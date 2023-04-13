@@ -12,5 +12,5 @@ jobs:
     steps:
       - uses: actions/add-to-project@v0.4.0
         with:
-          project-url: https://github.com/orgs/winglang/projects/2
-          github-token: ${{ secrets.PROJEN_GITHUB_TOKEN }}
+          project-url: https://github.com/orgs/THipster/projects/1
+          github-token: ${{ secrets.PROJ_GITHUB_TOKEN }}
