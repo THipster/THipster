@@ -7,6 +7,8 @@ updates:
       interval: "weekly"
       day: "sunday"
     target-branch: "main"
+    commit-message:
+      prefix: ':green_heart: actions'
 
   # Python
   - package-ecosystem: "pip"
@@ -15,3 +17,5 @@ updates:
       interval: "weekly"
       day: "sunday"
     target-branch: "main"
+    commit-message:
+      prefix: ':arrow_up: pip'
