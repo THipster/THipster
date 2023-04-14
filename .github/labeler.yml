@@ -1,11 +1,14 @@
 # Add 'ci' label to any changes in the '.github', 'ci' folders & '.pre-commit-config.yaml', '.gitignore' files
 ci:
-- any: ['.github', 'pipelines', '.pre-commit-config.yaml', '.gitignore']
+- any: ['.github/*', 'pipelines/*', '.pre-commit-config.yaml', '.gitignore']
+
+github_actions:
+- any: ['.github/*','!.github/ISSUE_TEMPLATE/*']
 
 # Add 'tests' label to any changes in the 'tests' folder
 tests:
-- any: ['tests']
+- any: ['tests/*']
 
 # Add 'docs' label to any changes in the 'docs' folder & 'CODE_OF_CONDUCT.md','CONTRIBUTING.md','LICENSE','README.md' files
-docs:
-- any: ['docs','CODE_OF_CONDUCT.md','CONTRIBUTING.md','LICENSE','README.md']
+documentation:
+- any: ['docs/*','CODE_OF_CONDUCT.md','CONTRIBUTING.md','LICENSE','README.md']
