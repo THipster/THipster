@@ -1,4 +1,4 @@
-name: dagger
+name: Pull Request Checker
 on:
   pull_request:
     types: [opened, edited, reopened, synchronize]
