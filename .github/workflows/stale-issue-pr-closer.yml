@@ -1,0 +1,44 @@
+name: 'Close stale issues and PRs'
+on:
+    schedule:
+        - cron: '30 8 * * 1'
+
+jobs:
+    stale:
+        permissions:
+            contents: write # only for delete-branch option
+            issues: write
+            pull-requests: write
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/stale@v8
+              with:
+                stale-issue-message: 'This issue is stale because it has been open 30 days with no activity. Remove stale label or comment or this will be closed in 5 days.'
+                stale-issue-label: 'stale-issue'
+                stale-pr-message: 'This PR is stale because it has been open 45 days with no activity. Remove stale label or comment or this will be closed in 10 days.'
+                stale-pr-label: 'stale-pr'
+                close-issue-message: 'This issue was closed because it has been stalled for 5 days with no activity.'
+                close-pr-message: 'This PR was closed because it has been stalled for 10 days with no activity.'
+                days-before-issue-stale: 30
+                days-before-pr-stale: 45
+                days-before-issue-close: 5
+                days-before-pr-close: 10
+                exempt-all-issue-milestones: true
+                exempt-all-pr-milestones: true
+    duplicate:
+        permissions:
+            issues: write
+            pull-requests: write
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/stale@v8
+              with:
+                any-of-labels: 'duplicate,invalid,wontfix'
+                stale-issue-label: 'to-be-deleted'
+                stale-pr-label: 'to-be-deleted'
+                days-before-issue-stale: 3
+                days-before-pr-stale: 3
+                days-before-issue-close: 2
+                days-before-pr-close: 2
+                exempt-all-issue-milestones: true
+                exempt-all-pr-milestones: true
