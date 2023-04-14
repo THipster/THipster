@@ -5,7 +5,7 @@ body:
 - type: markdown
   attributes:
     value: |
-      ## Enhancement Request
+      ## New feature Request
 - type: textarea
   id: spec
   attributes:
