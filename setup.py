@@ -1,11 +1,14 @@
 from setuptools import setup
 
+__version__ = "0.0.0"
+
 requirements = [
     ''
 ]
 
 setup(
-    name= "THipster",
+    name = "THipster",
+    version = __version__,
     packages= [
         "thipster"
     ],
