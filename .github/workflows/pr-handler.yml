@@ -1,6 +1,7 @@
-name: "Pull Request Labeler"
+name: "Pull Request Handler"
 on:
-- pull_request_target
+    pull_request:
+        types: [opened, edited, reopened, synchronize]
 
 jobs:
     triage:
@@ -10,3 +11,31 @@ jobs:
         runs-on: ubuntu-latest
         steps:
             - uses: actions/labeler@v4
+
+    tests:
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/setup-python@v4
+              with:
+                python-version: '3.11'
+            - uses: actions/checkout@v3
+            - name: Install deps
+              run: |
+                python -m pip install --upgrade pip
+                pip install dagger-io
+            - name: Run Dagger_test.py pipeline
+              run: python pipelines/test.py
+
+    run_pre-commit:
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/setup-python@v4
+              with:
+                python-version: '3.11'
+            - uses: actions/checkout@v3
+            - name: Install deps
+              run: |
+                python -m pip install --upgrade pip
+                pip install dagger-io
+            - name: Run Dagger_pre-commit.py pipeline
+              run: python pipelines/pre-commit.py
