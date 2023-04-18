@@ -1,12 +1,12 @@
 # Add 'ci' label to any changes in the '.github', 'ci' folders & '.pre-commit-config.yaml', '.gitignore' files
 ci:
-- .github/*
+- any: ['.github/*','!.github/ISSUE_TEMPLATE/*','!.github/PULL_REQUEST_TEMPLATE/*']
 - pipelines/*
 - .pre-commit-config.yaml
 - .gitignore
 
 github_actions:
-- any: ['.github/*','!.github/ISSUE_TEMPLATE/*']
+- any: ['.github/*','!.github/ISSUE_TEMPLATE/*','!.github/PULL_REQUEST_TEMPLATE/*']
 
 # Add 'tests' label to any changes in the 'tests' folder
 tests:
