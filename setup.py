@@ -7,12 +7,9 @@ requirements = [
 ]
 
 setup(
-    name='THipster',
+    name='thipster',
     version=__version__,
-    packages=[
-        'thipster',
-    ],
-
+    package_dir={'': 'thipster'},
     install_requires=requirements,
     extras_require={
         'test': [
