@@ -7,27 +7,31 @@ body:
     value: |
       ## New Bug Report
 - type: textarea
-  id: spec
+  id: steps
   attributes:
-    label: Feature Spec
+    label: Steps to reproduce
     placeholder: |
-      Describe the feature as if it was already released. Write a hypothetical doc/readme/changelog/contributing section for this new enhancement, code snippets and all.
+      Describe the exact steps which reproduce the problem in as many details as possible. 
+      For example, start by explaining how you started THipster, e.g. which command exactly you used in the terminal, or how you started THipster otherwise. 
+      When listing steps, don't just say what you did, but explain how you did it.
+      Include links to files or GitHub projects, or copy/pasteable snippets, which you use in those examples. 
+      If you're providing snippets in the issue, use Markdown code blocks : https://help.github.com/articles/markdown-basics/#multiple-lines.
   validations:
     required: true
 - type: textarea
-  id: use-cases
+  id: observed-behavior
   attributes:
-    label: Use Cases
+    label: Observed behavior after following the steps
     placeholder: |
-      What problems does this solves? List of use cases this feature or enhancement is designed to address.
+      Point out what exactly is the problem with that behavior.
   validations:
     required: true
 - type: textarea
-  id: implementation-notes
+  id: expected-behavior
   attributes:
-    label: Implementation Notes
+    label: Expected behavior
     placeholder: |
-      Any thoughts regarding how this should be implemented?
+      Explain which behavior you expected to see instead and why.
 - type: dropdown
   id: Component
   attributes:

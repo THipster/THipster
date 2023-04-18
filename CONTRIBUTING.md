@@ -6,6 +6,10 @@
 
 [Code of Conduct](#code-of-conduct)
 
+[GitHub Workflow](#github-worklow)
+
+[Scope of Pull Requests](#scope-of-pull-requests)
+
 [How to Contribute ?](#how-to-contribute)
 * [Reporting Bugs](#reporting-bugs)
 * [Suggesting Enhancements](#suggesting-enhancements)
@@ -21,6 +25,64 @@
 
 ## Code of Conduct
 
+## GitHub Worklow
+The recommended workflow is to fork the repository and open pull requests from your fork.
+
+### 1. Fork, clone & configure THipster upstream
+
+- Click on the _Fork_ button on GitHub
+- Clone your fork
+- Add the upstream repository as a new remote
+
+```shell
+# Clone repository
+git clone https://github.com/$YOUR_GITHUB_USER/$REPOSITORY.git
+
+# Add upstream origin
+git remote add upstream git@github.com:THipster/$REPOSITORY.git
+```
+
+### 2. Create a pull request
+
+```shell
+# Create a new feature branch
+git switch -c my_feature_branch
+
+# Make changes to your branch
+# ...
+
+# Commit changes
+git commit
+
+# Push your new feature branch
+git push my_feature_branch
+
+# Create a new pull request from https://github.com/THipster/$REPOSITORY
+```
+
+### 3. Update your pull request with latest changes
+
+```shell
+# Checkout main branch
+git switch main
+
+# Update your fork's main branch from upstream
+git pull upstream main
+
+# Checkout your feature branch
+git switch my_feature_branch
+
+# Rebase your feature branch changes on top of the updated main branch
+git rebase main
+
+# Update your pull request with latest changes
+git push -f my_feature_branch
+```
+
+## Scope of Pull Requests
+We prefer small incremental changes that can be reviewed and merged quickly. It's OK if it takes multiple pull requests to close an issue.  
+
+The idea is that each feature / improvement branch should only live a few hours and be merged in THipster's main branch whithin a day at most. 
 
 ## How to Contribute ?
 
