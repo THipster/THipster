@@ -32,6 +32,58 @@ body:
     label: Expected behavior
     placeholder: |
       Explain which behavior you expected to see instead and why.
+  validations:
+    required: true
+- type: textarea
+  id: thipster-version
+  attributes:
+    label: THipster version
+    placeholder: |
+      run thipster -v and paste the result here!
+  validations:
+    required: true
+- type: textarea
+  id: problem-start-date
+  attributes:
+    label: Start date and occurence
+    placeholder: |
+      Did the problem start happening recently (e.g. after updating to a new version of THipster) or was this always a problem?
+      If the problem started happening recently, can you reproduce the problem in an older version of THipster? 
+      What's the most recent version in which the problem doesn't happen?
+      Can you reliably reproduce the issue? 
+      If not, provide details about how often the problem happens and under which conditions it normally happens.
+    validations:
+      required: true
+- type: dropdown
+  id: host-os
+  attributes:
+    label: OS name
+    multiple: false
+    options:
+    - Linux
+    - MacOS
+    - Windows
+    - Other
+  validations:
+    required: true
+- type: textarea
+  id: host-os-details
+  attributes:
+    label: OS details
+    placeholder: |
+      Version and details of the OS you're using. Are you running THipster in a virtual machine? 
+      If so, which VM software are you using and which operating systems and versions are used for the host and the guest?
+  validations:
+    required: true
+- type: textarea
+  id: python-version
+  attributes:
+    label: Python version
+    placeholder: |
+      What Python version are you using?
+      You can find the Python version with: python --version
+  validations:
+    required: true
 - type: dropdown
   id: Component
   attributes:
@@ -45,5 +97,14 @@ body:
     - Auth
     - Resource Library
     - Documentation
+    - Other
+  validations:
+    required: true
+- type: textarea
+  id: additional-info
+  attributes:
+    label: Additional infos
+    placeholder: |
+      Add any additional context information or screenshots you think are useful.
   validations:
     required: false
