@@ -1,34 +1,16 @@
 from abc import ABC, abstractmethod
 
 
-class I_Parsed_Value(ABC):
+class I_Model_Value(ABC):
     @property
     @abstractmethod
     def value(self):
         pass
 
 
-class Position():
-    def __init__(self, ln: int, col: int):
-        self.__ln = ln
-        self.__col = col
-
-    @property
-    def ln(self):
-        return self.__ln
-
-    @property
-    def col(self):
-        return self.__col
-
-    def __str__(self) -> str:
-        return 'Ln ' + self.ln + ', Col ' + self.col
-
-
-class Parsed_Attribute():
-    def __init__(self, name: str, position: Position, value: I_Parsed_Value):
+class Model_Attribute():
+    def __init__(self, name: str, value: I_Model_Value):
         self.__name = name
-        self.__position = position
         self.__value = value
 
     @property
@@ -39,13 +21,9 @@ class Parsed_Attribute():
     def name(self):
         return self.__name
 
-    @property
-    def position(self):
-        return self.__position
 
-
-class Parsed_List(I_Parsed_Value):
-    def __init__(self, value: list[I_Parsed_Value]):
+class Model_List(I_Model_Value):
+    def __init__(self, value: list[I_Model_Value]):
         super().__init__()
         self.__value = value
 
@@ -67,7 +45,7 @@ class Parsed_List(I_Parsed_Value):
         return ret
 
 
-class Parsed_Literal(I_Parsed_Value):
+class Model_Literal(I_Model_Value):
     def __init__(self, value):
         super().__init__()
         self.__value = value
@@ -77,8 +55,8 @@ class Parsed_Literal(I_Parsed_Value):
         return self.__value
 
 
-class Parsed_Dict(I_Parsed_Value):
-    def __init__(self, value: dict[Parsed_Attribute]):
+class Model_Dict(I_Model_Value):
+    def __init__(self, value: dict[Model_Attribute]):
         super().__init__()
         self.__value = value
 
@@ -100,18 +78,26 @@ class Parsed_Dict(I_Parsed_Value):
         return ret
 
 
-class ParsedResource():
+class ResourceModel():
+    pass
+
+
+class ResourceModel():
     def __init__(
             self,
             type: str,
-            name: str,
-            position: Position,
-            attributes=list[Parsed_Attribute],
+            attributes: list[Model_Attribute],
+            dependencies: list[ResourceModel],
+            cdk_provider: str,
+            cdk_module: str,
+            cdk_name: str,
     ):
         self.__type = type
-        self.__name = name
-        self.__position = position
         self.__attributes = attributes
+        self.__dependencies = dependencies
+        self.__cdk_provider = cdk_provider
+        self.__cdk_module = cdk_module
+        self.__cdk_name = cdk_name
 
     @property
     def type(self):
@@ -122,22 +108,21 @@ class ParsedResource():
         return self.__name
 
     @property
-    def position(self):
-        return self.__position
-
-    @property
     def attributes(self):
         return self.__attributes
 
-
-class ParsedFile():
-    def __init__(self):
-        self.__resources = []
+    @property
+    def dependencies(self):
+        return self.__dependencies
 
     @property
-    def resources(self):
-        return self.__resources
+    def cdk_provider(self):
+        return self.__cdk_provider
 
-    @resources.setter
-    def resources(self, resources):
-        self.__resources = resources
+    @property
+    def cdk_module(self):
+        return self.__cdk_module
+
+    @property
+    def cdk_name(self):
+        return self.__cdk_name
