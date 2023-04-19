@@ -52,8 +52,8 @@ body:
       What's the most recent version in which the problem doesn't happen?
       Can you reliably reproduce the issue? 
       If not, provide details about how often the problem happens and under which conditions it normally happens.
-    validations:
-      required: true
+  validations:
+    required: true
 - type: dropdown
   id: host-os
   attributes:
