@@ -14,9 +14,11 @@ setup(
     extras_require={
         'test': [
             'pytest',
+            'pytest-mock',
         ],
         'dev': [
             'pytest',
+            'pytest-mock',
             'dagger.io',
             'pre-commit',
         ],
