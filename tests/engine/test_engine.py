@@ -49,8 +49,7 @@ def test_parser_failure(mocker):
         raise MockException('Parser failed')
 
     mocker.patch(
-        # Dataset is in slow.py, but imported to main.py
-        'tests.engine.engine_test.MockParser.run',
+        'tests.engine.test_engine.MockParser.run',
         fail,
     )
 
