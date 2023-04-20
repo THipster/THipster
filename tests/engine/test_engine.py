@@ -2,6 +2,8 @@ import engine.Engine as eng
 from engine.ParsedFile import ParsedFile
 from engine.ResourceModel import ResourceModel
 
+import pytest
+
 
 class MockException(Exception):
     def __init__(self, message):
@@ -59,11 +61,9 @@ def test_parser_failure(mocker):
     auth = MockAuth()
     terraform = MockTerraform()
 
-    try:
+    with pytest.raises(MockException):
         engine = eng.Engine(parser, repository, auth, terraform)
         engine.run()
-    except MockException as e:
-        assert e.message == 'Parser failure'
 
 
 def test_repository_failure(mocker):
@@ -80,8 +80,6 @@ def test_repository_failure(mocker):
     auth = MockAuth()
     terraform = MockTerraform()
 
-    try:
+    with pytest.raises(MockException):
         engine = eng.Engine(parser, repository, auth, terraform)
         engine.run()
-    except MockException as e:
-        assert e.message == 'Repository failure'
