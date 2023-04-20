@@ -15,6 +15,11 @@ class DSLParserBaseException(Exception):
         return self.__message
 
 
+class DSLParserPathNotFound(DSLParserBaseException):
+    def __init__(self, file, *args: object) -> None:
+        super().__init__(f'Path not found : {file}', *args)
+
+
 class DSLParser(I_Parser):
 
     def __getfiles(self, path: str) -> dict[str, str]:
@@ -22,7 +27,7 @@ class DSLParser(I_Parser):
         path = os.path.abspath(path)
 
         if not os.path.exists(path):
-            raise DSLParserBaseException(f'Path not found : {path}')
+            raise DSLParserPathNotFound(path)
 
         files = {}
 

@@ -1,5 +1,7 @@
 from parser.dsl_parser.DSLParser import DSLParser
+from parser.dsl_parser.DSLParser import DSLParserPathNotFound
 import os
+import pytest
 
 
 def create_dir(dirname: str, files: dict[str, str]):
@@ -8,7 +10,7 @@ def create_dir(dirname: str, files: dict[str, str]):
 
     dirname = os.path.abspath(dirname)
     for name, content in files.items():
-        create_file(dirname, name, content)
+        create_file(name, content, dirname)
 
     def destroy_files():
         for content in os.listdir(dirname):
@@ -21,7 +23,6 @@ def create_dir(dirname: str, files: dict[str, str]):
 def create_file(filename: str, content: str, dirname: str = 'test'):
     if not os.path.isdir(dirname):
         os.mkdir(dirname)
-
     dirname = os.path.abspath(dirname)
 
     file = open(f'{dirname}/{filename}', 'w')
@@ -48,3 +49,10 @@ def test_get_files():
         assert v == 'content'
 
     _destroy_dir()
+
+
+def test_get_absent_files():
+    with pytest.raises(DSLParserPathNotFound):
+
+        parser = DSLParser()
+        parser._DSLParser__getfiles('inexistant_path')
