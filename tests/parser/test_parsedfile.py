@@ -8,7 +8,7 @@ def test_create_parsed_file():
 
 
 def test_create_resource():
-    pos = pf.Position(3, 7)
+    pos = pf.Position('test_file',3,7)
     resource = pf.ParsedResource(
         'test_type', 'test_name',
         attributes=None, position=pos,
@@ -22,7 +22,7 @@ def test_create_resource():
 
 
 def test_create_position():
-    pos = pf.Position(ln=3, col=7)
+    pos = pf.Position(fileName='test_file',ln=3, col=7)
 
     assert isinstance(pos, pf.Position)
     assert pos.ln == 3
@@ -31,7 +31,7 @@ def test_create_position():
 
 def test_create_num_attr():
     val = pf.Parsed_Literal(3)
-    pos = pf.Position(3, 7)
+    pos = pf.Position('test_file',3,7)
 
     attr = pf.Parsed_Attribute('test_attr', value=val, position=pos)
 
@@ -42,7 +42,7 @@ def test_create_num_attr():
 
 def test_create_str_attr():
     val = pf.Parsed_Literal('test_value')
-    pos = pf.Position(3, 7)
+    pos = pf.Position('test_file',3,7)
 
     attr = pf.Parsed_Attribute('test_attr', value=val, position=pos)
 
@@ -55,7 +55,7 @@ def test_create_list_str_attr():
     val = pf.Parsed_List(
         [pf.Parsed_Literal('test_value_' + str(i)) for i in range(3)],
     )
-    pos = pf.Position(3, 7)
+    pos = pf.Position('test_file',3,7)
 
     attr = pf.Parsed_Attribute('test_attr', value=val, position=pos)
 
@@ -71,7 +71,7 @@ def test_create_dict_str_attr():
     val = pf.Parsed_Dict(
         {pf.Parsed_Literal('test_value_' + str(i)) for i in range(3)},
     )
-    pos = pf.Position(3, 7)
+    pos = pf.Position('test_file',3,7)
 
     attr = pf.Parsed_Attribute('test_attr', value=val, position=pos)
 
@@ -88,12 +88,12 @@ def test_create_composite_attr():
         pf.Parsed_Attribute(
             'attr_num',
             value=pf.Parsed_Literal(3),
-            position=pf.Position(3, 7),
+            position=pf.Position('test_file',3,7),
         ),
         pf.Parsed_Attribute(
             'attr_str',
             value=pf.Parsed_Literal('test'),
-            position=pf.Position(4, 7),
+            position=pf.Position('test_file',4, 7),
         ),
         pf.Parsed_Attribute(
             'attr_list',
@@ -102,7 +102,7 @@ def test_create_composite_attr():
                 pf.Parsed_Literal('test_list_2'),
                 pf.Parsed_Literal('test_list_3'),
             ]),
-            position=pf.Position(5, 7),
+            position=pf.Position('test_file', 5, 7),
         ),
         pf.Parsed_Attribute(
             'attr_dict',
@@ -110,22 +110,22 @@ def test_create_composite_attr():
                 pf.Parsed_Attribute(
                     'attr_dict_1',
                     value=pf.Parsed_Literal('test'),
-                    position=pf.Position(11, 7),
+                    position=pf.Position('test_file', 11, 7),
                 ),
                 pf.Parsed_Attribute(
                     'attr_dict_2',
                     value=pf.Parsed_Literal('test'),
-                    position=pf.Position(12, 7),
+                    position=pf.Position('test_file', 12, 7),
                 ),
             ]),
-            position=pf.Position(10, 7),
+            position=pf.Position('test_file', 10, 7),
         ),
     ]
 
     resource = pf.ParsedResource(
         'test_type',
         'test_name',
-        position=pf.Position(3, 7),
+        position=pf.Position('test_file',3,7),
         attributes=attr,
     )
 
@@ -150,7 +150,7 @@ def test_create_composite_attr():
 def test_add_resource():
     file = pf.ParsedFile()
 
-    pos = pf.Position(3, 7)
+    pos = pf.Position('test_file',3,7)
     resource = pf.ParsedResource(
         'test_type', 'test_name',
         attributes=None, position=pos,

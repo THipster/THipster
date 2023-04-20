@@ -9,9 +9,14 @@ class I_Parsed_Value(ABC):
 
 
 class Position():
-    def __init__(self, ln: int, col: int):
+    def __init__(self, fileName:str, ln: int, col: int):
+        self.__fileName = fileName
         self.__ln = ln
         self.__col = col
+
+    @property
+    def fileName(self):
+        return self.__fileName
 
     @property
     def ln(self):
@@ -22,7 +27,7 @@ class Position():
         return self.__col
 
     def __str__(self) -> str:
-        return 'Ln ' + self.ln + ', Col ' + self.col
+        return 'File : {}, Ln {}, Col {}'.format(self.fileName,self.ln,self.col)
 
 
 class Parsed_Attribute():
