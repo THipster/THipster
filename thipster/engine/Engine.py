@@ -23,7 +23,8 @@ class Engine():
         res = 'Engine begin\n'
         if self.__parser.run():
             res += 'Parser OK' + '\n'
-        res += self.__repository.run() + '\n'
+        if isinstance(self.__repository.run(), list):
+            res += 'Repository OK' + '\n'
         res += self.__auth.run() + '\n'
         res += self.__terraform.run() + '\n'
 
