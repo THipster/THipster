@@ -2,7 +2,7 @@ from parser.dsl_parser.Token import Token
 from engine.ParsedFile import Position
 
 def test_create_token():
-    position = Position(ln=2,col=6)
+    position = Position(fileName='testFile',ln=2,col=6)
     type = 'test_type'
     value = 'test_value'
 
