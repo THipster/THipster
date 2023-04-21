@@ -8,6 +8,7 @@ jobs:
   release:
     runs-on: ubuntu-latest
     concurrency: release
+    permissions: write-all
 
     steps:
     - uses: actions/checkout@v2
