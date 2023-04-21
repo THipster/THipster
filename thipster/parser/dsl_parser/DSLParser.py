@@ -2,6 +2,7 @@ from engine.I_Parser import I_Parser
 from engine.ParsedFile import ParsedFile
 
 import os
+from parser.dsl_parser.Lexer import Lexer
 
 
 class DSLParserBaseException(Exception):
@@ -48,13 +49,12 @@ class DSLParser(I_Parser):
         try:
             files = self.__getfiles(path)
             print(files)
-            # lexer = Lexer(files)
-            # token_list = lexer.run()
-            #
+            lexer = Lexer(files)
+            token_list = lexer.run()
+
+            return token_list
         except DSLParserBaseException as e:
             print(e.message)
             pass
         except Exception:
             pass
-
-        pass

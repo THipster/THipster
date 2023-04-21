@@ -9,7 +9,7 @@ class I_Parsed_Value(ABC):
 
 
 class Position():
-    def __init__(self, fileName:str, ln: int, col: int):
+    def __init__(self, fileName: str, ln: int, col: int):
         self.__fileName = fileName
         self.__ln = ln
         self.__col = col
@@ -27,17 +27,17 @@ class Position():
         return self.__col
 
     def __str__(self) -> str:
-        return 'File : {}, Ln {}, Col {}'.format(self.fileName,self.ln,self.col)
-    
+        return f'File : {self.fileName}, Ln {self.ln}, Col {self.col}'
+
     def __eq__(self, __value: object) -> bool:
-        if isinstance(__value,Position):
+        if isinstance(__value, Position):
             return (
                 self.fileName == __value.fileName and
                 self.ln == __value.ln and
                 self.col == __value.col
             )
         else:
-            raise TypeError("Value must be a Position")
+            raise TypeError('Value must be a Position')
 
 
 class Parsed_Attribute():

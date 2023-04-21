@@ -56,3 +56,49 @@ def test_get_absent_files():
 
         parser = DSLParser()
         parser._DSLParser__getfiles('inexistant_path')
+
+
+def test_tokenize_file():
+    path_input = 'test'
+    _destroy_dir = create_dir(
+        path_input,
+        {
+            'test_file.thips':
+            """bucket my-bucket:
+\tregion: euw""",
+        },
+    )
+
+    parser = DSLParser()
+
+    tokens = parser.run(path_input)
+
+    assert len(tokens) == 9
+
+    _destroy_dir()
+
+
+def test_tokenize_longer_file():
+    path_input = 'test'
+    _destroy_dir = create_dir(
+        path_input,
+        {
+            'test_file.thips':
+            """bucket my-bucket:
+\t toto: if #a=b
+\t\t aaa: val1
+\t\t bbb: val2
+\t tata:
+\t- ccc: val3
+\t- ddd: val4
+""",
+        },
+    )
+
+    parser = DSLParser()
+
+    tokens = parser.run(path_input)
+
+    assert len(tokens) == 39
+
+    _destroy_dir()
