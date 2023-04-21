@@ -1,4 +1,4 @@
-name: New Bug 
+name: New Bug
 description: Report a new bug
 labels: ["bug"]
 body:
@@ -11,10 +11,10 @@ body:
   attributes:
     label: Steps to reproduce
     placeholder: |
-      Describe the exact steps which reproduce the problem in as many details as possible. 
-      For example, start by explaining how you started THipster, e.g. which command exactly you used in the terminal, or how you started THipster otherwise. 
+      Describe the exact steps which reproduce the problem in as many details as possible.
+      For example, start by explaining how you started THipster, e.g. which command exactly you used in the terminal, or how you started THipster otherwise.
       When listing steps, don't just say what you did, but explain how you did it.
-      Include links to files or GitHub projects, or copy/pasteable snippets, which you use in those examples. 
+      Include links to files or GitHub projects, or copy/pasteable snippets, which you use in those examples.
       If you're providing snippets in the issue, use Markdown code blocks : https://help.github.com/articles/markdown-basics/#multiple-lines.
   validations:
     required: true
@@ -48,9 +48,9 @@ body:
     label: Start date and occurence
     placeholder: |
       Did the problem start happening recently (e.g. after updating to a new version of THipster) or was this always a problem?
-      If the problem started happening recently, can you reproduce the problem in an older version of THipster? 
+      If the problem started happening recently, can you reproduce the problem in an older version of THipster?
       What's the most recent version in which the problem doesn't happen?
-      Can you reliably reproduce the issue? 
+      Can you reliably reproduce the issue?
       If not, provide details about how often the problem happens and under which conditions it normally happens.
   validations:
     required: true
@@ -71,7 +71,7 @@ body:
   attributes:
     label: OS details
     placeholder: |
-      Version and details of the OS you're using. Are you running THipster in a virtual machine? 
+      Version and details of the OS you're using. Are you running THipster in a virtual machine?
       If so, which VM software are you using and which operating systems and versions are used for the host and the guest?
   validations:
     required: true

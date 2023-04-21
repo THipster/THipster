@@ -1,14 +1,15 @@
 from parser.dsl_parser.Token import Token
 from engine.ParsedFile import Position
 
+
 def test_create_token():
-    position = Position(fileName='testFile',ln=2,col=6)
+    position = Position(fileName='testFile', ln=2, col=6)
     type = 'test_type'
     value = 'test_value'
 
-    token = Token(position, type=type, value=value,)
+    token = Token(position, type=type, value=value)
 
-    assert isinstance(token,Token)
+    assert isinstance(token, Token)
     assert token.position == position
     assert token.type == type
     assert token.value == value

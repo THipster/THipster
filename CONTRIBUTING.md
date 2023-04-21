@@ -82,7 +82,7 @@ git push -f my_feature_branch
 ## Scope of Pull Requests
 We prefer small incremental changes that can be reviewed and merged quickly. It's OK if it takes multiple pull requests to close an issue.  
 
-The idea is that each feature / improvement branch should only live a few hours and be merged in THipster's main branch whithin a day at most. 
+The idea is that each feature / improvement branch should only live a few hours and be merged in THipster's main branch whithin a day at most.
 
 ## How to Contribute ?
 
@@ -93,7 +93,7 @@ Bugs are tracked as [GitHub issues](https://guides.github.com/features/issues/).
 Explain the problem and include additional details to help maintainers reproduce the problem:
 
 * **Use a clear and descriptive title** for the issue to identify the problem.
-* **Describe the exact steps which reproduce the problem** in as many details as possible. For example, start by explaining how you started THipster, e.g. which command exactly you used in the terminal, or how you started THipster otherwise. When listing steps, **don't just say what you did, but explain how you did it**. 
+* **Describe the exact steps which reproduce the problem** in as many details as possible. For example, start by explaining how you started THipster, e.g. which command exactly you used in the terminal, or how you started THipster otherwise. When listing steps, **don't just say what you did, but explain how you did it**.
 * **Provide specific examples to demonstrate the steps**. Include links to files or GitHub projects, or copy/pasteable snippets, which you use in those examples. If you're providing snippets in the issue, use [Markdown code blocks](https://help.github.com/articles/markdown-basics/#multiple-lines).
 * **Describe the behavior you observed after following the steps** and point out what exactly is the problem with that behavior.
 * **Explain which behavior you expected to see instead and why.**
@@ -213,7 +213,7 @@ While the prerequisites above must be satisfied prior to having your pull reques
 
 ### Python Styleguide
 
-All python code is linted with [Ruff](https://github.com/charliermarsh/ruff). 
+All python code is linted with [Ruff](https://github.com/charliermarsh/ruff).
 
 ### Documentation Styleguide
 
@@ -225,5 +225,3 @@ All python code is linted with [Ruff](https://github.com/charliermarsh/ruff).
 
 ## Additional Notes
 ### Issue and Pull Request Labels
-
-
