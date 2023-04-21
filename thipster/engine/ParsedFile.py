@@ -28,6 +28,16 @@ class Position():
 
     def __str__(self) -> str:
         return 'File : {}, Ln {}, Col {}'.format(self.fileName,self.ln,self.col)
+    
+    def __eq__(self, __value: object) -> bool:
+        if isinstance(__value,Position):
+            return (
+                self.fileName == __value.fileName and
+                self.ln == __value.ln and
+                self.col == __value.col
+            )
+        else:
+            raise TypeError("Value must be a Position")
 
 
 class Parsed_Attribute():
