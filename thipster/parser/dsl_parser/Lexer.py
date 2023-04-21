@@ -89,6 +89,10 @@ class Lexer():
             if self.__variable:
                 self.addTokenToList(currentTokenIndex, 'VAR', currentToken)
                 self.__variable = False
+            elif currentToken.isdigit():
+                self.addTokenToList(currentTokenIndex, 'INT', currentToken)
+            elif self._isfloat(currentToken):
+                self.addTokenToList(currentTokenIndex, 'FLOAT', currentToken)
             else:
                 self.addTokenToList(currentTokenIndex, 'STRING', currentToken)
 
@@ -103,3 +107,10 @@ class Lexer():
                 value=value,
             ),
         )
+
+    def _isfloat(self, num):
+        try:
+            float(num)
+            return True
+        except ValueError:
+            return False
