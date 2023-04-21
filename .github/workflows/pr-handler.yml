@@ -25,7 +25,7 @@ jobs:
             uses: JulienKode/pull-request-name-linter-action@v0.5.0
 
     tests:
-        if: ${{ !contains(github.event.pull_request.title, ':memo:') && !contains(github.event.pull_request.title, ':green_heart:') && !contains(github.event.pull_request.title, ':construction_worker:') }}
+        if: ${{ !contains(github.event.pull_request.title, ':memo:') }}
         runs-on: ubuntu-latest
         steps:
             - uses: actions/setup-python@v4
