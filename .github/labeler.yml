@@ -1,44 +1,42 @@
-# Add 'ci' label to any changes in the '.github', 'ci' folders & '.pre-commit-config.yaml', '.gitignore' files
+# PR labeler configuration file
 ci:
-- any: ['.github/*','!.github/ISSUE_TEMPLATE/*','!.github/PULL_REQUEST_TEMPLATE/*']
-- pipelines/*
+- any: ['.github/**/*','!.github/ISSUE_TEMPLATE/*','!.github/PULL_REQUEST_TEMPLATE/*']
+- pipelines/**/*
 - .pre-commit-config.yaml
 - .gitignore
 
 github_actions:
-- any: ['.github/*','!.github/ISSUE_TEMPLATE/*','!.github/PULL_REQUEST_TEMPLATE/*']
+- any: ['.github/**/*','!.github/ISSUE_TEMPLATE/*','!.github/PULL_REQUEST_TEMPLATE/*']
 
-# Add 'tests' label to any changes in the 'tests' folder
 tests:
-- any: ['tests/*']
+- any: ['tests/**/*']
 
-# Add 'docs' label to any changes in the 'docs' folder & 'CODE_OF_CONDUCT.md','CONTRIBUTING.md','LICENSE','README.md' files
 documentation:
-- docs/*
+- docs/**/*
 - CODE_OF_CONDUCT.md
 - CONTRIBUTING.md
 - LICENSE
 - README.md
-- .github/ISSUE_TEMPLATE/*
-- .github/PULL_REQUEST_TEMPLATE/*
+- .github/ISSUE_TEMPLATE/**/*
+- .github/PULL_REQUEST_TEMPLATE/**/*
 
 auth:
-- thipster/auth/*
+- thipster/auth/**/*
 
 cli:
-- thipster/cli/*
+- thipster/cli/**/*
 
 engine:
-- thipster/engine/*
+- thipster/engine/**/*
 
 parser:
-- thipster/parser/*
+- thipster/parser/**/*
 
 parser/DSL Parser:
-- thipster/parser/dsl_parser/*
+- thipster/parser/dsl_parser/**/*
 
 repository:
-- thipster/repository/*
+- thipster/repository/**/*
 
 terraform:
-- thipster/terraform/*
+- thipster/terraform/**/*
