@@ -21,3 +21,24 @@ documentation:
 - README.md
 - .github/ISSUE_TEMPLATE/*
 - .github/PULL_REQUEST_TEMPLATE/*
+
+auth:
+- thipster/auth/*
+
+cli:
+- thipster/cli/*
+
+engine:
+- thipster/engine/*
+
+parser:
+- thipster/parser/*
+
+parser/DSL Parser:
+- thipster/parser/dsl_parser/*
+
+repository:
+- thipster/repository/*
+
+terraform:
+- thipster/terraform/*
