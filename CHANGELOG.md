@@ -2,6 +2,13 @@
 
 <!--next-version-placeholder-->
 
+## v0.0.2 (2023-04-21)
+### Other
+* :green_heart: fix: semantic-release ([`046862a`](https://github.com/THipster/THipster/commit/046862a0d1d936b40c504f6d4fe0d4d19b28c615))
+* :green_heart: fix: Execute tests on CI change ([`d23f8ae`](https://github.com/THipster/THipster/commit/d23f8aeef8c3555395978265f0ab6054046cf138))
+* :green_heart: feat(ci): Skip tests for doc & ci ([`50293ee`](https://github.com/THipster/THipster/commit/50293eedade22b70772475c060dc12cacdd27d2c))
+* :green_heart: fix(ci): fix pr labeler ([`225a3f8`](https://github.com/THipster/THipster/commit/225a3f855fa1011a9a769b70b2c3193d485f2a1f))
+
 ## v0.0.1 (2023-04-21)
 ### :zap:
 * :zap: feat: fix pre-commit config + review ([`20b859f`](https://github.com/THipster/THipster/commit/20b859fc43c9c9618b0b314b6f6b00c68d90ddcd))
