@@ -52,7 +52,7 @@ def test_lex():
 def test_run_lexer():
     input = {
         'file': 'bucket nom-8 \n\t',
-        'file2': 'network aaaa-#i: nombre: 2',
+        'file2': 'network aaaa-#i: nombre: 2 4.5',
     }
     expectedOutput = [
         Token(Position('file', 1, 1), 'STRING', 'bucket'),
@@ -67,12 +67,13 @@ def test_run_lexer():
         Token(Position('file2', 1, 16), 'COLUMN'),
         Token(Position('file2', 1, 18), 'STRING', 'nombre'),
         Token(Position('file2', 1, 24), 'COLUMN'),
-        Token(Position('file2', 1, 26), 'STRING', '2'),
-        Token(Position('file2', 1, 27), 'EOF'),
+        Token(Position('file2', 1, 26), 'INT', '2'),
+        Token(Position('file2', 1, 28), 'FLOAT', '4.5'),
+        Token(Position('file2', 1, 31), 'EOF'),
     ]
     lexer = Lexer(input)
     output = lexer.run()
 
-    assert len(output) == 13
+    assert len(output) == 14
     for i in range(len(expectedOutput)):
         assert output[i] == expectedOutput[i]
