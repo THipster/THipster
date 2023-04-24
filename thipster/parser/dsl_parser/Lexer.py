@@ -4,6 +4,7 @@ from enum import Enum
 
 
 class CHARS(str, Enum):
+    AMOUNT = 'amount'
     WHITESPACE = ' '
     DASH = '-'
     TAB = '\t'
@@ -79,14 +80,17 @@ class Lexer():
         self.addTokenToList(column, TT.EOF.value)
 
     def handleCurrentToken(self, currentToken: str, currentTokenIndex: int) -> None:
+        currentTokenLower = currentToken.lower()
         if currentToken == CHARS.DASH.value:
             self.addTokenToList(currentTokenIndex, TT.DASH.value)
-        elif currentToken == CHARS.IF.value:
+        elif currentTokenLower == CHARS.IF.value:
             self.addTokenToList(currentTokenIndex, TT.IF.value)
-        elif currentToken == CHARS.ELSE.value:
+        elif currentTokenLower == CHARS.ELSE.value:
             self.addTokenToList(currentTokenIndex, TT.ELSE.value)
-        elif currentToken == CHARS.ELIF.value:
+        elif currentTokenLower == CHARS.ELIF.value:
             self.addTokenToList(currentTokenIndex, TT.ELIF.value)
+        elif currentTokenLower == CHARS.AMOUNT.value:
+            self.addTokenToList(currentTokenIndex, TT.AMOUNT.value)
         elif len(currentToken.strip()) > 0:
             if self.__variable:
                 self.addTokenToList(
