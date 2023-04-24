@@ -2,6 +2,14 @@
 
 <!--next-version-placeholder-->
 
+## v0.2.0 (2023-04-24)
+### :sparkles:
+* :sparkles: feat(parser): Add amount token ([`12bf065`](https://github.com/THipster/THipster/commit/12bf0658bc52769566916c71cc6b6566378a0b5a))
+
+### Other
+* :white_check_mark: fix(tests): Fix tests ([`688e5e0`](https://github.com/THipster/THipster/commit/688e5e000f1c8f9f40774aa9951baf928e9617b5))
+* :fire: fix(parser): Add enum for token types ([`e2a01f1`](https://github.com/THipster/THipster/commit/e2a01f1499bf36e6f0efca7ae25cc5def089cfd3))
+
 ## v0.1.0 (2023-04-24)
 ### :sparkles:
 * :sparkles: feat(parser): Add dash token ([`32a3cce`](https://github.com/THipster/THipster/commit/32a3cceb4e4f5b169788175b6925ed1a075a59ad))
