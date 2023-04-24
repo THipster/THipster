@@ -2,6 +2,15 @@
 
 <!--next-version-placeholder-->
 
+## v0.1.0 (2023-04-24)
+### :sparkles:
+* :sparkles: feat(parser): Add dash token ([`32a3cce`](https://github.com/THipster/THipster/commit/32a3cceb4e4f5b169788175b6925ed1a075a59ad))
+* :sparkles: feat(parser): Add int and float tokens ([`4cc7223`](https://github.com/THipster/THipster/commit/4cc7223c2d8098eef0de7d7bfa0686dbf5117888))
+
+### Other
+* :green_heart: actions: bump actions/checkout from 2 to 3 ([`17c0443`](https://github.com/THipster/THipster/commit/17c04430b4fb556651603a2b3037aff8cfe7ecdd))
+* :green_heart: fix(ci): update dependabot config ([`5b732d7`](https://github.com/THipster/THipster/commit/5b732d7a6ac475909dd45aa6bfa43c28b22e6016))
+
 ## v0.0.2 (2023-04-21)
 ### Other
 * :green_heart: fix: semantic-release ([`046862a`](https://github.com/THipster/THipster/commit/046862a0d1d936b40c504f6d4fe0d4d19b28c615))
