@@ -110,14 +110,14 @@ class Lexer():
                     TT.STRING.value, currentToken,
                 )
 
-    def addTokenToList(self, column: int, type: str, value: str = None) -> None:
+    def addTokenToList(self, column: int, tokenType: str, value: str = None) -> None:
         self.tokenList.append(
             Token(
                 position=Position(
                     self.__currentFile,
                     self.__currentLine, column,
                 ),
-                type=type,
+                tokenType=tokenType,
                 value=value,
             ),
         )
