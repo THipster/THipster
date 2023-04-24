@@ -6,6 +6,7 @@ from enum import Enum
 
 class TOKENS(str, Enum):
     WHITESPACE = ' '
+    DASH = '-'
     TAB = '\t'
     NEWLINE = '\n'
     COLUMN = ':'
@@ -79,7 +80,9 @@ class Lexer():
         self.addTokenToList(column, 'EOF')
 
     def handleCurrentToken(self, currentToken: str, currentTokenIndex: int) -> None:
-        if currentToken == TOKENS.IF.value:
+        if currentToken == TOKENS.DASH.value:
+            self.addTokenToList(currentTokenIndex, 'DASH')
+        elif currentToken == TOKENS.IF.value:
             self.addTokenToList(currentTokenIndex, 'IF')
         elif currentToken == TOKENS.ELSE.value:
             self.addTokenToList(currentTokenIndex, 'ELSE')
@@ -87,14 +90,26 @@ class Lexer():
             self.addTokenToList(currentTokenIndex, 'ELIF')
         elif len(currentToken.strip()) > 0:
             if self.__variable:
-                self.addTokenToList(currentTokenIndex, 'VAR', currentToken)
+                self.addTokenToList(
+                    currentTokenIndex,
+                    'VAR', currentToken,
+                )
                 self.__variable = False
             elif currentToken.isdigit():
-                self.addTokenToList(currentTokenIndex, 'INT', currentToken)
+                self.addTokenToList(
+                    currentTokenIndex,
+                    'INT', currentToken,
+                )
             elif self._isfloat(currentToken):
-                self.addTokenToList(currentTokenIndex, 'FLOAT', currentToken)
+                self.addTokenToList(
+                    currentTokenIndex,
+                    'FLOAT', currentToken,
+                )
             else:
-                self.addTokenToList(currentTokenIndex, 'STRING', currentToken)
+                self.addTokenToList(
+                    currentTokenIndex,
+                    'STRING', currentToken,
+                )
 
     def addTokenToList(self, column: int, type: str, value: str = None) -> None:
         self.tokenList.append(
