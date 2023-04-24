@@ -3,6 +3,7 @@ from engine.ParsedFile import ParsedFile
 
 import os
 from parser.dsl_parser.Lexer import Lexer
+# from parser.dsl_parser.TokenParser import TokenParser
 
 
 class DSLParserBaseException(Exception):
@@ -51,6 +52,8 @@ class DSLParser(I_Parser):
             print(files)
             lexer = Lexer(files)
             token_list = lexer.run()
+            # parser = TokenParser(token_list)
+            # ast = parser.run()
 
             return token_list
         except DSLParserBaseException as e:

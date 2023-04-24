@@ -88,3 +88,26 @@ def test_run_lexer():
     assert len(output) == 22
     for i in range(len(expectedOutput)):
         assert output[i] == expectedOutput[i]
+
+
+def test_run_lexer_var_in_name():
+    input = {
+        'file': 'bucket nom-#test \n\t toto: tata',
+    }
+    expectedOutput = [
+        Token(Position('file', 1, 1), 'STRING', 'bucket'),
+        Token(Position('file', 1, 8), 'STRING', 'nom-'),
+        Token(Position('file', 1, 13), 'VAR', 'test'),
+        Token(Position('file', 1, 18), 'NEWLINE'),
+        Token(Position('file', 2, 1), 'TAB'),
+        Token(Position('file', 2, 3), 'STRING', 'toto'),
+        Token(Position('file', 2, 7), 'COLUMN'),
+        Token(Position('file', 2, 9), 'STRING', 'tata'),
+        Token(Position('file', 2, 13), 'EOF'),
+    ]
+    lexer = Lexer(input)
+    output = lexer.run()
+
+    assert len(output) == 9
+    for i in range(len(expectedOutput)):
+        assert output[i] == expectedOutput[i]

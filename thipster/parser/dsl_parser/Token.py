@@ -45,3 +45,6 @@ class Token():
             )
         else:
             raise TypeError('Value must be a Token')
+
+    def __str__(self) -> str:
+        return f'({self.tokenType} {self.value})'

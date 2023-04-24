@@ -93,7 +93,7 @@ class Parsed_Literal(I_Parsed_Value):
 
 
 class Parsed_Dict(I_Parsed_Value):
-    def __init__(self, value: dict[Parsed_Attribute]):
+    def __init__(self, value: dict[str, Parsed_Attribute]):
         super().__init__()
         self.__value = value
 
