@@ -46,5 +46,12 @@ class Token():
         else:
             raise TypeError('Value must be a Token')
 
+    def __repr__(self) -> str:
+        tokenString = f'Position: ({str(self.position)}), Type: {self.tokenType}'
+        if self.value:
+            return tokenString + f', Value: {self.value}'
+        else:
+            return tokenString
+        
     def __str__(self) -> str:
         return f'({self.tokenType} {self.value})'

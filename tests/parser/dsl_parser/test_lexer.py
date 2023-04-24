@@ -80,7 +80,7 @@ def test_lex_quoted_string():
 
     assert len(output) == 7
     for i in range(len(expectedOutput)):
-        assert str(output[i]) == expectedOutput[i]
+        assert repr(output[i]) == expectedOutput[i]
 
 
 def test_lex_quoted_string_error():
@@ -127,7 +127,7 @@ def test_run_lexer():
 
     assert len(output) == 22
     for i in range(len(expectedOutput)):
-        assert output[i] == expectedOutput[i]
+        assert str(output[i]) == expectedOutput[i]
 
 
 def test_run_lexer_var_in_name():
