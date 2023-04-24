@@ -1,10 +1,26 @@
 from engine.ParsedFile import Position
+from enum import Enum
+
+
+class TOKENTYPES(Enum):
+    COLUMN = 'COLUMN'
+    DASH = 'DASH'
+    ELIF = 'ELIF'
+    ELSE = 'ELSE'
+    EOF = 'EOF'
+    FLOAT = 'FLOAT'
+    IF = 'IF'
+    INT = 'INT'
+    NEWLINE = 'NEWLINE'
+    STRING = 'STRING'
+    TAB = 'TAB'
+    VAR = 'VAR'
 
 
 class Token():
-    def __init__(self, position: Position, type: str, value: str = None):
+    def __init__(self, position: Position, tokenType: str, value: str = None):
         self.__position = position
-        self.__type = type
+        self.__tokenType = tokenType
         self.__value = value
 
     @property
@@ -12,8 +28,8 @@ class Token():
         return self.__position
 
     @property
-    def type(self):
-        return self.__type
+    def tokenType(self):
+        return self.__tokenType
 
     @property
     def value(self):
@@ -23,7 +39,7 @@ class Token():
         if isinstance(__value, Token):
             return (
                 self.position == __value.position and
-                self.type == __value.type and
+                self.tokenType == __value.tokenType and
                 self.value == __value.value
             )
         else:

@@ -1,10 +1,9 @@
-from parser.dsl_parser.Token import Token
+from parser.dsl_parser.Token import Token, TOKENTYPES as TT
 from engine.ParsedFile import Position
-
 from enum import Enum
 
 
-class TOKENS(str, Enum):
+class CHARS(str, Enum):
     WHITESPACE = ' '
     DASH = '-'
     TAB = '\t'
@@ -46,28 +45,28 @@ class Lexer():
         currentToken = ''
         currentTokenIndex = 1
         for char in codeString:
-            if char == TOKENS.WHITESPACE.value:
+            if char == CHARS.WHITESPACE.value:
                 self.handleCurrentToken(currentToken, currentTokenIndex)
                 currentToken = ''
                 currentTokenIndex = column+1
-            elif char == TOKENS.NEWLINE.value:
+            elif char == CHARS.NEWLINE.value:
                 self.handleCurrentToken(currentToken, currentTokenIndex)
-                self.addTokenToList(column, 'NEWLINE')
+                self.addTokenToList(column, TT.NEWLINE.value)
                 currentToken = ''
                 currentTokenIndex = 1
                 self.__currentLine += 1
                 column = 0
-            elif char == TOKENS.TAB.value:
+            elif char == CHARS.TAB.value:
                 self.handleCurrentToken(currentToken, currentTokenIndex)
-                self.addTokenToList(column, 'TAB')
+                self.addTokenToList(column, TT.TAB.value)
                 currentToken = ''
                 currentTokenIndex = column+1
-            elif char == TOKENS.COLUMN.value:
+            elif char == CHARS.COLUMN.value:
                 self.handleCurrentToken(currentToken, currentTokenIndex)
-                self.addTokenToList(column, 'COLUMN')
+                self.addTokenToList(column, TT.COLUMN.value)
                 currentToken = ''
                 currentTokenIndex = column+1
-            elif char == TOKENS.HASH.value:
+            elif char == CHARS.HASH.value:
                 self.handleCurrentToken(currentToken, currentTokenIndex)
                 self.__variable = True
                 currentToken = ''
@@ -77,38 +76,38 @@ class Lexer():
             column += 1
         if len(currentToken.strip()) > 0:
             self.handleCurrentToken(currentToken, currentTokenIndex)
-        self.addTokenToList(column, 'EOF')
+        self.addTokenToList(column, TT.EOF.value)
 
     def handleCurrentToken(self, currentToken: str, currentTokenIndex: int) -> None:
-        if currentToken == TOKENS.DASH.value:
-            self.addTokenToList(currentTokenIndex, 'DASH')
-        elif currentToken == TOKENS.IF.value:
-            self.addTokenToList(currentTokenIndex, 'IF')
-        elif currentToken == TOKENS.ELSE.value:
-            self.addTokenToList(currentTokenIndex, 'ELSE')
-        elif currentToken == TOKENS.ELIF.value:
-            self.addTokenToList(currentTokenIndex, 'ELIF')
+        if currentToken == CHARS.DASH.value:
+            self.addTokenToList(currentTokenIndex, TT.DASH.value)
+        elif currentToken == CHARS.IF.value:
+            self.addTokenToList(currentTokenIndex, TT.IF.value)
+        elif currentToken == CHARS.ELSE.value:
+            self.addTokenToList(currentTokenIndex, TT.ELSE.value)
+        elif currentToken == CHARS.ELIF.value:
+            self.addTokenToList(currentTokenIndex, TT.ELIF.value)
         elif len(currentToken.strip()) > 0:
             if self.__variable:
                 self.addTokenToList(
                     currentTokenIndex,
-                    'VAR', currentToken,
+                    TT.VAR.value, currentToken,
                 )
                 self.__variable = False
             elif currentToken.isdigit():
                 self.addTokenToList(
                     currentTokenIndex,
-                    'INT', currentToken,
+                    TT.INT.value, currentToken,
                 )
             elif self._isfloat(currentToken):
                 self.addTokenToList(
                     currentTokenIndex,
-                    'FLOAT', currentToken,
+                    TT.FLOAT.value, currentToken,
                 )
             else:
                 self.addTokenToList(
                     currentTokenIndex,
-                    'STRING', currentToken,
+                    TT.STRING.value, currentToken,
                 )
 
     def addTokenToList(self, column: int, type: str, value: str = None) -> None:
