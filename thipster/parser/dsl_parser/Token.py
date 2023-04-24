@@ -3,6 +3,7 @@ from enum import Enum
 
 
 class TOKENTYPES(Enum):
+    AMOUNT = 'AMOUNT'
     COLUMN = 'COLUMN'
     DASH = 'DASH'
     ELIF = 'ELIF'

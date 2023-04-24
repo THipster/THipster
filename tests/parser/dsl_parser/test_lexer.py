@@ -28,7 +28,10 @@ def test_handle_current_token():
     lexer = Lexer('')
     lexer.handleCurrentToken('if', 1)
     lexer.handleCurrentToken('babyfoot', 4)
-    assert len(lexer.tokenList) == 2
+    lexer.handleCurrentToken('amount', 12)
+    assert len(lexer.tokenList) == 3
+    assert lexer.tokenList[0].tokenType == 'IF'
+    assert lexer.tokenList[2].tokenType == 'AMOUNT'
 
 
 def test_lex():
@@ -51,13 +54,17 @@ def test_lex():
 
 def test_run_lexer():
     input = {
-        'file': 'bucket nom-8 \n\t',
+        'file': 'bucket nom-8: amount: 5 \n\t',
         'file2': 'network aaaa-#i: nombre: 2 4.5\n\t- property',
     }
     expectedOutput = [
         Token(Position('file', 1, 1), 'STRING', 'bucket'),
         Token(Position('file', 1, 8), 'STRING', 'nom-8'),
-        Token(Position('file', 1, 14), 'NEWLINE'),
+        Token(Position('file', 1, 13), 'COLUMN'),
+        Token(Position('file', 1, 15), 'AMOUNT'),
+        Token(Position('file', 1, 21), 'COLUMN'),
+        Token(Position('file', 1, 23), 'INT', '5'),
+        Token(Position('file', 1, 25), 'NEWLINE'),
         Token(Position('file', 2, 1), 'TAB'),
         Token(Position('file', 2, 2), 'EOF'),
 
@@ -78,6 +85,6 @@ def test_run_lexer():
     lexer = Lexer(input)
     output = lexer.run()
 
-    assert len(output) == 18
+    assert len(output) == 22
     for i in range(len(expectedOutput)):
         assert output[i] == expectedOutput[i]
