@@ -11,7 +11,9 @@ def test_parser():
         Token(Position('file', 1, 14), 'NEWLINE'),
         Token(Position('file', 2, 1), 'TAB'),
         Token(Position('file', 2, 2), 'STRING', 'region'),
+        Token(Position('file', 1, 8), 'COLUMN'),
         Token(Position('file', 2, 3), 'STRING', 'euw'),
+        Token(Position('file', 1, 14), 'NEWLINE'),
         Token(Position('file', 2, 4), 'EOF'),
     ]
 
@@ -21,4 +23,5 @@ def test_parser():
     assert str(output) == '<RESOURCE \
 type = <STRING (STRING bucket)>, \
 name = <STRING (STRING nom-8)>, \
-parameters = <DICT <PARAMETER name = (STRING region), value = <LITERAL (STRING euw)>>>>'
+parameters = <DICT <PARAMETER name = <STRING (STRING region)>, \
+value = <LITERAL <STRING (STRING euw)>>>>>'

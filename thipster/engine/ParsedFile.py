@@ -27,7 +27,7 @@ class Position():
         return self.__col
 
     def __str__(self) -> str:
-        return f'File : {self.fileName}, Ln {self.ln}, Col {self.col}'
+        return f'(File : {self.fileName}, Ln {self.ln}, Col {self.col})'
 
     def __eq__(self, __value: object) -> bool:
         if isinstance(__value, Position):
