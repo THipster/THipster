@@ -62,6 +62,7 @@ class Lexer():
                         column -= 3
                         currentTokenIndex = column+1
                         self.addTokenToList(column, TT.TAB.value)
+                        self.__consecutiveWhitespaces = 0
                 elif char == CHARS.NEWLINE.value:
                     self.handleCurrentToken(currentToken, currentTokenIndex)
                     self.addTokenToList(column, TT.NEWLINE.value)
