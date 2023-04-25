@@ -1,0 +1,26 @@
+bucket test_bucket:
+    location: US
+    storage: Standard
+    access: public
+    destroy: true
+    tags:
+        - bucket
+        - new
+        - logs
+    lifecycle:
+        - rule rule_1:
+            condition:
+                - age : 1
+                - storage: Standard
+            action: Delete
+        - rule rule_2:
+            condition:
+                storage: Standard
+            action: Delete
+
+bucket test_bucket#i:
+    location: US if #i % 2 == 0 else EU
+    storage: Standard
+    access: private
+    tags:
+        - multi_bucket

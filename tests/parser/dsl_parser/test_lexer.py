@@ -202,7 +202,7 @@ def test_lex_else():
 def test_lex_true():
     input = 'true '
     expectedOutput = [
-        getTokenString('file', 1, 1, TT.TRUE.value),
+        getTokenString('file', 1, 1, TT.BOOLEAN.value, 'true'),
         getTokenString('file', 1, 6, TT.NEWLINE.value),
         getTokenString('file', 2, 1, TT.EOF.value),
     ]
@@ -218,7 +218,7 @@ def test_lex_true():
 def test_lex_false():
     input = 'false '
     expectedOutput = [
-        getTokenString('file', 1, 1, TT.FALSE.value),
+        getTokenString('file', 1, 1, TT.BOOLEAN.value, 'false'),
         getTokenString('file', 1, 7, TT.NEWLINE.value),
         getTokenString('file', 2, 1, TT.EOF.value),
     ]
