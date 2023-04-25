@@ -1,6 +1,7 @@
 from engine.ParsedFile import Position
 from parser.dsl_parser.Lexer import Lexer
 from parser.dsl_parser.Token import Token
+
 import pytest
 
 
@@ -153,4 +154,4 @@ def test_run_lexer_var_in_name():
 
     assert len(output) == 9
     for i in range(len(expectedOutput)):
-        assert output[i] == expectedOutput[i]
+        assert str(output[i]) == expectedOutput[i]
