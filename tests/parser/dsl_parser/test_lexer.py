@@ -133,7 +133,6 @@ def test_run_lexer():
         assert repr(output[i]) == expectedOutput[i]
 
 
-
 def test_run_lexer_var_in_name():
     input = {
         'file': 'bucket nom-#test \n\t toto: tata',
@@ -154,4 +153,4 @@ def test_run_lexer_var_in_name():
 
     assert len(output) == 9
     for i in range(len(expectedOutput)):
-        assert str(output[i]) == expectedOutput[i]
+        assert output[i] == expectedOutput[i]
