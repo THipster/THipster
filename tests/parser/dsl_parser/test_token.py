@@ -23,5 +23,5 @@ def test_token_to_string():
     tokenType = 'test_type'
     value = 'test_value'
     token = Token(position, tokenType=tokenType, value=value)
-    tokenStr = f'Position: {positionStr}, Type: {tokenType}, Value: {value}'
+    tokenStr = f'Position: ({positionStr}), Type: {tokenType}, Value: {value}'
     assert str(token) == tokenStr
