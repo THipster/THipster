@@ -130,8 +130,8 @@ class TokenParser():
             )
 
             if ifElseCtrl:
-                ifElseCtrl.ifCase = parameter
-                parameter = ifElseCtrl
+                ifElseCtrl.ifCase = parameter.value
+                parameter.value = ifElseCtrl
 
             return parameter
 
@@ -239,12 +239,14 @@ class TokenParser():
 
     def __get_nb_ctrl(self) -> AmountNode | None:
         """"amount", ":", int, ["#", var]"""
-        nextToken = self.__check(TT.AMOUNT)
-        if not nextToken:
-            return None
 
         try:
-            nb = self._pop(TT.INT)
+            nextToken = self.__check(TT.AMOUNT)
+            if not nextToken:
+                return None
+
+            self.__next(TT.COLUMN)
+            nb = self.__next(TT.INT)
         except DSLSyntaxException as e:
             raise e
 
@@ -258,6 +260,7 @@ class TokenParser():
 
     def __get_if_ctrl(self) -> IfNode | None:
         """"if", condition"""
+
         condition = self.__check(TT.IF)
         if not condition:
             return None
@@ -269,7 +272,7 @@ class TokenParser():
             raise e
 
         return IfNode(
-            condition=condition,
+            condition=StringNode(condition),
             ifCase=None,
         )
 
@@ -279,7 +282,7 @@ class TokenParser():
         if not ifCtrl:
             return None
 
-        if self.__get_next_type() == TT.ELSE.value:
+        if self.__check(TT.ELSE):
             elseCase = self.__next(TT.STRING)
         else:
             elseCase = None
@@ -287,5 +290,5 @@ class TokenParser():
         return IfElseNode(
             condition=ifCtrl.condition,
             ifCase=None,
-            elseCase=LiteralNode(elseCase),
+            elseCase=LiteralNode(StringNode(elseCase)),
         )

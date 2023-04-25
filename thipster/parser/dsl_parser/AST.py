@@ -60,16 +60,19 @@ class IfNode(Node):
     def ifCase(self):
         return self.__ifCase
 
+    @ifCase.setter
+    def ifCase(self, __value):
+        self.__ifCase = __value
+
 
 class IfElseNode(IfNode):
     def __init__(self, condition: StringNode, ifCase: Node, elseCase: Node) -> None:
         super().__init__(condition, ifCase)
-        self.__condition = condition
-        self.__ifCase = ifCase
         self.__elseCase = elseCase
 
     def __str__(self) -> str:
-        return f'<IF_E {self.__condition}: {self.__ifCase}, ELSE : {self.__elseCase}>'
+        return f'<IF_E {str(self.condition)}: {str(self.ifCase)}, ELSE : \
+{str(self.elseCase)}>'
 
     @property
     def elseCase(self):
@@ -90,6 +93,10 @@ class AmountNode(Node):
     def node(self):
         return self.__node
 
+    @node.setter
+    def node(self, __value):
+        self.__node = __value
+
 
 class ValueNode(Node, ABC):
     pass
@@ -103,6 +110,14 @@ class ParameterNode(Node):
 
     def __str__(self) -> str:
         return f'<PARAMETER name = {str(self.__name)}, value = {str(self.__value)}>'
+
+    @property
+    def value(self):
+        return self.__value
+
+    @value.setter
+    def value(self, __value):
+        self.__value = __value
 
 
 class DictNode(ValueNode):

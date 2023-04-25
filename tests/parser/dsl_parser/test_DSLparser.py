@@ -59,15 +59,13 @@ def test_get_absent_files():
         parser._DSLParser__getfiles('inexistant_path')
 
 
-def test_parse_simple_file():
+def __test_file(file: str, expected: str):
     path_input = 'test'
     _destroy_dir = create_dir(
         path_input,
         {
             'test_file.thips':
-            """bucket my-bucket:
-\tregion: euw
-""",
+            file,
         },
     )
 
@@ -77,25 +75,30 @@ def test_parse_simple_file():
 
         assert type(output) == FileNode
 
-        assert str(output) == """<RESOURCE \
-type = <STRING (STRING bucket)>, \
-name = <STRING (STRING my-bucket)>, \
-parameters = <DICT <PARAMETER name = <STRING (STRING region)>, \
-value = <LITERAL <STRING (STRING euw)>>>>>"""
+        assert str(output) == expected
     except Exception as e:
-        print(e)
-        pytest.fail()
+        raise e
     finally:
         _destroy_dir()
 
 
+def test_parse_simple_file():
+    __test_file(
+        file="""bucket my-bucket:
+\tregion: euw
+""",
+        expected="""<RESOURCE \
+type = <STRING (STRING bucket)>, \
+name = <STRING (STRING my-bucket)>, \
+parameters = <DICT <PARAMETER name = <STRING (STRING region)>, \
+value = <LITERAL <STRING (STRING euw)>>>>>""",
+
+    )
+
+
 def test_parse_simple_file_with_newlines():
-    path_input = 'test'
-    _destroy_dir = create_dir(
-        path_input,
-        {
-            'test_file.thips':
-            """
+    __test_file(
+        file="""
 
 bucket my-bucket:
 
@@ -108,16 +111,7 @@ bucket my-bucket2:
 
 
 """,
-        },
-    )
-
-    parser = DSLParser()
-    try:
-        output = parser.run(path_input)
-
-        assert type(output) == FileNode
-
-        assert str(output) == '<RESOURCE \
+        expected='<RESOURCE \
 type = <STRING (STRING bucket)>, \
 name = <STRING (STRING my-bucket)>, \
 parameters = <DICT <PARAMETER name = <STRING (STRING region)>, \
@@ -126,21 +120,13 @@ value = <LITERAL <STRING (STRING euw)>>>>>\n\
 type = <STRING (STRING bucket)>, \
 name = <STRING (STRING my-bucket2)>, \
 parameters = <DICT <PARAMETER name = <STRING (STRING region)>, \
-value = <LITERAL <STRING (STRING euw)>>>>>'
-    except Exception as e:
-        print(e)
-        pytest.fail()
-    finally:
-        _destroy_dir()
+value = <LITERAL <STRING (STRING euw)>>>>>',
+    )
 
 
-def test_parse_longer_file():
-    path_input = 'test'
-    _destroy_dir = create_dir(
-        path_input,
-        {
-            'test_file.thips':
-            """bucket my-bucket:
+def test_parse_dict_list_in_dict():
+    __test_file(
+        file="""bucket my-bucket:
 \ttoto:
 \t\t aaa: val1
 \t\t bbb: val2
@@ -148,16 +134,7 @@ def test_parse_longer_file():
 \t\t- ccc
 \t\t- ddd
 """,
-        },
-    )
-
-    parser = DSLParser()
-    try:
-        output = parser.run(path_input)
-
-        assert type(output) == FileNode
-
-        assert str(output) == """<RESOURCE \
+        expected="""<RESOURCE \
 type = <STRING (STRING bucket)>, \
 name = <STRING (STRING my-bucket)>, \
 parameters = <DICT <PARAMETER name = <STRING (STRING toto)>, \
@@ -167,9 +144,33 @@ value = <DICT \
 <PARAMETER name = <STRING (STRING tata)>, \
 value = <LIST \
 <LITERAL <STRING (STRING ccc)>> \
-<LITERAL <STRING (STRING ddd)>>>>>>"""
-    except Exception as e:
-        print(e)
-        pytest.fail()
-    finally:
-        _destroy_dir()
+<LITERAL <STRING (STRING ddd)>>>>>>""",
+    )
+
+
+def test_parse_if_else():
+    __test_file(
+        file="""bucket my-bucket:
+\tregion: euw if aaa else na
+""", expected="""<RESOURCE \
+type = <STRING (STRING bucket)>, \
+name = <STRING (STRING my-bucket)>, \
+parameters = <DICT <PARAMETER name = <STRING (STRING region)>, \
+value = <IF_E <STRING (STRING aaa)>: <LITERAL <STRING (STRING euw)>>, \
+ELSE : <LITERAL <STRING (STRING na)>>>>>>\
+""",
+    )
+
+
+def test_parse_amount():
+    __test_file(
+        file="""bucket my-bucket: amount: 3
+\tregion: euw
+""", expected="""<AMOUNT <INT (INT 3)> #None: \
+<RESOURCE \
+type = <STRING (STRING bucket)>, \
+name = <STRING (STRING my-bucket)>, \
+parameters = <DICT <PARAMETER name = <STRING (STRING region)>, \
+value = <LITERAL <STRING (STRING euw)>>>>>>\
+""",
+    )
