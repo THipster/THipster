@@ -13,3 +13,15 @@ def test_create_token():
     assert token.position == position
     assert token.tokenType == tokenType
     assert token.value == value
+
+
+def test_token_to_string():
+    position = Position(fileName='testFile', ln=2, col=6)
+    positionStr = 'File : testFile, Ln 2, Col 6'
+    assert str(position) == positionStr
+
+    tokenType = 'test_type'
+    value = 'test_value'
+    token = Token(position, tokenType=tokenType, value=value)
+    tokenStr = f'Position: {positionStr}, Type: {tokenType}, Value: {value}'
+    assert str(token) == tokenStr

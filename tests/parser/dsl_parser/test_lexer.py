@@ -1,6 +1,14 @@
 from parser.dsl_parser.Lexer import Lexer
-from parser.dsl_parser.Token import Token
-from engine.ParsedFile import Position
+import pytest
+
+
+def getTokenString(fileName: str, ln: int, col: int, tokenType: str, value: str = None):
+    positionStr = f'File : {fileName}, Ln {ln}, Col {col}'
+    tokenStr = f'Position: {positionStr}, Type: {tokenType}'
+    if value:
+        return tokenStr + f', Value: {value}'
+    else:
+        return tokenStr
 
 
 def test_create_lexer():
@@ -16,12 +24,14 @@ def test_create_lexer():
 
 
 def test_add_token_to_list():
+    tokenType = 'STRING'
+    value = 'babyfoot'
     lexer = Lexer('')
-    lexer.addTokenToList(1, 'STRING', 'babyfoot')
+    lexer.addTokenToList(1, tokenType, value)
+
+    tokenStr = getTokenString('', 1, 1, tokenType, value)
     assert len(lexer.tokenList) == 1
-    assert lexer.tokenList[0] == Token(
-        Position('', 1, 1), 'STRING', 'babyfoot',
-    )
+    assert str(lexer.tokenList[0]) == tokenStr
 
 
 def test_handle_current_token():
@@ -37,11 +47,11 @@ def test_handle_current_token():
 def test_lex():
     input = 'bucket nom-8 \n\t'
     expectedOutput = [
-        Token(Position('file', 1, 1), 'STRING', 'bucket'),
-        Token(Position('file', 1, 8), 'STRING', 'nom-8'),
-        Token(Position('file', 1, 14), 'NEWLINE'),
-        Token(Position('file', 2, 1), 'TAB'),
-        Token(Position('file', 2, 2), 'EOF'),
+        getTokenString('file', 1, 1, 'STRING', 'bucket'),
+        getTokenString('file', 1, 8, 'STRING', 'nom-8'),
+        getTokenString('file', 1, 14, 'NEWLINE'),
+        getTokenString('file', 2, 1, 'TAB'),
+        getTokenString('file', 2, 2, 'EOF'),
     ]
     lexer = Lexer('')
     lexer.lex(input, 'file')
@@ -49,7 +59,37 @@ def test_lex():
 
     assert len(output) == 5
     for i in range(len(expectedOutput)):
-        assert output[i] == expectedOutput[i]
+        assert str(output[i]) == expectedOutput[i]
+
+
+def test_lex_quoted_string():
+    input = {
+        'file': 'bucket nom-8: "amount: 5" \n\t',
+    }
+    expectedOutput = [
+        getTokenString('file', 1, 1, 'STRING', 'bucket'),
+        getTokenString('file', 1, 8, 'STRING', 'nom-8'),
+        getTokenString('file', 1, 13, 'COLUMN'),
+        getTokenString('file', 1, 16, 'STRING', 'amount: 5'),
+        getTokenString('file', 1, 27, 'NEWLINE'),
+        getTokenString('file', 2, 1, 'TAB'),
+        getTokenString('file', 2, 2, 'EOF'),
+    ]
+    lexer = Lexer(input)
+    output = lexer.run()
+
+    assert len(output) == 7
+    for i in range(len(expectedOutput)):
+        assert str(output[i]) == expectedOutput[i]
+
+
+def test_lex_quoted_string_error():
+    input = {
+        'file': 'bucket nom-8: "amount: 5 \n\t',
+    }
+    lexer = Lexer(input)
+    with pytest.raises(SyntaxError):
+        lexer.run()
 
 
 def test_run_lexer():
@@ -58,29 +98,29 @@ def test_run_lexer():
         'file2': 'network aaaa-#i: nombre: 2 4.5\n\t- property',
     }
     expectedOutput = [
-        Token(Position('file', 1, 1), 'STRING', 'bucket'),
-        Token(Position('file', 1, 8), 'STRING', 'nom-8'),
-        Token(Position('file', 1, 13), 'COLUMN'),
-        Token(Position('file', 1, 15), 'AMOUNT'),
-        Token(Position('file', 1, 21), 'COLUMN'),
-        Token(Position('file', 1, 23), 'INT', '5'),
-        Token(Position('file', 1, 25), 'NEWLINE'),
-        Token(Position('file', 2, 1), 'TAB'),
-        Token(Position('file', 2, 2), 'EOF'),
+        getTokenString('file', 1, 1, 'STRING', 'bucket'),
+        getTokenString('file', 1, 8, 'STRING', 'nom-8'),
+        getTokenString('file', 1, 13, 'COLUMN'),
+        getTokenString('file', 1, 15, 'AMOUNT'),
+        getTokenString('file', 1, 21, 'COLUMN'),
+        getTokenString('file', 1, 23, 'INT', '5'),
+        getTokenString('file', 1, 25, 'NEWLINE'),
+        getTokenString('file', 2, 1, 'TAB'),
+        getTokenString('file', 2, 2, 'EOF'),
 
-        Token(Position('file2', 1, 1), 'STRING', 'network'),
-        Token(Position('file2', 1, 9), 'STRING', 'aaaa-'),
-        Token(Position('file2', 1, 15), 'VAR', 'i'),
-        Token(Position('file2', 1, 16), 'COLUMN'),
-        Token(Position('file2', 1, 18), 'STRING', 'nombre'),
-        Token(Position('file2', 1, 24), 'COLUMN'),
-        Token(Position('file2', 1, 26), 'INT', '2'),
-        Token(Position('file2', 1, 28), 'FLOAT', '4.5'),
-        Token(Position('file2', 1, 31), 'NEWLINE'),
-        Token(Position('file2', 2, 1), 'TAB'),
-        Token(Position('file2', 2, 2), 'DASH'),
-        Token(Position('file2', 2, 4), 'STRING', 'property'),
-        Token(Position('file2', 2, 12), 'EOF'),
+        getTokenString('file2', 1, 1, 'STRING', 'network'),
+        getTokenString('file2', 1, 9, 'STRING', 'aaaa-'),
+        getTokenString('file2', 1, 15, 'VAR', 'i'),
+        getTokenString('file2', 1, 16, 'COLUMN'),
+        getTokenString('file2', 1, 18, 'STRING', 'nombre'),
+        getTokenString('file2', 1, 24, 'COLUMN'),
+        getTokenString('file2', 1, 26, 'INT', '2'),
+        getTokenString('file2', 1, 28, 'FLOAT', '4.5'),
+        getTokenString('file2', 1, 31, 'NEWLINE'),
+        getTokenString('file2', 2, 1, 'TAB'),
+        getTokenString('file2', 2, 2, 'DASH'),
+        getTokenString('file2', 2, 4, 'STRING', 'property'),
+        getTokenString('file2', 2, 12, 'EOF'),
     ]
     lexer = Lexer(input)
     output = lexer.run()
