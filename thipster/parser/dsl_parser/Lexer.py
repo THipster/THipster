@@ -5,16 +5,18 @@ from enum import Enum
 
 class CHARS(str, Enum):
     AMOUNT = 'amount'
-    WHITESPACE = ' '
+    COLUMN = ':'
     DASH = '-'
     DOUBLEQUOTES = '"'
-    TAB = '\t'
-    NEWLINE = '\n'
-    COLUMN = ':'
+    ELIF = 'elif'
+    ELSE = 'else'
     HASH = '#'
     IF = 'if'
-    ELSE = 'else'
-    ELIF = 'elif'
+    NEWLINE = '\n'
+    TAB = '\t'
+    TRUE = 'true'
+    FALSE = 'false'
+    WHITESPACE = ' '
 
 
 class Lexer():
@@ -23,7 +25,11 @@ class Lexer():
         self.tokenList = []
         self.__currentFile = ''
         self.__currentLine = 1
+        self.__currentColumn = 1
+        self.__currentToken = ''
+        self.__currentTokenIndex = 1
         self.__variable = False
+        self.__quotedString = False
         self.__consecutiveWhitespaces = 0
 
     @property
@@ -44,78 +50,45 @@ class Lexer():
     ) -> None:
         self.__currentFile = fileName
         self.__currentLine = startLine
-        column = startColumn
-        currentToken = ''
-        currentTokenIndex = 1
-        quotedString = False
+        self.__currentColumn = startColumn
+        self.__currentToken = ''
+        self.__currentTokenIndex = 1
         for char in codeString:
-            if not quotedString:
+            if not self.__quotedString:
                 if char == CHARS.WHITESPACE.value:
                     self.__consecutiveWhitespaces += 1
                 else:
                     self.__consecutiveWhitespaces = 0
                 if char == CHARS.WHITESPACE.value:
-                    self.handleCurrentToken(currentToken, currentTokenIndex)
-                    currentToken = ''
-                    currentTokenIndex = column+1
-                    if self.__consecutiveWhitespaces == 4:
-                        column -= 3
-                        currentTokenIndex = column+1
-                        self.addTokenToList(column, TT.TAB.value)
-                        self.__consecutiveWhitespaces = 0
+                    self.__handleWhitespace()
                 elif char == CHARS.NEWLINE.value:
-                    self.handleCurrentToken(currentToken, currentTokenIndex)
-                    self.addTokenToList(column, TT.NEWLINE.value)
-                    currentToken = ''
-                    currentTokenIndex = 1
-                    self.__currentLine += 1
-                    column = 0
+                    self.__handleNewline()
                 elif char == CHARS.TAB.value:
-                    self.handleCurrentToken(currentToken, currentTokenIndex)
-                    self.addTokenToList(column, TT.TAB.value)
-                    currentToken = ''
-                    currentTokenIndex = column+1
+                    self.__handleTab()
                 elif char == CHARS.COLUMN.value:
-                    self.handleCurrentToken(currentToken, currentTokenIndex)
-                    self.addTokenToList(column, TT.COLUMN.value)
-                    currentToken = ''
-                    currentTokenIndex = column+1
+                    self.__handleColumn()
                 elif char == CHARS.HASH.value:
-                    self.handleCurrentToken(currentToken, currentTokenIndex)
-                    self.__variable = True
-                    currentToken = ''
-                    currentTokenIndex = column+1
+                    self.__handleHash()
                 elif char == CHARS.DOUBLEQUOTES.value:
-                    self.handleCurrentToken(currentToken, currentTokenIndex)
-                    quotedString = True
-                    currentToken = ''
-                    currentTokenIndex = column+1
+                    self.__handleDoubleQuotes()
                 else:
-                    currentToken += char
+                    self.__currentToken += char
             else:
                 if char == CHARS.DOUBLEQUOTES.value:
-                    self.addTokenToList(
-                        currentTokenIndex,
-                        TT.STRING.value, currentToken,
-                    )
-                    quotedString = False
-                    currentToken = ''
-                    currentTokenIndex = column+1
+                    self.__handleDoubleQuotes()
                 elif char == CHARS.NEWLINE.value:
                     position = str(
                         Position(
                             self.__currentFile,
-                            self.__currentLine, column,
+                            self.__currentLine, self.__currentColumn,
                         ),
                     )
                     error = "Invalid syntax, missing ending quotes at '%s'" % position
                     raise SyntaxError(error)
                 else:
-                    currentToken += char
-            column += 1
-        if len(currentToken.strip()) > 0:
-            self.handleCurrentToken(currentToken, currentTokenIndex)
-        self.addTokenToList(column, TT.EOF.value)
+                    self.__currentToken += char
+            self.__currentColumn += 1
+        self.__addFileEnd()
 
     def handleCurrentToken(self, currentToken: str, currentTokenIndex: int) -> None:
         currentTokenLower = currentToken.lower()
@@ -129,6 +102,10 @@ class Lexer():
             self.addTokenToList(currentTokenIndex, TT.ELIF.value)
         elif currentTokenLower == CHARS.AMOUNT.value:
             self.addTokenToList(currentTokenIndex, TT.AMOUNT.value)
+        elif currentTokenLower == CHARS.TRUE.value:
+            self.addTokenToList(currentTokenIndex, TT.BOOLEAN.value, 'true')
+        elif currentTokenLower == CHARS.FALSE.value:
+            self.addTokenToList(currentTokenIndex, TT.BOOLEAN.value, 'false')
         elif len(currentToken.strip()) > 0:
             if self.__variable:
                 self.addTokenToList(
@@ -152,6 +129,57 @@ class Lexer():
                     TT.STRING.value, currentToken,
                 )
 
+    def __handleWhitespace(self) -> None:
+        self.handleCurrentToken(self.__currentToken, self.__currentTokenIndex)
+        self.__currentToken = ''
+        self.__currentTokenIndex = self.__currentColumn+1
+        if self.__consecutiveWhitespaces == 4:
+            self.__currentColumn -= 3
+            self.__currentTokenIndex = self.__currentColumn+1
+            self.addTokenToList(self.__currentColumn, TT.TAB.value)
+            self.__consecutiveWhitespaces = 0
+
+    def __handleNewline(self) -> None:
+        self.handleCurrentToken(self.__currentToken, self.__currentTokenIndex)
+        self.addTokenToList(self.__currentColumn, TT.NEWLINE.value)
+        self.__currentToken = ''
+        self.__currentTokenIndex = 1
+        self.__currentLine += 1
+        self.__currentColumn = 0
+
+    def __handleTab(self) -> None:
+        self.handleCurrentToken(self.__currentToken, self.__currentTokenIndex)
+        self.addTokenToList(self.__currentColumn, TT.TAB.value)
+        self.__currentToken = ''
+        self.__currentTokenIndex = self.__currentColumn+1
+
+    def __handleColumn(self) -> None:
+        self.handleCurrentToken(self.__currentToken, self.__currentTokenIndex)
+        self.addTokenToList(self.__currentColumn, TT.COLUMN.value)
+        self.__currentToken = ''
+        self.__currentTokenIndex = self.__currentColumn+1
+
+    def __handleHash(self) -> None:
+        self.handleCurrentToken(self.__currentToken, self.__currentTokenIndex)
+        self.__variable = True
+        self.__currentToken = ''
+        self.__currentTokenIndex = self.__currentColumn+1
+
+    def __handleDoubleQuotes(self) -> None:
+        if self.__quotedString:
+            self.addTokenToList(
+                self.__currentTokenIndex,
+                TT.STRING.value, self.__currentToken,
+            )
+            self.__quotedString = False
+        else:
+            self.handleCurrentToken(
+                self.__currentToken, self.__currentTokenIndex,
+            )
+            self.__quotedString = True
+        self.__currentToken = ''
+        self.__currentTokenIndex = self.__currentColumn+1
+
     def addTokenToList(self, column: int, tokenType: str, value: str = None) -> None:
         self.tokenList.append(
             Token(
@@ -163,6 +191,15 @@ class Lexer():
                 value=value,
             ),
         )
+
+    def __addFileEnd(self) -> None:
+        if len(self.__currentToken.strip()) > 0:
+            self.handleCurrentToken(
+                self.__currentToken, self.__currentTokenIndex,
+            )
+            self.__currentToken = ''
+        self.__handleNewline()
+        self.addTokenToList(self.__currentColumn+1, TT.EOF.value)
 
     def __isfloat(self, num):
         try:

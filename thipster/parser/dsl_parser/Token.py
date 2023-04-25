@@ -4,6 +4,7 @@ from enum import Enum
 
 class TOKENTYPES(Enum):
     AMOUNT = 'AMOUNT'
+    BOOLEAN = 'BOOLEAN'
     COLUMN = 'COLUMN'
     DASH = 'DASH'
     ELIF = 'ELIF'
