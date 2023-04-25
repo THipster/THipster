@@ -19,16 +19,21 @@ class TokenParser():
 
     def run(self) -> FileNode:
         tree = FileNode()
-        tree.add(self.__create_resource())
+
+        while self.__get_next_type() != TT.EOF.value:
+            self.__trim_newlines()
+
+            tree.add(self.__create_resource())
+            self.__trim_newlines()
 
         return tree
 
     def __next(self, expected: TT | None = None) -> Token:
         """Get next token and pop it from the list"""
-        tok = self.__tokens.pop(0)
-        if expected and tok.tokenType != expected.value:
-            raise DSLSyntaxException(tok)
-        return tok
+        tok = self.__get_next_type()
+        if expected and tok != expected.value:
+            raise DSLSyntaxException(self.__tokens[0])
+        return self.__tokens.pop(0)
 
     def __check(self, expected: TT) -> Token | None:
         """Check if the type of the next token is equal to the expected parameter. \
@@ -46,6 +51,10 @@ class TokenParser():
 
         return self.__tokens[index].tokenType
 
+    def __trim_newlines(self):
+        while self.__check(TT.NEWLINE):
+            pass
+
     def __create_resource(self, indent=0) -> ResourceNode | IfNode | AmountNode:
         """type, name, ":", [amt_ctrl], [if_ctrl] ,"\\n"
                                 (list | dict | {parameter, "\\n"})"""
@@ -61,6 +70,7 @@ class TokenParser():
             ifCtrl = self.__get_if_ctrl()
 
             self.__next(TT.NEWLINE)
+            self.__trim_newlines()
 
             properties = self.__get_properties(indent+1)
 
@@ -85,6 +95,7 @@ class TokenParser():
         return resource
 
     def __get_tabs(self, nb: int) -> bool:
+        """Check if the number of tabs is correct/ if it is the end of the block"""
         for i in range(nb):
             try:
                 self.__next(TT.TAB)
@@ -129,6 +140,7 @@ class TokenParser():
         try:
             ifCtrl = self.__get_if_ctrl()
             self.__next(TT.NEWLINE)
+            self.__trim_newlines()
             properties = self.__get_properties(indent+1)
         except:
             raise
@@ -153,6 +165,7 @@ class TokenParser():
                 self.__check(TT.DASH)
                 items.append(ValueNode(self.__next(TT.STRING)))
                 self.__next(TT.NEWLINE)
+                self.__trim_newlines()
         except:
             raise
 
@@ -168,6 +181,7 @@ class TokenParser():
                 self.__check(TT.DASH)
                 props.append(self.__get_parameter(indent))
                 self.__next(TT.NEWLINE)
+                self.__trim_newlines()
         except:
             raise
 
