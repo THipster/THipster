@@ -4,7 +4,7 @@ import pytest
 
 def getTokenString(fileName: str, ln: int, col: int, tokenType: str, value: str = None):
     positionStr = f'File : {fileName}, Ln {ln}, Col {col}'
-    tokenStr = f'Position: {positionStr}, Type: {tokenType}'
+    tokenStr = f'Position: ({positionStr}), Type: {tokenType}'
     if value:
         return tokenStr + f', Value: {value}'
     else:
