@@ -68,6 +68,7 @@ def test_lex():
 def test_lex_quoted_string():
     input = {
         'file': 'bucket nom-8: "amount: 5" \n\t',
+        'file2': 'network aaaa-#i: nombre: 2 4.5\n\t- property    ',
     }
     expectedOutput = [
         getTokenString('file', 1, 1, 'STRING', 'bucket'),
@@ -77,11 +78,26 @@ def test_lex_quoted_string():
         getTokenString('file', 1, 27, 'NEWLINE'),
         getTokenString('file', 2, 1, 'TAB'),
         getTokenString('file', 2, 2, 'EOF'),
+
+        getTokenString('file2', 1, 1, 'STRING', 'network'),
+        getTokenString('file2', 1, 9, 'STRING', 'aaaa-'),
+        getTokenString('file2', 1, 15, 'VAR', 'i'),
+        getTokenString('file2', 1, 16, 'COLUMN'),
+        getTokenString('file2', 1, 18, 'STRING', 'nombre'),
+        getTokenString('file2', 1, 24, 'COLUMN'),
+        getTokenString('file2', 1, 26, 'INT', '2'),
+        getTokenString('file2', 1, 28, 'FLOAT', '4.5'),
+        getTokenString('file2', 1, 31, 'NEWLINE'),
+        getTokenString('file2', 2, 1, 'TAB'),
+        getTokenString('file2', 2, 2, 'DASH'),
+        getTokenString('file2', 2, 4, 'STRING', 'property'),
+        getTokenString('file2', 2, 12, 'TAB'),
+        getTokenString('file2', 2, 13, 'EOF'),
     ]
     lexer = Lexer(input)
     output = lexer.run()
 
-    assert len(output) == 7
+    assert len(output) == 21
     for i in range(len(expectedOutput)):
         assert repr(output[i]) == expectedOutput[i]
 

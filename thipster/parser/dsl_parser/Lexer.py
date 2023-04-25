@@ -24,6 +24,7 @@ class Lexer():
         self.__currentFile = ''
         self.__currentLine = 1
         self.__variable = False
+        self.__consecutiveWhitespaces = 0
 
     @property
     def files(self):
@@ -50,9 +51,17 @@ class Lexer():
         for char in codeString:
             if not quotedString:
                 if char == CHARS.WHITESPACE.value:
+                    self.__consecutiveWhitespaces += 1
+                else:
+                    self.__consecutiveWhitespaces = 0
+                if char == CHARS.WHITESPACE.value:
                     self.handleCurrentToken(currentToken, currentTokenIndex)
                     currentToken = ''
                     currentTokenIndex = column+1
+                    if self.__consecutiveWhitespaces == 4:
+                        column -= 3
+                        currentTokenIndex = column+1
+                        self.addTokenToList(column, TT.TAB.value)
                 elif char == CHARS.NEWLINE.value:
                     self.handleCurrentToken(currentToken, currentTokenIndex)
                     self.addTokenToList(column, TT.NEWLINE.value)
@@ -131,7 +140,7 @@ class Lexer():
                     currentTokenIndex,
                     TT.INT.value, currentToken,
                 )
-            elif self._isfloat(currentToken):
+            elif self.__isfloat(currentToken):
                 self.addTokenToList(
                     currentTokenIndex,
                     TT.FLOAT.value, currentToken,
@@ -154,7 +163,7 @@ class Lexer():
             ),
         )
 
-    def _isfloat(self, num):
+    def __isfloat(self, num):
         try:
             float(num)
             return True
