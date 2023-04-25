@@ -1,6 +1,6 @@
 from parser.dsl_parser.Token import Token, TOKENTYPES as TT
 from parser.dsl_parser.AST import DictNode, FileNode, IfElseNode, IfNode, AmountNode, \
-    IntNode, ListNode, ParameterNode, ResourceNode, StringNode, LiteralNode, ValueNode,\
+    IntNode, ListNode, ParameterNode, ResourceNode, StringNode, LiteralNode, \
     VariableNode
 
 
@@ -94,18 +94,17 @@ class TokenParser():
 
         return resource
 
-    def __get_tabs(self, nb: int) -> bool:
+    def __get_tabs(self, indent: int) -> bool:
         """Check if the number of tabs is correct/ if it is the end of the block"""
-        for i in range(nb):
-            try:
-                self.__next(TT.TAB)
-            except DSLSyntaxException as e:
-                if i == nb - 1:
-                    return False
-                else:
-                    raise e
 
-        return True
+        if self.__get_next_type() == TT.EOF.value:
+            return False
+        elif self.__get_next_type(indent-1) == TT.TAB.value:
+            for i in range(indent):
+                print(i)
+                self.__next(TT.TAB)
+            return True
+        return False
 
     def __get_parameter(self, indent: int) -> ParameterNode:
         """name, ":", (value, [if_else_ctrl] | [if_ctrl], "\\n", (list | dict))"""
@@ -146,7 +145,7 @@ class TokenParser():
             raise
 
         parameter = ParameterNode(
-            name=name,
+            name=StringNode(name),
             value=properties,
         )
 
@@ -156,18 +155,40 @@ class TokenParser():
 
         return parameter
 
-    def __get_list(self, indent: int):
+    def __get_list(self, indent: int) -> ListNode:
         """{ "-", value, [amt_ctrl], [if_else_ctrl], "\\n"}"""
         items = []
 
         try:
             while self.__get_tabs(indent):
                 self.__check(TT.DASH)
-                items.append(ValueNode(self.__next(TT.STRING)))
+                value = LiteralNode(StringNode(self.__next(TT.STRING)))
+
+                amountCtrl = self.__get_nb_ctrl()
+
+                ifElseCtrl = self.__get_if_else_ctrl()
+
+                if ifElseCtrl:
+                    ifElseCtrl.ifCase = value
+                    value = ifElseCtrl
+
+                if amountCtrl:
+                    amountCtrl.node = value
+                    value = amountCtrl
+
+                items.append(value)
+
                 self.__next(TT.NEWLINE)
                 self.__trim_newlines()
-        except:
-            raise
+        except Exception as e:
+            raise e
+
+        self.__tokens.insert(
+            0, Token(
+                position=self.__tokens[0].position,
+                tokenType=TT.NEWLINE.value,
+            ),
+        )
 
         return ListNode(items)
 
@@ -182,8 +203,15 @@ class TokenParser():
                 props.append(self.__get_parameter(indent))
                 self.__next(TT.NEWLINE)
                 self.__trim_newlines()
-        except:
-            raise
+        except Exception as e:
+            raise e
+
+        self.__tokens.insert(
+            0, Token(
+                position=self.__tokens[0].position,
+                tokenType=TT.NEWLINE.value,
+            ),
+        )
 
         return DictNode(props)
 

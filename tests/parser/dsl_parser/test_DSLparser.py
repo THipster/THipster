@@ -1,3 +1,4 @@
+from parser.dsl_parser.AST import FileNode
 from parser.dsl_parser.DSLParser import DSLParser
 from parser.dsl_parser.DSLParser import DSLParserPathNotFound
 import os
@@ -58,47 +59,117 @@ def test_get_absent_files():
         parser._DSLParser__getfiles('inexistant_path')
 
 
-def test_tokenize_file():
+def test_parse_simple_file():
     path_input = 'test'
     _destroy_dir = create_dir(
         path_input,
         {
             'test_file.thips':
             """bucket my-bucket:
-\tregion: euw""",
-        },
-    )
-
-    parser = DSLParser()
-
-    tokens = parser.run(path_input)
-
-    assert len(tokens) == 9
-
-    _destroy_dir()
-
-
-def test_tokenize_longer_file():
-    path_input = 'test'
-    _destroy_dir = create_dir(
-        path_input,
-        {
-            'test_file.thips':
-            """bucket my-bucket:
-\t toto: if #a=b
-\t\t aaa: val1
-\t\t bbb: val2
-\t tata:
-\t- ccc: val3
-\t- ddd: val4
+\tregion: euw
 """,
         },
     )
 
     parser = DSLParser()
+    try:
+        output = parser.run(path_input)
 
-    tokens = parser.run(path_input)
+        assert type(output) == FileNode
 
-    assert len(tokens) == 39
+        assert str(output) == """<RESOURCE \
+type = <STRING (STRING bucket)>, \
+name = <STRING (STRING my-bucket)>, \
+parameters = <DICT <PARAMETER name = <STRING (STRING region)>, \
+value = <LITERAL <STRING (STRING euw)>>>>>"""
+    except Exception as e:
+        print(e)
+        pytest.fail()
+    finally:
+        _destroy_dir()
 
-    _destroy_dir()
+
+def test_parse_simple_file_with_newlines():
+    path_input = 'test'
+    _destroy_dir = create_dir(
+        path_input,
+        {
+            'test_file.thips':
+            """
+
+bucket my-bucket:
+
+
+\tregion: euw
+
+bucket my-bucket2:
+\tregion: euw
+
+
+
+""",
+        },
+    )
+
+    parser = DSLParser()
+    try:
+        output = parser.run(path_input)
+
+        assert type(output) == FileNode
+
+        assert str(output) == '<RESOURCE \
+type = <STRING (STRING bucket)>, \
+name = <STRING (STRING my-bucket)>, \
+parameters = <DICT <PARAMETER name = <STRING (STRING region)>, \
+value = <LITERAL <STRING (STRING euw)>>>>>\n\
+<RESOURCE \
+type = <STRING (STRING bucket)>, \
+name = <STRING (STRING my-bucket2)>, \
+parameters = <DICT <PARAMETER name = <STRING (STRING region)>, \
+value = <LITERAL <STRING (STRING euw)>>>>>'
+    except Exception as e:
+        print(e)
+        pytest.fail()
+    finally:
+        _destroy_dir()
+
+
+def test_parse_longer_file():
+    path_input = 'test'
+    _destroy_dir = create_dir(
+        path_input,
+        {
+            'test_file.thips':
+            """bucket my-bucket:
+\ttoto:
+\t\t aaa: val1
+\t\t bbb: val2
+\ttata:
+\t\t- ccc
+\t\t- ddd
+""",
+        },
+    )
+
+    parser = DSLParser()
+    try:
+        output = parser.run(path_input)
+
+        assert type(output) == FileNode
+
+        assert str(output) == """<RESOURCE \
+type = <STRING (STRING bucket)>, \
+name = <STRING (STRING my-bucket)>, \
+parameters = <DICT <PARAMETER name = <STRING (STRING toto)>, \
+value = <DICT \
+<PARAMETER name = <STRING (STRING aaa)>, value = <LITERAL <STRING (STRING val1)>>> \
+<PARAMETER name = <STRING (STRING bbb)>, value = <LITERAL <STRING (STRING val2)>>>>> \
+<PARAMETER name = <STRING (STRING tata)>, \
+value = <LIST \
+<LITERAL <STRING (STRING ccc)>> \
+<LITERAL <STRING (STRING ddd)>>>>>>"""
+    except Exception as e:
+        print(e)
+        pytest.fail()
+    finally:
+        _destroy_dir()

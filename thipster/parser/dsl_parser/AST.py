@@ -129,7 +129,7 @@ class ListNode(ValueNode):
         self.__value = value
 
     def __str__(self) -> str:
-        return f"<DICT {' '.join(list(map(lambda x : str(x), self.__value)))}>"
+        return f"<LIST {' '.join(list(map(lambda x : str(x), self.__value)))}>"
 
 
 class ResourceNode(Node):

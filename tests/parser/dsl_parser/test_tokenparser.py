@@ -43,7 +43,6 @@ def test_newline_remover():
         Token(Position('file', 1, 14), 'NEWLINE'),
         Token(Position('file', 1, 14), 'NEWLINE'),
         Token(Position('file', 1, 14), 'NEWLINE'),
-
         Token(Position('file', 1, 1), 'STRING', 'bucket'),
         Token(Position('file', 1, 8), 'STRING', 'nom-8'),
         Token(Position('file', 1, 8), 'COLUMN'),
