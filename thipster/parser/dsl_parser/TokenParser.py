@@ -13,6 +13,14 @@ class DSLSyntaxException(Exception):
         return f'Syntax error at {str(self.__pos)}'
 
 
+class DSLUnexpectedEOF(Exception):
+    def __init__(self, *args: object) -> None:
+        super().__init__(*args)
+
+    def __repr__(self) -> str:
+        return 'Unexpected EOF'
+
+
 class TokenParser():
     def __init__(self, tokens: list[Token]) -> None:
         self.__tokens = tokens
@@ -48,8 +56,8 @@ class TokenParser():
 
     def __get_next_type(self, index: int = 0):
         """Get the type of the next token"""
-        if len(self.__tokens) == 0:
-            raise
+        if len(self.__tokens) <= index:
+            raise DSLUnexpectedEOF
 
         return self.__tokens[index].tokenType
 
