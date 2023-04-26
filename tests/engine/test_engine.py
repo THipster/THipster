@@ -10,22 +10,22 @@ class MockException(Exception):
         self.message = message
 
 
-class MockAuth(eng.I_Auth.I_Auth):
+class MockAuth(eng.I_Auth):
     def run(self):
         return 'Auth OK'
 
 
-class MockParser(eng.I_Parser.I_Parser):
+class MockParser(eng.I_Parser):
     def run(self) -> ParsedFile:
         return ParsedFile()
 
 
-class MockRepository(eng.I_Repository.I_Repository):
+class MockRepository(eng.I_Repository):
     def run(self) -> list[ResourceModel]:
         return []
 
 
-class MockTerraform(eng.I_Terraform.I_Terraform):
+class MockTerraform(eng.I_Terraform):
     def run(self):
         return 'Terraform OK'
 

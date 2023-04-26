@@ -1,7 +1,7 @@
-import engine.I_Parser as I_Parser
-import engine.I_Repository as I_Repository
-import engine.I_Auth as I_Auth
-import engine.I_Terraform as I_Terraform
+from engine.I_Parser import I_Parser
+from engine.I_Repository import I_Repository
+from engine.I_Auth import I_Auth
+from engine.I_Terraform import I_Terraform
 
 
 class Engine():

@@ -56,7 +56,7 @@ class Model_Literal(I_Model_Value):
 
 
 class Model_Dict(I_Model_Value):
-    def __init__(self, value: dict[Model_Attribute]):
+    def __init__(self, value: dict[str, Model_Attribute]):
         super().__init__()
         self.__value = value
 
@@ -102,10 +102,6 @@ class ResourceModel():
     @property
     def type(self):
         return self.__type
-
-    @property
-    def name(self):
-        return self.__name
 
     @property
     def attributes(self):

@@ -3,6 +3,7 @@ from engine.ParsedFile import ParsedFile
 
 import os
 from parser.dsl_parser.Lexer import Lexer
+from parser.dsl_parser.TokenParser import TokenParser
 
 
 class DSLParserBaseException(Exception):
@@ -48,13 +49,14 @@ class DSLParser(I_Parser):
 
         try:
             files = self.__getfiles(path)
-            print(files)
             lexer = Lexer(files)
             token_list = lexer.run()
+            parser = TokenParser(token_list)
+            ast = parser.run()
 
-            return token_list
+            return ast
         except DSLParserBaseException as e:
             print(e.message)
-            pass
-        except Exception:
-            pass
+            raise e
+        except Exception as e:
+            raise e

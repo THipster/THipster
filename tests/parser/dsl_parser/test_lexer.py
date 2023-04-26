@@ -1,14 +1,17 @@
+from engine.ParsedFile import Position
 from parser.dsl_parser.Lexer import Lexer
+from parser.dsl_parser.Token import Token
+
 import pytest
 
 
 def getTokenString(fileName: str, ln: int, col: int, tokenType: str, value: str = None):
-    positionStr = f'File : {fileName}, Ln {ln}, Col {col}'
-    tokenStr = f'Position: ({positionStr}), Type: {tokenType}'
+    positionStr = f'(File : {fileName}, Ln {ln}, Col {col})'
+    tokenStr = f'(Type: {tokenType.upper()}, Position: {positionStr}'
     if value:
-        return tokenStr + f', Value: {value}'
-    else:
-        return tokenStr
+        tokenStr += f', Value: {value}'
+    tokenStr += ')'
+    return tokenStr
 
 
 def test_create_lexer():
@@ -31,7 +34,7 @@ def test_add_token_to_list():
 
     tokenStr = getTokenString('', 1, 1, tokenType, value)
     assert len(lexer.tokenList) == 1
-    assert str(lexer.tokenList[0]) == tokenStr
+    assert repr(lexer.tokenList[0]) == tokenStr
 
 
 def test_handle_current_token():
@@ -59,7 +62,7 @@ def test_lex():
 
     assert len(output) == 5
     for i in range(len(expectedOutput)):
-        assert str(output[i]) == expectedOutput[i]
+        assert repr(output[i]) == expectedOutput[i]
 
 
 def test_lex_quoted_string():
@@ -80,7 +83,7 @@ def test_lex_quoted_string():
 
     assert len(output) == 7
     for i in range(len(expectedOutput)):
-        assert str(output[i]) == expectedOutput[i]
+        assert repr(output[i]) == expectedOutput[i]
 
 
 def test_lex_quoted_string_error():
@@ -127,4 +130,27 @@ def test_run_lexer():
 
     assert len(output) == 22
     for i in range(len(expectedOutput)):
-        assert str(output[i]) == expectedOutput[i]
+        assert repr(output[i]) == expectedOutput[i]
+
+
+def test_run_lexer_var_in_name():
+    input = {
+        'file': 'bucket nom-#test \n\t toto: tata',
+    }
+    expectedOutput = [
+        Token(Position('file', 1, 1), 'STRING', 'bucket'),
+        Token(Position('file', 1, 8), 'STRING', 'nom-'),
+        Token(Position('file', 1, 13), 'VAR', 'test'),
+        Token(Position('file', 1, 18), 'NEWLINE'),
+        Token(Position('file', 2, 1), 'TAB'),
+        Token(Position('file', 2, 3), 'STRING', 'toto'),
+        Token(Position('file', 2, 7), 'COLUMN'),
+        Token(Position('file', 2, 9), 'STRING', 'tata'),
+        Token(Position('file', 2, 13), 'EOF'),
+    ]
+    lexer = Lexer(input)
+    output = lexer.run()
+
+    assert len(output) == 9
+    for i in range(len(expectedOutput)):
+        assert output[i] == expectedOutput[i]
