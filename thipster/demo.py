@@ -4,6 +4,7 @@ from engine.ResourceModel import ResourceModel
 from helpers import logger
 
 from parser.dsl_parser.DSLParser import DSLParserPathNotFound
+from parser.dsl_parser.TokenParser import DSLSyntaxException
 
 
 class MockAuth(eng.I_Auth):
@@ -35,6 +36,8 @@ def demo():
         engine.run(file)
     except DSLParserPathNotFound as e:
         print(e.message)
+    except DSLSyntaxException as e:
+        print(repr(e))
 
 
 if __name__ == '__main__':
