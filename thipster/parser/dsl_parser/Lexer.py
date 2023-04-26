@@ -1,6 +1,7 @@
 from parser.dsl_parser.Token import Token, TOKENTYPES as TT
 from engine.ParsedFile import Position
 from enum import Enum
+from helpers import createLogger
 
 
 class CHARS(str, Enum):
@@ -21,6 +22,7 @@ class CHARS(str, Enum):
 
 class Lexer():
     def __init__(self, files: dict[str, str]):
+        self.__logger = createLogger(__name__)
         self.__files = files
         self.__tokenList = []
         self.__currentFile = ''
@@ -41,8 +43,14 @@ class Lexer():
         return self.__tokenList
 
     def run(self) -> list[Token]:
+        self.__logger.info('Start Lexer')
         for fileName in self.files:
             self.lex(self.files.get(fileName), fileName, 1, 1)
+        self.__logger.info(
+            'Shuting down Lexer, processed %d file(s) and generated %d tokens',
+            len(self.__files),
+            len(self.__tokenList),
+        )
         return self.__tokenList
 
     def lex(
@@ -52,6 +60,7 @@ class Lexer():
         startLine: int = 1,
         startColumn: int = 1,
     ) -> None:
+        self.__logger.debug('Lex file %s', fileName)
         self.__currentFile = fileName
         self.__currentLine = startLine
         self.__currentColumn = startColumn
@@ -97,6 +106,7 @@ class Lexer():
                         ),
                     )
                     error = "Invalid syntax, missing ending quotes at '%s'" % position
+                    self.__logger.error(error)
                     raise SyntaxError(error)
 
                 else:
@@ -105,6 +115,7 @@ class Lexer():
             self.__currentColumn += 1
 
         self.__addFileEnd()
+        self.__logger.debug('Finished lexing file %s', fileName)
 
     def handleCurrentToken(self, currentToken: str, currentTokenIndex: int) -> None:
         currentTokenLower = currentToken.lower()

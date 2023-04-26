@@ -1,3 +1,6 @@
+import logging
+
+
 def logger(name: str):
     def wrapper(function):
         def internal_wrapper(*args, **kwargs):
@@ -7,3 +10,8 @@ def logger(name: str):
             return res
         return internal_wrapper
     return wrapper
+
+
+def createLogger(className: str) -> logging.Logger:
+    logger = logging.getLogger(className)
+    return logger
