@@ -111,7 +111,6 @@ class TokenParser():
             return False
         elif self.__get_next_type(indent-1) == TT.TAB.value:
             for i in range(indent):
-                print(i)
                 self.__next(TT.TAB)
             return True
         return False

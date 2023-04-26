@@ -35,3 +35,7 @@ def demo():
         engine.run(file)
     except DSLParserPathNotFound as e:
         print(e.message)
+
+
+if __name__ == '__main__':
+    demo()
