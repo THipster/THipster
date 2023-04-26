@@ -177,11 +177,79 @@ ELSE : <LITERAL <STRING (STRING na)>>>>>>>\
     )
 
 
+def test_parse_literal_types():
+    __test_file(
+        file="""bucket my-bucket:
+\tregion: euw
+""",
+        expected="""<RESOURCE \
+type = <STRING (STRING bucket)>, \
+name = <STRING (STRING my-bucket)>, \
+parameters = <DICT <PARAMETER name = <STRING (STRING region)>, \
+value = <LITERAL <STRING (STRING euw)>>>>>""",
+
+    )
+    __test_file(
+        file="""bucket my-bucket:
+\tregion: 1
+""",
+        expected="""<RESOURCE \
+type = <STRING (STRING bucket)>, \
+name = <STRING (STRING my-bucket)>, \
+parameters = <DICT <PARAMETER name = <STRING (STRING region)>, \
+value = <LITERAL <STRING (INT 1)>>>>>""",
+
+    )
+    __test_file(
+        file="""bucket my-bucket:
+\tregion: 3.2
+""",
+        expected="""<RESOURCE \
+type = <STRING (STRING bucket)>, \
+name = <STRING (STRING my-bucket)>, \
+parameters = <DICT <PARAMETER name = <STRING (STRING region)>, \
+value = <LITERAL <STRING (FLOAT 3.2)>>>>>""",
+
+    )
+    __test_file(
+        file="""bucket my-bucket:
+\tregion: true
+""",
+        expected="""<RESOURCE \
+type = <STRING (STRING bucket)>, \
+name = <STRING (STRING my-bucket)>, \
+parameters = <DICT <PARAMETER name = <STRING (STRING region)>, \
+value = <LITERAL <STRING (BOOLEAN true)>>>>>""",
+    )
+    __test_file(
+        file="""bucket my-bucket:
+\tregion: #i
+""",
+        expected="""<RESOURCE \
+type = <STRING (STRING bucket)>, \
+name = <STRING (STRING my-bucket)>, \
+parameters = <DICT <PARAMETER name = <STRING (STRING region)>, \
+value = <LITERAL <STRING (VAR i)>>>>>""",
+    )
+
+
 def test_parse_amount():
     __test_file(
         file="""bucket my-bucket: amount: 3
 \tregion: euw
 """, expected="""<AMOUNT <INT (INT 3)> #None: \
+<RESOURCE \
+type = <STRING (STRING bucket)>, \
+name = <STRING (STRING my-bucket)>, \
+parameters = <DICT <PARAMETER name = <STRING (STRING region)>, \
+value = <LITERAL <STRING (STRING euw)>>>>>>\
+""",
+    )
+
+    __test_file(
+        file="""bucket my-bucket: amount: 3 #i
+\tregion: euw
+""", expected="""<AMOUNT <INT (INT 3)> #<VAR (VAR i)>: \
 <RESOURCE \
 type = <STRING (STRING bucket)>, \
 name = <STRING (STRING my-bucket)>, \
