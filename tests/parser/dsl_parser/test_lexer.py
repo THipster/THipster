@@ -100,7 +100,7 @@ def test_lex_int():
 
     assert len(output) == 3
     for i in range(len(expectedOutput)):
-        assert str(output[i]) == expectedOutput[i]
+        assert repr(output[i]) == expectedOutput[i]
 
 
 def test_lex_float():
@@ -116,7 +116,7 @@ def test_lex_float():
 
     assert len(output) == 3
     for i in range(len(expectedOutput)):
-        assert str(output[i]) == expectedOutput[i]
+        assert repr(output[i]) == expectedOutput[i]
 
 
 def test_lex_var():
@@ -132,7 +132,7 @@ def test_lex_var():
 
     assert len(output) == 3
     for i in range(len(expectedOutput)):
-        assert str(output[i]) == expectedOutput[i]
+        assert repr(output[i]) == expectedOutput[i]
 
 
 def test_lex_amount():
@@ -148,7 +148,7 @@ def test_lex_amount():
 
     assert len(output) == 3
     for i in range(len(expectedOutput)):
-        assert str(output[i]) == expectedOutput[i]
+        assert repr(output[i]) == expectedOutput[i]
 
 
 def test_lex_if():
@@ -164,7 +164,7 @@ def test_lex_if():
 
     assert len(output) == 3
     for i in range(len(expectedOutput)):
-        assert str(output[i]) == expectedOutput[i]
+        assert repr(output[i]) == expectedOutput[i]
 
 
 def test_lex_elif():
@@ -180,7 +180,7 @@ def test_lex_elif():
 
     assert len(output) == 3
     for i in range(len(expectedOutput)):
-        assert str(output[i]) == expectedOutput[i]
+        assert repr(output[i]) == expectedOutput[i]
 
 
 def test_lex_else():
@@ -196,7 +196,7 @@ def test_lex_else():
 
     assert len(output) == 3
     for i in range(len(expectedOutput)):
-        assert str(output[i]) == expectedOutput[i]
+        assert repr(output[i]) == expectedOutput[i]
 
 
 def test_lex_true():
@@ -212,7 +212,7 @@ def test_lex_true():
 
     assert len(output) == 3
     for i in range(len(expectedOutput)):
-        assert str(output[i]) == expectedOutput[i]
+        assert repr(output[i]) == expectedOutput[i]
 
 
 def test_lex_false():
@@ -228,7 +228,7 @@ def test_lex_false():
 
     assert len(output) == 3
     for i in range(len(expectedOutput)):
-        assert str(output[i]) == expectedOutput[i]
+        assert repr(output[i]) == expectedOutput[i]
 
 
 def test_lex_tab():
@@ -244,7 +244,7 @@ def test_lex_tab():
 
     assert len(output) == 3
     for i in range(len(expectedOutput)):
-        assert str(output[i]) == expectedOutput[i]
+        assert repr(output[i]) == expectedOutput[i]
 
 
 def test_lex_4_whitespaces_as_tab():
@@ -263,7 +263,7 @@ def test_lex_4_whitespaces_as_tab():
 
     assert len(output) == 5
     for i in range(len(expectedOutput)):
-        assert str(output[i]) == expectedOutput[i]
+        assert repr(output[i]) == expectedOutput[i]
 
 
 def test_lex_2_4_whitespaces_as_tabs():
@@ -283,7 +283,7 @@ def test_lex_2_4_whitespaces_as_tabs():
 
     assert len(output) == 6
     for i in range(len(expectedOutput)):
-        assert str(output[i]) == expectedOutput[i]
+        assert repr(output[i]) == expectedOutput[i]
 
 
 def test_lex_newline():
@@ -299,7 +299,7 @@ def test_lex_newline():
 
     assert len(output) == 3
     for i in range(len(expectedOutput)):
-        assert str(output[i]) == expectedOutput[i]
+        assert repr(output[i]) == expectedOutput[i]
 
 
 def test_lex_colon():
@@ -315,7 +315,7 @@ def test_lex_colon():
 
     assert len(output) == 3
     for i in range(len(expectedOutput)):
-        assert str(output[i]) == expectedOutput[i]
+        assert repr(output[i]) == expectedOutput[i]
 
 
 def test_lex_dash():
@@ -331,7 +331,7 @@ def test_lex_dash():
 
     assert len(output) == 3
     for i in range(len(expectedOutput)):
-        assert str(output[i]) == expectedOutput[i]
+        assert repr(output[i]) == expectedOutput[i]
 
 
 def test_run_lexer():
@@ -387,11 +387,12 @@ def test_run_lexer_var_in_name():
         getTokenString('file', 2, 3, 'STRING', 'toto'),
         getTokenString('file', 2, 7, 'COLUMN'),
         getTokenString('file', 2, 9, 'STRING', 'tata'),
-        getTokenString('file', 2, 13, 'EOF'),
+        getTokenString('file', 2, 13, 'NEWLINE'),
+        getTokenString('file', 3, 1, 'EOF'),
     ]
     lexer = Lexer(input)
     output = lexer.run()
 
-    assert len(output) == 9
+    assert len(output) == 10
     for i in range(len(expectedOutput)):
-        assert output[i] == expectedOutput[i]
+        assert repr(output[i]) == expectedOutput[i]
