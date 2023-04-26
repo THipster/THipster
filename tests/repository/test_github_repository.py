@@ -16,7 +16,7 @@ def test_get_bucket():
 
     bucket = models['gcp/bucket']
 
-    assert len(bucket.attributes) == 2
+    assert len(bucket.attributes) == 1
     assert len(bucket.dependencies) == 0
     assert bucket.type == 'gcp/bucket'
 
@@ -45,5 +45,5 @@ def test_get_vm():
     network = models['gcp/network']
 
     assert network.type == 'gcp/network'
-    assert len(network.attributes) == 2
+    assert len(network.attributes) == 1
     assert len(network.dependencies) == 0
