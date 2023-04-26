@@ -2,6 +2,18 @@
 
 <!--next-version-placeholder-->
 
+## v0.2.1 (2023-04-26)
+### :bug:
+* :bug: fix: literal values parsing ([#59](https://github.com/THipster/THipster/issues/59)) ([`c4e6fae`](https://github.com/THipster/THipster/commit/c4e6faec127e87f667b4fc965699689dee669f9f))
+
+### Other
+* :hammer: fix: exception in script ([#58](https://github.com/THipster/THipster/issues/58)) ([`9058ce6`](https://github.com/THipster/THipster/commit/9058ce6f371b6eff4e6df8bd34aca382733dc284))
+* :hammer: feat: demo scripts ([#57](https://github.com/THipster/THipster/issues/57)) ([`ee1f656`](https://github.com/THipster/THipster/commit/ee1f656fbb5d171f4bd691e9bf2bba000a1649a9))
+* ✅ fix(parser): Add resource library + lexer clean up ([#56](https://github.com/THipster/THipster/issues/56)) ([`3cd0d41`](https://github.com/THipster/THipster/commit/3cd0d41cf261fd33232b8d2a66e9dfddedd012ef))
+* ✨ feat: token_parser ([#55](https://github.com/THipster/THipster/issues/55)) ([`1d01096`](https://github.com/THipster/THipster/commit/1d01096287a58e7332417212eaa2281c0d01a390))
+* :art: fix: improve clarity ([`9aafca1`](https://github.com/THipster/THipster/commit/9aafca1f3536be86008afaa08eebc279f55a9bea))
+* :white_check_mark: feat(parser): add tokens ([`ac97738`](https://github.com/THipster/THipster/commit/ac977380d9b0cf39fde05dc5562d957956a2b472))
+
 ## v0.2.0 (2023-04-24)
 ### :sparkles:
 * :sparkles: feat(parser): Add amount token ([`12bf065`](https://github.com/THipster/THipster/commit/12bf0658bc52769566916c71cc6b6566378a0b5a))
