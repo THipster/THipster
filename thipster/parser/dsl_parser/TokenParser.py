@@ -125,7 +125,13 @@ class TokenParser():
 
         next = self.__get_next_type()
 
-        if next == TT.STRING.value:
+        if next in [
+            TT.BOOLEAN.value,
+            TT.FLOAT.value,
+            TT.INT.value,
+            TT.STRING.value,
+            TT.VAR.value,
+        ]:
             # value, [if_else_ctrl]
             try:
                 value = self.__next()
@@ -259,7 +265,7 @@ class TokenParser():
         except DSLSyntaxException as e:
             raise e
 
-        var = nextToken = self.__check(TT.AMOUNT)
+        var = self.__check(TT.VAR)
 
         return AmountNode(
             amount=IntNode(nb),

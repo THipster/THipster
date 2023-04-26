@@ -1,2 +1,3 @@
-bucket mon-bucket:
+bucket mon-bucket: amount: 3 #i
 	toto: tata
+	tito: tita
