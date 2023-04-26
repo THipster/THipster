@@ -2,6 +2,7 @@ from engine.I_Parser import I_Parser
 from engine.ParsedFile import ParsedFile
 
 import os
+from helpers import logger
 from parser.dsl_parser.Lexer import Lexer
 from parser.dsl_parser.TokenParser import TokenParser
 
@@ -45,6 +46,7 @@ class DSLParser(I_Parser):
 
         return files
 
+    @logger('- Parser')
     def run(self, path: str) -> ParsedFile:
 
         try:

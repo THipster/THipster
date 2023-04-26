@@ -2,6 +2,7 @@ from engine.I_Parser import I_Parser
 from engine.I_Repository import I_Repository
 from engine.I_Auth import I_Auth
 from engine.I_Terraform import I_Terraform
+from helpers import logger
 
 
 class Engine():
@@ -19,14 +20,11 @@ class Engine():
 
         pass
 
-    def run(self):
-        res = 'Engine begin\n'
-        if self.__parser.run():
-            res += 'Parser OK' + '\n'
-        if isinstance(self.__repository.run(), list):
-            res += 'Repository OK' + '\n'
-        res += self.__auth.run() + '\n'
-        res += self.__terraform.run() + '\n'
+    @logger('Engine')
+    def run(self, filename: str):
+        files = self.__parser.run(filename)
+        self.__repository.run()
+        self.__auth.run()
+        self.__terraform.run()
 
-        res += 'Engine end'
-        return res
+        return files

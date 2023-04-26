@@ -22,4 +22,9 @@ setup(
             'pre-commit',
         ],
     },
+    entry_points={
+        'console_scripts': [
+            'thipster-demo = demo:demo',
+        ],
+    },
 )
