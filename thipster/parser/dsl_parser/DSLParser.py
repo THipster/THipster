@@ -57,6 +57,6 @@ class DSLParser(I_Parser):
             return ast
         except DSLParserBaseException as e:
             print(e.message)
-            pass
-        except Exception:
-            pass
+            raise e
+        except Exception as e:
+            raise e

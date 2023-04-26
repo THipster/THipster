@@ -2,6 +2,7 @@ from parser.dsl_parser.AST import FileNode
 from parser.dsl_parser.DSLParser import DSLParser
 from parser.dsl_parser.DSLParser import DSLParserPathNotFound
 import os
+from parser.dsl_parser.TokenParser import DSLSyntaxException
 import pytest
 
 
@@ -174,3 +175,67 @@ parameters = <DICT <PARAMETER name = <STRING (STRING region)>, \
 value = <LITERAL <STRING (STRING euw)>>>>>>\
 """,
     )
+
+
+def test_syntax_error_resource(mocker):
+    # MISSING NAME
+    with pytest.raises(DSLSyntaxException) as exc_info:
+        __test_file(
+            file="""bucket :
+            """, expected="""""",
+        )
+
+    assert repr(exc_info.value) == f'Syntax error at (File : \
+{os.getcwd()}/test/test_file.thips, Ln 1, Col 8)'
+
+
+def test_syntax_error_dict(mocker):
+    # MISSING COLUMN
+    with pytest.raises(DSLSyntaxException) as exc_info:
+        __test_file(
+            file="""
+bucket my-bucket:
+\tregion euw
+            """, expected="""""",
+        )
+
+    assert repr(exc_info.value) == f'Syntax error at (File : \
+{os.getcwd()}/test/test_file.thips, Ln 3, Col 9)'
+
+    # MISSING TAB
+    with pytest.raises(DSLSyntaxException) as exc_info:
+        __test_file(
+            file="""
+bucket my-bucket:
+region: euw
+            """, expected="""""",
+        )
+
+    assert repr(exc_info.value) == f'Syntax error at (File : \
+{os.getcwd()}/test/test_file.thips, Ln 3, Col 1)'
+
+
+def test_syntax_error_amount(mocker):
+    # MISSING COLUMN
+    with pytest.raises(DSLSyntaxException) as exc_info:
+        __test_file(
+            file="""
+bucket my-bucket: amount 3
+\tregion: euw
+""", expected="""""",
+        )
+
+    # NO INTEGER
+    assert repr(exc_info.value) == f'Syntax error at (File : \
+{os.getcwd()}/test/test_file.thips, Ln 2, Col 26)'
+
+    with pytest.raises(DSLSyntaxException) as exc_info:
+        __test_file(
+            file="""
+bucket my-bucket: amount: str
+\tregion: euw
+""", expected="""""",
+        )
+
+    assert repr(exc_info.value) == f'Syntax error at (File : \
+{os.getcwd()}/test/test_file.thips, Ln 2, Col 27)'

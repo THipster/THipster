@@ -19,12 +19,14 @@ class TokenParser():
 
     def run(self) -> FileNode:
         tree = FileNode()
+        try:
+            while self.__get_next_type() != TT.EOF.value:
+                self.__trim_newlines()
 
-        while self.__get_next_type() != TT.EOF.value:
-            self.__trim_newlines()
-
-            tree.add(self.__create_resource())
-            self.__trim_newlines()
+                tree.add(self.__create_resource())
+                self.__trim_newlines()
+        except Exception as e:
+            raise e
 
         return tree
 
