@@ -134,14 +134,14 @@ class TokenParser():
         ]:
             # value, [if_else_ctrl]
             try:
-                value = self.__next()
+                value = self.__get_value()
                 ifElseCtrl = self.__get_if_else_ctrl()
             except:
                 raise
 
             parameter = ParameterNode(
                 name=StringNode(name),
-                value=LiteralNode(StringNode(value)),
+                value=value,
             )
 
             if ifElseCtrl:
@@ -299,14 +299,14 @@ class TokenParser():
             return None
 
         if self.__check(TT.ELSE):
-            elseCase = self.__next(TT.STRING)
+            elseCase = self.__get_value()
         else:
             elseCase = None
 
         return IfElseNode(
             condition=ifCtrl.condition,
             ifCase=None,
-            elseCase=LiteralNode(StringNode(elseCase)),
+            elseCase=elseCase,
         )
 
     def __get_value(self) -> LiteralNode:
