@@ -177,7 +177,8 @@ class TokenParser():
         try:
             while self.__get_tabs(indent):
                 self.__check(TT.DASH)
-                value = LiteralNode(StringNode(self.__next(TT.STRING)))
+
+                value = self.__get_value()
 
                 amountCtrl = self.__get_nb_ctrl()
 
@@ -307,3 +308,18 @@ class TokenParser():
             ifCase=None,
             elseCase=LiteralNode(StringNode(elseCase)),
         )
+
+    def __get_value(self) -> LiteralNode:
+
+        if self.__get_next_type() in [
+                TT.BOOLEAN.value,
+                TT.FLOAT.value,
+                TT.INT.value,
+                TT.STRING.value,
+                TT.VAR.value,
+        ]:
+            value = LiteralNode(StringNode(self.__next()))
+        else:
+            raise DSLSyntaxException(self.__next())
+
+        return value
