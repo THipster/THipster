@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 
 
-class I_Parsed_Value(ABC):
+class I_ParsedValue(ABC):
     @property
     @abstractmethod
     def value(self):
@@ -40,8 +40,8 @@ class Position():
             raise TypeError('Value must be a Position')
 
 
-class Parsed_Attribute():
-    def __init__(self, name: str, position: Position, value: I_Parsed_Value):
+class ParsedAttribute():
+    def __init__(self, name: str, position: Position, value: I_ParsedValue):
         self.__name = name
         self.__position = position
         self.__value = value
@@ -59,8 +59,8 @@ class Parsed_Attribute():
         return self.__position
 
 
-class Parsed_List(I_Parsed_Value):
-    def __init__(self, value: list[I_Parsed_Value]):
+class ParsedList(I_ParsedValue):
+    def __init__(self, value: list[I_ParsedValue]):
         super().__init__()
         self.__value = value
 
@@ -73,16 +73,16 @@ class Parsed_List(I_Parsed_Value):
         return self
 
     def __next__(self):
-        ret = self.value[self.i]
         if self.i > len(self.__value):
             raise StopIteration
         else:
+            ret = self.value[self.i]
             self.i += 1
 
         return ret
 
 
-class Parsed_Literal(I_Parsed_Value):
+class ParsedLiteral(I_ParsedValue):
     def __init__(self, value):
         super().__init__()
         self.__value = value
@@ -92,27 +92,14 @@ class Parsed_Literal(I_Parsed_Value):
         return self.__value
 
 
-class Parsed_Dict(I_Parsed_Value):
-    def __init__(self, value: dict[str, Parsed_Attribute]):
+class ParsedDict(I_ParsedValue):
+    def __init__(self, value: list[ParsedAttribute]):
         super().__init__()
         self.__value = value
 
     @property
     def value(self):
         return self.__value
-
-    def __iter__(self):
-        self.i = 0
-        return self
-
-    def __next__(self):
-        ret = self.value[self.i]
-        if self.i > len(self.__value):
-            raise StopIteration
-        else:
-            self.i += 1
-
-        return ret
 
 
 class ParsedResource():
@@ -121,7 +108,7 @@ class ParsedResource():
             type: str,
             name: str,
             position: Position,
-            attributes=list[Parsed_Attribute],
+            attributes=list[ParsedAttribute],
     ):
         self.__type = type
         self.__name = name
@@ -129,19 +116,19 @@ class ParsedResource():
         self.__attributes = attributes
 
     @property
-    def type(self):
+    def type(self) -> str:
         return self.__type
 
     @property
-    def name(self):
+    def name(self) -> str:
         return self.__name
 
     @property
-    def position(self):
+    def position(self) -> Position:
         return self.__position
 
     @property
-    def attributes(self):
+    def attributes(self) -> list[ParsedAttribute]:
         return self.__attributes
 
 
@@ -150,7 +137,7 @@ class ParsedFile():
         self.__resources = []
 
     @property
-    def resources(self):
+    def resources(self) -> list[ParsedResource]:
         return self.__resources
 
     @resources.setter

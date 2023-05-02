@@ -30,37 +30,37 @@ def test_create_position():
 
 
 def test_create_num_attr():
-    val = pf.Parsed_Literal(3)
+    val = pf.ParsedLiteral(3)
     pos = pf.Position('test_file', 3, 7)
 
-    attr = pf.Parsed_Attribute('test_attr', value=val, position=pos)
+    attr = pf.ParsedAttribute('test_attr', value=val, position=pos)
 
-    assert isinstance(attr, pf.Parsed_Attribute)
-    assert isinstance(attr._Parsed_Attribute__value, pf.Parsed_Literal)
+    assert isinstance(attr, pf.ParsedAttribute)
+    assert isinstance(attr._ParsedAttribute__value, pf.ParsedLiteral)
     assert attr.value == 3
 
 
 def test_create_str_attr():
-    val = pf.Parsed_Literal('test_value')
+    val = pf.ParsedLiteral('test_value')
     pos = pf.Position('test_file', 3, 7)
 
-    attr = pf.Parsed_Attribute('test_attr', value=val, position=pos)
+    attr = pf.ParsedAttribute('test_attr', value=val, position=pos)
 
-    assert isinstance(attr, pf.Parsed_Attribute)
-    assert isinstance(attr._Parsed_Attribute__value, pf.Parsed_Literal)
+    assert isinstance(attr, pf.ParsedAttribute)
+    assert isinstance(attr._ParsedAttribute__value, pf.ParsedLiteral)
     assert attr.value == 'test_value'
 
 
 def test_create_list_str_attr():
-    val = pf.Parsed_List(
-        [pf.Parsed_Literal('test_value_' + str(i)) for i in range(3)],
+    val = pf.ParsedList(
+        [pf.ParsedLiteral('test_value_' + str(i)) for i in range(3)],
     )
     pos = pf.Position('test_file', 3, 7)
 
-    attr = pf.Parsed_Attribute('test_attr', value=val, position=pos)
+    attr = pf.ParsedAttribute('test_attr', value=val, position=pos)
 
-    assert isinstance(attr, pf.Parsed_Attribute)
-    assert isinstance(attr._Parsed_Attribute__value, pf.Parsed_List)
+    assert isinstance(attr, pf.ParsedAttribute)
+    assert isinstance(attr._ParsedAttribute__value, pf.ParsedList)
 
     assert len(attr.value) == 3
     for val in attr.value:
@@ -68,15 +68,15 @@ def test_create_list_str_attr():
 
 
 def test_create_dict_str_attr():
-    val = pf.Parsed_Dict(
-        {pf.Parsed_Literal('test_value_' + str(i)) for i in range(3)},
+    val = pf.ParsedDict(
+        {pf.ParsedLiteral('test_value_' + str(i)) for i in range(3)},
     )
     pos = pf.Position('test_file', 3, 7)
 
-    attr = pf.Parsed_Attribute('test_attr', value=val, position=pos)
+    attr = pf.ParsedAttribute('test_attr', value=val, position=pos)
 
-    assert isinstance(attr, pf.Parsed_Attribute)
-    assert isinstance(attr._Parsed_Attribute__value, pf.Parsed_Dict)
+    assert isinstance(attr, pf.ParsedAttribute)
+    assert isinstance(attr._ParsedAttribute__value, pf.ParsedDict)
 
     assert len(attr.value) == 3
     for val in attr.value:
@@ -85,36 +85,36 @@ def test_create_dict_str_attr():
 
 def test_create_composite_attr():
     attr = [
-        pf.Parsed_Attribute(
+        pf.ParsedAttribute(
             'attr_num',
-            value=pf.Parsed_Literal(3),
+            value=pf.ParsedLiteral(3),
             position=pf.Position('test_file', 3, 7),
         ),
-        pf.Parsed_Attribute(
+        pf.ParsedAttribute(
             'attr_str',
-            value=pf.Parsed_Literal('test'),
+            value=pf.ParsedLiteral('test'),
             position=pf.Position('test_file', 4, 7),
         ),
-        pf.Parsed_Attribute(
+        pf.ParsedAttribute(
             'attr_list',
-            value=pf.Parsed_List([
-                pf.Parsed_Literal('test_list_1'),
-                pf.Parsed_Literal('test_list_2'),
-                pf.Parsed_Literal('test_list_3'),
+            value=pf.ParsedList([
+                pf.ParsedLiteral('test_list_1'),
+                pf.ParsedLiteral('test_list_2'),
+                pf.ParsedLiteral('test_list_3'),
             ]),
             position=pf.Position('test_file', 5, 7),
         ),
-        pf.Parsed_Attribute(
+        pf.ParsedAttribute(
             'attr_dict',
-            value=pf.Parsed_Dict([
-                pf.Parsed_Attribute(
+            value=pf.ParsedDict([
+                pf.ParsedAttribute(
                     'attr_dict_1',
-                    value=pf.Parsed_Literal('test'),
+                    value=pf.ParsedLiteral('test'),
                     position=pf.Position('test_file', 11, 7),
                 ),
-                pf.Parsed_Attribute(
+                pf.ParsedAttribute(
                     'attr_dict_2',
-                    value=pf.Parsed_Literal('test'),
+                    value=pf.ParsedLiteral('test'),
                     position=pf.Position('test_file', 12, 7),
                 ),
             ]),
@@ -133,18 +133,18 @@ def test_create_composite_attr():
     assert resource.type == 'test_type'
     assert isinstance(resource.attributes, list)
     for attribute in resource.attributes:
-        assert isinstance(attribute, pf.Parsed_Attribute)
+        assert isinstance(attribute, pf.ParsedAttribute)
         assert isinstance(
-            attribute._Parsed_Attribute__value,
-            pf.I_Parsed_Value,
+            attribute._ParsedAttribute__value,
+            pf.I_ParsedValue,
         )
-        if isinstance(attribute._Parsed_Attribute__value, pf.Parsed_Dict):
+        if isinstance(attribute._ParsedAttribute__value, pf.ParsedDict):
             for val in attribute.value:
-                assert isinstance(val, pf.Parsed_Attribute)
+                assert isinstance(val, pf.ParsedAttribute)
 
-        elif isinstance(attribute._Parsed_Attribute__value, pf.Parsed_List):
+        elif isinstance(attribute._ParsedAttribute__value, pf.ParsedList):
             for val in attribute.value:
-                assert isinstance(val, pf.I_Parsed_Value)
+                assert isinstance(val, pf.I_ParsedValue)
 
 
 def test_add_resource():
