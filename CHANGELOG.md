@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v0.3.0 (2023-05-02)
+### :sparkles:
+* :sparkles: feat: add yaml parser ([#68](https://github.com/THipster/THipster/issues/68)) ([`3a062aa`](https://github.com/THipster/THipster/commit/3a062aaffbc42d905046ea925063273845b11abd))
+
 ## v0.2.3 (2023-05-02)
 ### :bug:
 * :bug: fix: #62 + #65 ([#66](https://github.com/THipster/THipster/issues/66)) ([`3ec5d12`](https://github.com/THipster/THipster/commit/3ec5d12a7e63afc98abdcef173a7f06f50738a02))
