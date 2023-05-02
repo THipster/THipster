@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v0.2.3 (2023-05-02)
+### :bug:
+* :bug: fix: #62 + #65 ([#66](https://github.com/THipster/THipster/issues/66)) ([`3ec5d12`](https://github.com/THipster/THipster/commit/3ec5d12a7e63afc98abdcef173a7f06f50738a02))
+
 ## v0.2.2 (2023-04-27)
 ### :bug:
 * :bug: fix: accept all value types in lists ([#60](https://github.com/THipster/THipster/issues/60)) ([`0bdf976`](https://github.com/THipster/THipster/commit/0bdf9761dc5bcf2b9513676cee5719ce5c3651e3))
