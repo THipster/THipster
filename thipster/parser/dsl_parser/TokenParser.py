@@ -26,8 +26,10 @@ class TokenParser():
         self.__tokens = tokens
 
     def run(self) -> FileNode:
+        self.__rm_empty_lines()
         tree = FileNode()
         try:
+            self.__trim_newlines()
             while self.__get_next_type() != TT.EOF.value:
                 self.__trim_newlines()
 
@@ -45,10 +47,10 @@ class TokenParser():
             raise DSLSyntaxException(self.__tokens[0])
         return self.__tokens.pop(0)
 
-    def __check(self, expected: TT) -> Token | None:
+    def __check(self, expected: TT, index: int = 0) -> Token | None:
         """Check if the type of the next token is equal to the expected parameter. \
         Pop it from the list in that case"""
-        token = self.__get_next_type()
+        token = self.__get_next_type(index=index)
         if token != expected.value:
             return None
 
@@ -63,7 +65,25 @@ class TokenParser():
 
     def __trim_newlines(self):
         while self.__check(TT.NEWLINE):
-            pass
+            self.__rm_empty_lines()
+
+    def __rm_empty_lines(self):
+        # Detect empty line
+        empty_types = [TT.TAB.value]
+        end = 0
+        while end < len(self.__tokens):
+            begin = end
+            while self.__get_next_type(end) in empty_types:
+                end += 1
+
+            if self.__get_next_type(index=end) == TT.NEWLINE.value:
+                for _ in range(begin, end):
+                    self.__tokens.pop(begin)
+            end += 1
+
+    def __get_newline(self):
+        self.__next(TT.NEWLINE)
+        self.__trim_newlines()
 
     def __create_resource(self, indent=0) -> ResourceNode | IfNode | AmountNode:
         """type, name, ":", [amt_ctrl], [if_ctrl] ,"\\n"
@@ -79,8 +99,7 @@ class TokenParser():
             nbCtrl = self.__get_nb_ctrl()
             ifCtrl = self.__get_if_ctrl()
 
-            self.__next(TT.NEWLINE)
-            self.__trim_newlines()
+            self.__get_newline()
 
             properties = self.__get_properties(indent+1)
 
@@ -153,8 +172,7 @@ class TokenParser():
         # [if_ctrl], "\n" (liste | dict)
         try:
             ifCtrl = self.__get_if_ctrl()
-            self.__next(TT.NEWLINE)
-            self.__trim_newlines()
+            self.__get_newline()
             properties = self.__get_properties(indent+1)
         except:
             raise
@@ -194,8 +212,7 @@ class TokenParser():
 
                 items.append(value)
 
-                self.__next(TT.NEWLINE)
-                self.__trim_newlines()
+                self.__get_newline()
         except Exception as e:
             raise e
 
@@ -217,8 +234,7 @@ class TokenParser():
             while self.__get_tabs(indent):
                 self.__check(TT.DASH)
                 props.append(self.__get_parameter(indent))
-                self.__next(TT.NEWLINE)
-                self.__trim_newlines()
+                self.__get_newline()
         except Exception as e:
             raise e
 

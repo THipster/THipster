@@ -97,6 +97,14 @@ value = <LITERAL <STRING (STRING euw)>>>>>""",
     )
 
 
+def test_parse_empty_file():
+    __test_file(
+        file="""""",
+        expected="""""",
+
+    )
+
+
 def test_parse_simple_file_with_newlines():
     __test_file(
         file="""
@@ -110,6 +118,29 @@ bucket my-bucket2:
 \tregion: euw
 
 
+
+""",
+        expected='<RESOURCE \
+type = <STRING (STRING bucket)>, \
+name = <STRING (STRING my-bucket)>, \
+parameters = <DICT <PARAMETER name = <STRING (STRING region)>, \
+value = <LITERAL <STRING (STRING euw)>>>>>\n\
+<RESOURCE \
+type = <STRING (STRING bucket)>, \
+name = <STRING (STRING my-bucket2)>, \
+parameters = <DICT <PARAMETER name = <STRING (STRING region)>, \
+value = <LITERAL <STRING (STRING euw)>>>>>',
+    )
+
+
+def test_parse_simple_file_with_empty_lines():
+    __test_file(
+        file="""bucket my-bucket:
+\tregion: euw
+\t
+bucket my-bucket2:
+\tregion: euw
+\t\t
 
 """,
         expected='<RESOURCE \
