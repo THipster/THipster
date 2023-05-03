@@ -1,16 +1,17 @@
 import json
+from engine.I_Repository import I_Repository
 
 import requests
 from engine.ResourceModel import ResourceModel, Model_Attribute, Model_Dict, \
     Model_List, Model_Literal, I_Model_Value
 
 
-class GithubRepo():
+class GithubRepo(I_Repository):
     def __init__(self, repo: str) -> None:
         self.__repo = repo
         self.model_list = {}
 
-    def get(self, resourceNames: list[str]) -> list[ResourceModel]:
+    def get(self, resourceNames: list[str]) -> dict[str, ResourceModel]:
         for resource in resourceNames:
             self.__add_model(resource)
 

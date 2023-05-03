@@ -26,7 +26,7 @@ class MockParser(eng.I_Parser):
 
 class MockRepository(eng.I_Repository):
     @logger('- Repo')
-    def get(self, resourceNames: list[str]) -> list[ResourceModel]:
+    def get(self, resourceNames: list[str]) -> dict[str, ResourceModel]:
         return []
 
 
@@ -94,7 +94,7 @@ def test_parser_failure(mocker):
 
 
 def test_repository_failure(mocker):
-    def repositoryFail(self, resourceNames: list[str]):
+    def repositoryFail(self, resourceNames: list[str]) -> dict[str, ResourceModel]:
         raise MockException('Repository failure')
 
     mocker.patch(
