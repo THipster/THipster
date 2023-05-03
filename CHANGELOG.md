@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v0.6.0 (2023-05-03)
+### :sparkles:
+* :sparkles: feat: parser factory ([#70](https://github.com/THipster/THipster/issues/70)) ([`b7c7a52`](https://github.com/THipster/THipster/commit/b7c7a52fede83008d0ae433a80ff4a0dd87e07cd))
+
 ## v0.5.0 (2023-05-03)
 ### :sparkles:
 * :sparkles: feat: get resources from github repository ([#47](https://github.com/THipster/THipster/issues/47)) ([`fca3b7d`](https://github.com/THipster/THipster/commit/fca3b7d0be46b16ef9c754211a8c4d7ca8291a09))
