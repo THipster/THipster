@@ -5,7 +5,7 @@ from engine.ResourceModel import ResourceModel
 def test_get_bucket():
     resources = ['gcp/bucket']
 
-    repo = GithubRepo('rcattin/models')
+    repo = GithubRepo('THipster/models')
 
     models = repo.get(resources)
     assert isinstance(models, dict)
@@ -24,7 +24,7 @@ def test_get_bucket():
 def test_get_vm():
     resources = ['gcp/vm']
 
-    repo = GithubRepo('rcattin/models')
+    repo = GithubRepo('THipster/models')
 
     models = repo.get(resources)
     assert isinstance(models, dict)
