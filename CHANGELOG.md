@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v0.4.0 (2023-05-03)
+### :sparkles:
+* :sparkles: feat: token interpreter ([#69](https://github.com/THipster/THipster/issues/69)) ([`9e4548c`](https://github.com/THipster/THipster/commit/9e4548cb765627ab10721d530b1fe84d0ba1222f))
+
 ## v0.3.0 (2023-05-02)
 ### :sparkles:
 * :sparkles: feat: add yaml parser ([#68](https://github.com/THipster/THipster/issues/68)) ([`3a062aa`](https://github.com/THipster/THipster/commit/3a062aaffbc42d905046ea925063273845b11abd))
