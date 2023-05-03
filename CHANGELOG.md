@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v0.5.0 (2023-05-03)
+### :sparkles:
+* :sparkles: feat: get resources from github repository ([#47](https://github.com/THipster/THipster/issues/47)) ([`fca3b7d`](https://github.com/THipster/THipster/commit/fca3b7d0be46b16ef9c754211a8c4d7ca8291a09))
+
 ## v0.4.0 (2023-05-03)
 ### :sparkles:
 * :sparkles: feat: token interpreter ([#69](https://github.com/THipster/THipster/issues/69)) ([`9e4548c`](https://github.com/THipster/THipster/commit/9e4548cb765627ab10721d530b1fe84d0ba1222f))
