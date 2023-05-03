@@ -2,6 +2,13 @@
 
 <!--next-version-placeholder-->
 
+## v0.6.1 (2023-05-03)
+### :bug:
+* :bug: fix: update gh repo ([#72](https://github.com/THipster/THipster/issues/72)) ([`572d886`](https://github.com/THipster/THipster/commit/572d8868ce8e191af2cabc0e5684e7e1fcbe4ef6))
+
+### Other
+* :green_heart: fix: disable majors for development ([`19a141d`](https://github.com/THipster/THipster/commit/19a141d949a610856129a99908c6d284c1514776))
+
 ## v0.6.0 (2023-05-03)
 ### :sparkles:
 * :sparkles: feat: parser factory ([#70](https://github.com/THipster/THipster/issues/70)) ([`b7c7a52`](https://github.com/THipster/THipster/commit/b7c7a52fede83008d0ae433a80ff4a0dd87e07cd))
