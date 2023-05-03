@@ -84,15 +84,11 @@ class Model_Dict(I_Model_Value):
 
 
 class ResourceModel():
-    pass
-
-
-class ResourceModel():
     def __init__(
             self,
             type: str,
             attributes: list[Model_Attribute],
-            dependencies: list[ResourceModel],
+            dependencies: dict[str, str],
             cdk_provider: str,
             cdk_module: str,
             cdk_name: str,

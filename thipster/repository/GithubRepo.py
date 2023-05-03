@@ -56,9 +56,8 @@ class GithubRepo():
         bucket = response.content
         json_model = json.loads(bucket)
 
-        dependencies = []
-        for dep in json_model['dependencies']:
-            dependencies.append(self.__add_model(dep))
+        for _, dep in json_model['dependencies'].items():
+            self.__add_model(dep)
 
         res = ResourceModel(
             name,

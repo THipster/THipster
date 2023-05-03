@@ -19,10 +19,15 @@ class Engine():
         self.__terraform = terraform
 
     @logger('Engine')
-    def run(self, filename: str):
-        files = self.__parser.run(filename)
-        self.__repository.run()
+    def run(self, path: str):
+        # Parse files
+        file = self.__parser.run(path)
+
+        # Get needed models
+        types = [r.type for r in file.resources]
+        models = self.__repository.get(types)
+
         self.__auth.run()
         self.__terraform.run()
 
-        return files
+        return models

@@ -1,4 +1,5 @@
 import engine.Engine as eng
+from engine.ParsedFile import ParsedFile
 from engine.ResourceModel import ResourceModel
 from helpers import logger
 
@@ -20,13 +21,13 @@ class MockAuth(eng.I_Auth):
 class MockParser(eng.I_Parser):
     @logger('- Parser')
     def run(self, filename) -> str:
-        return f'Parser recieved {filename}'
+        return ParsedFile()
 
 
 class MockRepository(eng.I_Repository):
     @logger('- Repo')
-    def run(self) -> list[ResourceModel]:
-        pass
+    def get(self, resourceNames: list[str]) -> list[ResourceModel]:
+        return []
 
 
 class MockTerraform(eng.I_Terraform):
@@ -70,7 +71,7 @@ def test_engine_calls():
     engine = eng.Engine(parser, repository, auth, terraform)
     res = engine.run('test.file')
 
-    assert res == """Parser recieved test.file"""
+    assert res == []
 
 
 def test_parser_failure(mocker):
@@ -93,11 +94,11 @@ def test_parser_failure(mocker):
 
 
 def test_repository_failure(mocker):
-    def repositoryFail(self):
+    def repositoryFail(self, resourceNames: list[str]):
         raise MockException('Repository failure')
 
     mocker.patch(
-        'tests.engine.test_engine.MockRepository.run',
+        'tests.engine.test_engine.MockRepository.get',
         repositoryFail,
     )
 
