@@ -3,24 +3,12 @@ from engine.ParsedFile import ParsedFile
 
 import os
 from helpers import logger
+from parser.dsl_parser.Interpreter import Interpreter
 from parser.dsl_parser.Lexer import Lexer
 from parser.dsl_parser.TokenParser import TokenParser
 
-
-class DSLParserBaseException(Exception):
-    def __init__(self, message, *args: object) -> None:
-        super().__init__(*args)
-
-        self.__message = message
-
-    @property
-    def message(self):
-        return self.__message
-
-
-class DSLParserPathNotFound(DSLParserBaseException):
-    def __init__(self, file, *args: object) -> None:
-        super().__init__(f'Path not found : {file}', *args)
+from parser.dsl_parser.DSLExceptions import DSLParserPathNotFound, \
+    DSLParserBaseException
 
 
 class DSLParser(I_Parser):
@@ -56,7 +44,10 @@ class DSLParser(I_Parser):
             parser = TokenParser(token_list)
             ast = parser.run()
 
-            return ast
+            interpreter = Interpreter()
+            parsedFiles = interpreter.run(ast)
+
+            return parsedFiles
         except DSLParserBaseException as e:
             print(e.message)
             raise e

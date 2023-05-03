@@ -1,4 +1,4 @@
-from parser.dsl_parser.AST import FileNode
+from engine.ParsedFile import ParsedDict, ParsedFile, ParsedList, ParsedLiteral
 from parser.dsl_parser.DSLParser import DSLParser
 from parser.dsl_parser.DSLParser import DSLParserPathNotFound
 import os
@@ -60,7 +60,7 @@ def test_get_absent_files():
         parser._DSLParser__getfiles('inexistant_path')
 
 
-def __test_file(file: str, expected: str):
+def __test_file(file: str):
     path_input = 'test'
     _destroy_dir = create_dir(
         path_input,
@@ -74,39 +74,44 @@ def __test_file(file: str, expected: str):
     try:
         output = parser.run(path_input)
 
-        assert type(output) == FileNode
-
-        assert str(output) == expected
+        assert type(output) == ParsedFile
     except Exception as e:
         raise e
     finally:
         _destroy_dir()
 
+    return output
+
 
 def test_parse_simple_file():
-    __test_file(
+    out = __test_file(
         file="""bucket my-bucket:
 \tregion: euw
 """,
-        expected="""<RESOURCE \
-type = <STRING (STRING bucket)>, \
-name = <STRING (STRING my-bucket)>, \
-parameters = <DICT <PARAMETER name = <STRING (STRING region)>, \
-value = <LITERAL <STRING (STRING euw)>>>>>""",
-
     )
+
+    assert len(out.resources) == 1
+
+    bucket = out.resources[0]
+    assert bucket.type == 'bucket'
+    assert bucket.name == 'my-bucket'
+    assert len(bucket.attributes) == 1
+
+    region = bucket.attributes[0]
+    assert region.name == 'region'
+    assert type(region._ParsedAttribute__value) == ParsedLiteral
 
 
 def test_parse_empty_file():
-    __test_file(
+    out = __test_file(
         file="""""",
-        expected="""""",
-
     )
+
+    assert len(out.resources) == 0
 
 
 def test_parse_simple_file_with_newlines():
-    __test_file(
+    out = __test_file(
         file="""
 
 bucket my-bucket:
@@ -120,21 +125,20 @@ bucket my-bucket2:
 
 
 """,
-        expected='<RESOURCE \
-type = <STRING (STRING bucket)>, \
-name = <STRING (STRING my-bucket)>, \
-parameters = <DICT <PARAMETER name = <STRING (STRING region)>, \
-value = <LITERAL <STRING (STRING euw)>>>>>\n\
-<RESOURCE \
-type = <STRING (STRING bucket)>, \
-name = <STRING (STRING my-bucket2)>, \
-parameters = <DICT <PARAMETER name = <STRING (STRING region)>, \
-value = <LITERAL <STRING (STRING euw)>>>>>',
     )
+    assert len(out.resources) == 2
+    for bucket in out.resources:
+        assert bucket.type == 'bucket'
+        assert 'my-bucket' in bucket.name
+        assert len(bucket.attributes) == 1
+
+        region = bucket.attributes[0]
+        assert region.name == 'region'
+        assert region.value == 'euw'
 
 
 def test_parse_simple_file_with_empty_lines():
-    __test_file(
+    out = __test_file(
         file="""bucket my-bucket:
 \tregion: euw
 \t
@@ -143,21 +147,20 @@ bucket my-bucket2:
 \t\t
 
 """,
-        expected='<RESOURCE \
-type = <STRING (STRING bucket)>, \
-name = <STRING (STRING my-bucket)>, \
-parameters = <DICT <PARAMETER name = <STRING (STRING region)>, \
-value = <LITERAL <STRING (STRING euw)>>>>>\n\
-<RESOURCE \
-type = <STRING (STRING bucket)>, \
-name = <STRING (STRING my-bucket2)>, \
-parameters = <DICT <PARAMETER name = <STRING (STRING region)>, \
-value = <LITERAL <STRING (STRING euw)>>>>>',
     )
+    assert len(out.resources) == 2
+    for bucket in out.resources:
+        assert bucket.type == 'bucket'
+        assert 'my-bucket' in bucket.name
+        assert len(bucket.attributes) == 1
+
+        region = bucket.attributes[0]
+        assert region.name == 'region'
+        assert region.value == 'euw'
 
 
 def test_parse_dict_list_in_dict():
-    __test_file(
+    out = __test_file(
         file="""bucket my-bucket:
 \ttoto:
 \t\t aaa: val1
@@ -166,135 +169,193 @@ def test_parse_dict_list_in_dict():
 \t\t- ccc
 \t\t- ddd
 """,
-        expected="""<RESOURCE \
-type = <STRING (STRING bucket)>, \
-name = <STRING (STRING my-bucket)>, \
-parameters = <DICT <PARAMETER name = <STRING (STRING toto)>, \
-value = <DICT \
-<PARAMETER name = <STRING (STRING aaa)>, value = <LITERAL <STRING (STRING val1)>>> \
-<PARAMETER name = <STRING (STRING bbb)>, value = <LITERAL <STRING (STRING val2)>>>>> \
-<PARAMETER name = <STRING (STRING tata)>, \
-value = <LIST \
-<LITERAL <STRING (STRING ccc)>> \
-<LITERAL <STRING (STRING ddd)>>>>>>""",
     )
+
+    assert len(out.resources) == 1
+
+    bucket = out.resources[0]
+    assert bucket.type == 'bucket'
+    assert bucket.name == 'my-bucket'
+    assert len(bucket.attributes) == 2
+
+    toto = bucket.attributes[0]
+    assert toto.name == 'toto'
+    assert type(toto._ParsedAttribute__value) == ParsedDict
+    tata = bucket.attributes[1]
+    assert tata.name == 'tata'
+    assert type(tata._ParsedAttribute__value) == ParsedList
 
 
 def test_parse_if_else():
     # IN DICT
-    __test_file(
+    out = __test_file(
         file="""bucket my-bucket:
-\tregion: euw if aaa else na
-""", expected="""<RESOURCE \
-type = <STRING (STRING bucket)>, \
-name = <STRING (STRING my-bucket)>, \
-parameters = <DICT <PARAMETER name = <STRING (STRING region)>, \
-value = <IF_E <STRING (STRING aaa)>: <LITERAL <STRING (STRING euw)>>, \
-ELSE : <LITERAL <STRING (STRING na)>>>>>>\
+\tregion: euw if "1==1" else us
 """,
     )
+
+    assert len(out.resources) == 1
+
+    bucket = out.resources[0]
+    assert bucket.type == 'bucket'
+    assert bucket.name == 'my-bucket'
+    assert len(bucket.attributes) == 1
+
+    region = bucket.attributes[0]
+    assert region.name == 'region'
+    assert region.value == 'euw'
+
+    # ELSE CASE
+    out = __test_file(
+        file="""bucket my-bucket:
+\tregion: euw if "1==2" else us
+""",
+    )
+
+    assert len(out.resources) == 1
+
+    bucket = out.resources[0]
+    assert bucket.type == 'bucket'
+    assert bucket.name == 'my-bucket'
+    assert len(bucket.attributes) == 1
+
+    region = bucket.attributes[0]
+    assert region.name == 'region'
+    assert region.value == 'us'
+
     # IN LIST
-    __test_file(
+    out = __test_file(
         file="""bucket my-bucket:
 \tregion:
-\t\t- euw if aaa else na
-""", expected="""<RESOURCE \
-type = <STRING (STRING bucket)>, \
-name = <STRING (STRING my-bucket)>, \
-parameters = <DICT <PARAMETER name = <STRING (STRING region)>, \
-value = <LIST <IF_E <STRING (STRING aaa)>: <LITERAL <STRING (STRING euw)>>, \
-ELSE : <LITERAL <STRING (STRING na)>>>>>>>\
+\t\t- euw if "1==1" else us
 """,
     )
+
+    assert len(out.resources) == 1
+
+    bucket = out.resources[0]
+    assert bucket.type == 'bucket'
+    assert bucket.name == 'my-bucket'
+    assert len(bucket.attributes) == 1
+
+    region = bucket.attributes[0]
+    assert region.name == 'region'
+    assert type(region._ParsedAttribute__value) == ParsedList
+
+    assert len(region.value) == 1
+    r = region.value[0]
+    assert r.value == 'euw'
 
 
 def test_parse_literal_types():
-    __test_file(
+    out = __test_file(
         file="""bucket my-bucket:
 \tregion: euw
 """,
-        expected="""<RESOURCE \
-type = <STRING (STRING bucket)>, \
-name = <STRING (STRING my-bucket)>, \
-parameters = <DICT <PARAMETER name = <STRING (STRING region)>, \
-value = <LITERAL <STRING (STRING euw)>>>>>""",
-
     )
-    __test_file(
+
+    assert len(out.resources) == 1
+
+    bucket = out.resources[0]
+    assert bucket.type == 'bucket'
+    assert bucket.name == 'my-bucket'
+    assert len(bucket.attributes) == 1
+
+    region = bucket.attributes[0]
+    assert region.name == 'region'
+    assert region.value == 'euw'
+
+    out = __test_file(
         file="""bucket my-bucket:
 \tregion: 1
 """,
-        expected="""<RESOURCE \
-type = <STRING (STRING bucket)>, \
-name = <STRING (STRING my-bucket)>, \
-parameters = <DICT <PARAMETER name = <STRING (STRING region)>, \
-value = <LITERAL <STRING (INT 1)>>>>>""",
-
     )
-    __test_file(
+
+    assert len(out.resources) == 1
+
+    bucket = out.resources[0]
+    assert bucket.type == 'bucket'
+    assert bucket.name == 'my-bucket'
+    assert len(bucket.attributes) == 1
+
+    region = bucket.attributes[0]
+    assert region.name == 'region'
+    assert region.value == 1
+
+    out = __test_file(
         file="""bucket my-bucket:
 \tregion: 3.2
 """,
-        expected="""<RESOURCE \
-type = <STRING (STRING bucket)>, \
-name = <STRING (STRING my-bucket)>, \
-parameters = <DICT <PARAMETER name = <STRING (STRING region)>, \
-value = <LITERAL <STRING (FLOAT 3.2)>>>>>""",
-
     )
-    __test_file(
+
+    assert len(out.resources) == 1
+
+    bucket = out.resources[0]
+    assert bucket.type == 'bucket'
+    assert bucket.name == 'my-bucket'
+    assert len(bucket.attributes) == 1
+
+    region = bucket.attributes[0]
+    assert region.name == 'region'
+    assert region.value == 3.2
+
+    out = __test_file(
         file="""bucket my-bucket:
 \tregion: true
 """,
-        expected="""<RESOURCE \
-type = <STRING (STRING bucket)>, \
-name = <STRING (STRING my-bucket)>, \
-parameters = <DICT <PARAMETER name = <STRING (STRING region)>, \
-value = <LITERAL <STRING (BOOLEAN true)>>>>>""",
     )
-    __test_file(
-        file="""bucket my-bucket:
-\tregion: #i
-""",
-        expected="""<RESOURCE \
-type = <STRING (STRING bucket)>, \
-name = <STRING (STRING my-bucket)>, \
-parameters = <DICT <PARAMETER name = <STRING (STRING region)>, \
-value = <LITERAL <STRING (VAR i)>>>>>""",
-    )
+
+    assert len(out.resources) == 1
+
+    bucket = out.resources[0]
+    assert bucket.type == 'bucket'
+    assert bucket.name == 'my-bucket'
+    assert len(bucket.attributes) == 1
+
+    region = bucket.attributes[0]
+    assert region.name == 'region'
+    assert region.value is True
 
 
 def test_parse_amount():
-    __test_file(
+    out = __test_file(
         file="""bucket my-bucket: amount: 3
 \tregion: euw
-""", expected="""<AMOUNT <INT (INT 3)> #None: \
-<RESOURCE \
-type = <STRING (STRING bucket)>, \
-name = <STRING (STRING my-bucket)>, \
-parameters = <DICT <PARAMETER name = <STRING (STRING region)>, \
-value = <LITERAL <STRING (STRING euw)>>>>>>\
 """,
     )
 
-    __test_file(
+    assert len(out.resources) == 3
+    for bucket in out.resources:
+        assert bucket.type == 'bucket'
+        assert 'my-bucket' in bucket.name
+        assert len(bucket.attributes) == 1
+
+        region = bucket.attributes[0]
+        assert region.name == 'region'
+        assert region.value == 'euw'
+
+    out = __test_file(
         file="""bucket my-bucket: amount: 3 #i
-\tregion: euw
-""", expected="""<AMOUNT <INT (INT 3)> #<VAR (VAR i)>: \
-<RESOURCE \
-type = <STRING (STRING bucket)>, \
-name = <STRING (STRING my-bucket)>, \
-parameters = <DICT <PARAMETER name = <STRING (STRING region)>, \
-value = <LITERAL <STRING (STRING euw)>>>>>>\
+\tregion: #i
 """,
     )
+
+    assert len(out.resources) == 3
+    for bucket, i in zip(out.resources, range(1, 4)):
+        assert bucket.type == 'bucket'
+        assert 'my-bucket' in bucket.name
+        assert len(bucket.attributes) == 1
+
+        region = bucket.attributes[0]
+        assert region.name == 'region'
+        assert region.value == i
 
 
 def __test_parser_raises(mocker, input: str, exception: Exception)\
         -> pytest.ExceptionInfo:
     with pytest.raises(exception) as exc_info:
         __test_file(
-            file=input, expected="""""",
+            file=input,
         )
 
     return exc_info

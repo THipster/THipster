@@ -83,7 +83,7 @@ class ParsedList(I_ParsedValue):
 
 
 class ParsedLiteral(I_ParsedValue):
-    def __init__(self, value):
+    def __init__(self, value: bool | int | float):
         super().__init__()
         self.__value = value
 

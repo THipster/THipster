@@ -1,7 +1,7 @@
 from parser.dsl_parser.Token import Token, TOKENTYPES as TT
-from parser.dsl_parser.AST import DictNode, FileNode, IfElseNode, IfNode, AmountNode, \
-    IntNode, ListNode, ParameterNode, ResourceNode, StringNode, LiteralNode, \
-    VariableNode
+from parser.dsl_parser.AST import BoolNode, DictNode, FileNode, FloatNode, IfElseNode, \
+    IfNode, AmountNode, IntNode, ListNode, ParameterNode, ResourceNode, StringNode, \
+    LiteralNode, VariableDefinitionNode, VariableNode
 
 
 class DSLSyntaxException(Exception):
@@ -286,7 +286,10 @@ class TokenParser():
 
         return AmountNode(
             amount=IntNode(nb),
-            variable=VariableNode(var) if var else None,
+            variable=VariableDefinitionNode(
+                var, IntNode(Token(None, TT.INT, 1)),
+            )
+            if var else None,
             node=None,
         )
 
@@ -327,14 +330,17 @@ class TokenParser():
 
     def __get_value(self) -> LiteralNode:
 
-        if self.__get_next_type() in [
-                TT.BOOLEAN.value,
-                TT.FLOAT.value,
-                TT.INT.value,
-                TT.STRING.value,
-                TT.VAR.value,
-        ]:
+        nextType = self.__get_next_type()
+        if nextType == TT.BOOLEAN.value:
+            value = LiteralNode(BoolNode(self.__next()))
+        elif nextType == TT.FLOAT.value:
+            value = LiteralNode(FloatNode(self.__next()))
+        elif nextType == TT.INT.value:
+            value = LiteralNode(IntNode(self.__next()))
+        elif nextType == TT.STRING.value:
             value = LiteralNode(StringNode(self.__next()))
+        elif nextType == TT.VAR.value:
+            value = LiteralNode(VariableNode(self.__next()))
         else:
             raise DSLSyntaxException(self.__next())
 
