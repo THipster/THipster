@@ -100,6 +100,7 @@ def test_parse_simple_file():
     region = bucket.attributes[0]
     assert region.name == 'region'
     assert type(region._ParsedAttribute__value) == ParsedLiteral
+    assert region.value == 'euw'
 
 
 def test_parse_empty_file():

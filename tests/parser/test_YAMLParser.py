@@ -1,4 +1,4 @@
-from engine.ParsedFile import ParsedDict, ParsedFile, ParsedList
+from engine.ParsedFile import ParsedDict, ParsedFile, ParsedList, ParsedLiteral
 from parser.YAMLParser import YAMLParser, YAMLParserNoName
 import os
 import pytest
@@ -66,7 +66,7 @@ def __test_file(file: str):
 def test_parse_simple_file():
     out = __test_file(
         file="""bucket:
-  name: my_bucket
+  name: my-bucket
   region: euw
 """,
     )
@@ -74,27 +74,28 @@ def test_parse_simple_file():
 
     bucket = out.resources[0]
     assert bucket.type == 'bucket'
-    assert bucket.name == 'my_bucket'
+    assert bucket.name == 'my-bucket'
     assert len(bucket.attributes) == 1
 
     region = bucket.attributes[0]
     assert region.name == 'region'
+    assert type(region._ParsedAttribute__value) == ParsedLiteral
     assert region.value == 'euw'
 
 
 def test_parse_two_resources():
     out = __test_file(
         file="""bucket:
-  - name: my_bucket1
+  - name: my-bucket1
     region: euw
-  - name: my_bucket2
+  - name: my-bucket2
     region: euw
 """,
     )
     assert len(out.resources) == 2
     for bucket in out.resources:
         assert bucket.type == 'bucket'
-        assert 'my_bucket' in bucket.name
+        assert 'my-bucket' in bucket.name
         assert len(bucket.attributes) == 1
 
         region = bucket.attributes[0]
@@ -105,7 +106,7 @@ def test_parse_two_resources():
 def test_parse_dict_in_dict():
     out = __test_file(
         file="""bucket:
-  name: my_bucket
+  name: my-bucket
   region: euw
   toto:
     aaa: val1
@@ -116,7 +117,7 @@ def test_parse_dict_in_dict():
 
     bucket = out.resources[0]
     assert bucket.type == 'bucket'
-    assert bucket.name == 'my_bucket'
+    assert bucket.name == 'my-bucket'
     assert len(bucket.attributes) == 2
 
     region = bucket.attributes[0]
@@ -131,7 +132,7 @@ def test_parse_dict_in_dict():
 def test_parse_list():
     out = __test_file(
         file="""bucket:
-  name: my_bucket
+  name: my-bucket
   toto:
     - aaa
     - bbb
@@ -141,7 +142,7 @@ def test_parse_list():
 
     bucket = out.resources[0]
     assert bucket.type == 'bucket'
-    assert bucket.name == 'my_bucket'
+    assert bucket.name == 'my-bucket'
     assert len(bucket.attributes) == 1
 
     toto = bucket.attributes[0]

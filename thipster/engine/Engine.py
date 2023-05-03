@@ -18,8 +18,6 @@ class Engine():
         self.__auth = auth
         self.__terraform = terraform
 
-        pass
-
     @logger('Engine')
     def run(self, filename: str):
         files = self.__parser.run(filename)
