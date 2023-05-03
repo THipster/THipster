@@ -9,17 +9,22 @@ class I_Model_Value(ABC):
 
 
 class Model_Attribute():
-    def __init__(self, name: str, value: I_Model_Value):
+    def __init__(self, name: str, default: I_Model_Value = None, optional: bool = True):
         self.__name = name
-        self.__value = value
+        self.__default = default
+        self.__optional = optional
 
     @property
-    def value(self):
-        return self.__value.value
+    def default(self):
+        return self.__default.value
 
     @property
     def name(self):
         return self.__name
+
+    @property
+    def optional(self):
+        return self.__optional
 
 
 class Model_List(I_Model_Value):

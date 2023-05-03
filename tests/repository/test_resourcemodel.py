@@ -50,83 +50,89 @@ def test_create_resource_with_dependencies():
 def test_create_num_attr():
     val = rm.Model_Literal(3)
 
-    attr = rm.Model_Attribute('test_attr', value=val)
+    attr = rm.Model_Attribute('test_attr', default=val, optional=False)
 
     assert isinstance(attr, rm.Model_Attribute)
-    assert isinstance(attr._Model_Attribute__value, rm.Model_Literal)
-    assert attr.value == 3
+    assert isinstance(attr._Model_Attribute__default, rm.Model_Literal)
+    assert attr.default == 3
 
 
 def test_create_str_attr():
-    val = rm.Model_Literal('test_value')
+    val = rm.Model_Literal('test_default')
 
-    attr = rm.Model_Attribute('test_attr', value=val)
+    attr = rm.Model_Attribute('test_attr', default=val, optional=False)
 
     assert isinstance(attr, rm.Model_Attribute)
-    assert isinstance(attr._Model_Attribute__value, rm.Model_Literal)
-    assert attr.value == 'test_value'
+    assert isinstance(attr._Model_Attribute__default, rm.Model_Literal)
+    assert attr.default == 'test_default'
 
 
 def test_create_list_str_attr():
     val = rm.Model_List(
-        [rm.Model_Literal('test_value_' + str(i)) for i in range(3)],
+        [rm.Model_Literal('test_default_' + str(i)) for i in range(3)],
     )
 
-    attr = rm.Model_Attribute('test_attr', value=val)
+    attr = rm.Model_Attribute('test_attr', default=val, optional=False)
 
     assert isinstance(attr, rm.Model_Attribute)
-    assert isinstance(attr._Model_Attribute__value, rm.Model_List)
+    assert isinstance(attr._Model_Attribute__default, rm.Model_List)
 
-    assert len(attr.value) == 3
-    for val in attr.value:
-        assert 'test_value' in val.value
+    assert len(attr.default) == 3
+    for val in attr.default:
+        assert 'test_default' in val.value
 
 
 def test_create_dict_str_attr():
     val = rm.Model_Dict(
-        {rm.Model_Literal('test_value_' + str(i)) for i in range(3)},
+        {rm.Model_Literal('test_default_' + str(i)) for i in range(3)},
     )
 
-    attr = rm.Model_Attribute('test_attr', value=val)
+    attr = rm.Model_Attribute('test_attr', default=val, optional=False)
 
     assert isinstance(attr, rm.Model_Attribute)
-    assert isinstance(attr._Model_Attribute__value, rm.Model_Dict)
+    assert isinstance(attr._Model_Attribute__default, rm.Model_Dict)
 
-    assert len(attr.value) == 3
-    for val in attr.value:
-        assert 'test_value' in val.value
+    assert len(attr.default) == 3
+    for val in attr.default:
+        assert 'test_default' in val.value
 
 
 def test_create_resource_with_attributes():
     attr = [
         rm.Model_Attribute(
             'attr_num',
-            value=rm.Model_Literal(3),
+            default=rm.Model_Literal(3),
+            optional=False,
         ),
         rm.Model_Attribute(
             'attr_str',
-            value=rm.Model_Literal('test'),
+            default=rm.Model_Literal('test'),
+            optional=False,
         ),
         rm.Model_Attribute(
             'attr_list',
-            value=rm.Model_List([
+            default=rm.Model_List([
                 rm.Model_Literal('test_list_1'),
                 rm.Model_Literal('test_list_2'),
                 rm.Model_Literal('test_list_3'),
             ]),
+            optional=False,
         ),
         rm.Model_Attribute(
             'attr_dict',
-            value=rm.Model_Dict([
+            default=rm.Model_Dict([
                 rm.Model_Attribute(
                     'attr_dict_1',
-                    value=rm.Model_Literal('test'),
+                    default=rm.Model_Literal('test'),
+                    optional=False,
                 ),
                 rm.Model_Attribute(
                     'attr_dict_2',
-                    value=rm.Model_Literal('test'),
+                    default=rm.Model_Literal('test'),
+                    optional=False,
                 ),
             ]),
+            optional=False,
         ),
     ]
 
@@ -144,13 +150,15 @@ def test_create_resource_with_attributes():
     assert isinstance(model.attributes, list)
     for attribute in model.attributes:
         assert isinstance(attribute, rm.Model_Attribute)
-        assert isinstance(attribute._Model_Attribute__value, rm.I_Model_Value)
-        if isinstance(attribute._Model_Attribute__value, rm.Model_Dict):
-            for val in attribute.value:
+        assert isinstance(
+            attribute._Model_Attribute__default, rm.I_Model_Value,
+        )
+        if isinstance(attribute._Model_Attribute__default, rm.Model_Dict):
+            for val in attribute.default:
                 assert isinstance(val, rm.Model_Attribute)
 
-        elif isinstance(attribute._Model_Attribute__value, rm.Model_List):
-            for val in attribute.value:
+        elif isinstance(attribute._Model_Attribute__default, rm.Model_List):
+            for val in attribute.default:
                 assert isinstance(val, rm.I_Model_Value)
 
     assert model.dependencies is None
