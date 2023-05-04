@@ -17,10 +17,25 @@ class TOKENTYPES(Enum):
     STRING = 'STRING'
     TAB = 'TAB'
     VAR = 'VAR'
+    WHITESPACE = 'WHITESPACE'
 
 
 class Token():
+    """Class representing a Token
+    """
+
     def __init__(self, position: Position, tokenType: str, value: str = None):
+        """
+
+        Parameters
+        ----------
+        position : Position
+            Position of the token in its input file
+        tokenType : str
+            Token type
+        value : str, optional
+            Token value, by default None
+        """
         self.__position = position
         self.__tokenType = tokenType
         self.__value = value

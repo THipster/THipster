@@ -24,40 +24,18 @@ def test_create_lexer():
     assert len(lexer.tokenList) == 0
 
 
-def test_add_token_to_list():
-    tokenType = TT.STRING.value
-    value = 'babyfoot'
-    lexer = Lexer('')
-    lexer.addTokenToList(1, tokenType, value)
-
-    tokenStr = getTokenString('', 1, 1, tokenType, value)
-    assert len(lexer.tokenList) == 1
-    assert repr(lexer.tokenList[0]) == tokenStr
-
-
-def test_handle_current_token():
-    lexer = Lexer('')
-    lexer.handleCurrentToken('if', 1)
-    lexer.handleCurrentToken('babyfoot', 4)
-    lexer.handleCurrentToken('amount', 12)
-    assert len(lexer.tokenList) == 3
-    assert lexer.tokenList[0].tokenType == TT.IF.value
-    assert lexer.tokenList[2].tokenType == TT.AMOUNT.value
-
-
-def test_lex_string():
-    input = 'bucket nom-8'
+def test_lex_column():
+    input = ':'
     expectedOutput = [
-        getTokenString('file', 1, 1, TT.STRING.value, 'bucket'),
-        getTokenString('file', 1, 8, TT.STRING.value, 'nom-8'),
-        getTokenString('file', 1, 13, TT.NEWLINE.value),
+        getTokenString('file', 1, 1, TT.COLUMN.value),
+        getTokenString('file', 1, 2, TT.NEWLINE.value),
         getTokenString('file', 2, 1, TT.EOF.value),
     ]
     lexer = Lexer('')
     lexer.lex(input, 'file')
     output = lexer.tokenList
 
-    assert len(output) == 4
+    assert len(output) == 3
     for i in range(len(expectedOutput)):
         assert repr(output[i]) == expectedOutput[i]
 
@@ -87,10 +65,42 @@ def test_lex_quoted_string_error():
         lexer.run()
 
 
-def test_lex_int():
-    input = '8'
+def test_lex_var():
+    input = '#variable'
     expectedOutput = [
-        getTokenString('file', 1, 1, TT.INT.value, '8'),
+        getTokenString('file', 1, 2, TT.VAR.value, 'variable'),
+        getTokenString('file', 1, 10, TT.NEWLINE.value),
+        getTokenString('file', 2, 1, TT.EOF.value),
+    ]
+    lexer = Lexer('')
+    lexer.lex(input, 'file')
+    output = lexer.tokenList
+
+    assert len(output) == 3
+    for i in range(len(expectedOutput)):
+        assert repr(output[i]) == expectedOutput[i]
+
+
+def test_lex_newline():
+    input = '\n'
+    expectedOutput = [
+        getTokenString('file', 1, 1, TT.NEWLINE.value),
+        getTokenString('file', 2, 1, TT.NEWLINE.value),
+        getTokenString('file', 3, 1, TT.EOF.value),
+    ]
+    lexer = Lexer('')
+    lexer.lex(input, 'file')
+    output = lexer.tokenList
+
+    assert len(output) == 3
+    for i in range(len(expectedOutput)):
+        assert repr(output[i]) == expectedOutput[i]
+
+
+def test_lex_tab():
+    input = '\t'
+    expectedOutput = [
+        getTokenString('file', 1, 1, TT.TAB.value),
         getTokenString('file', 1, 2, TT.NEWLINE.value),
         getTokenString('file', 2, 1, TT.EOF.value),
     ]
@@ -103,27 +113,50 @@ def test_lex_int():
         assert repr(output[i]) == expectedOutput[i]
 
 
-def test_lex_float():
-    input = '4.5'
+def test_lex_4_whitespaces_as_tab():
+    input = {
+        'file': '    \n\t',
+    }
     expectedOutput = [
-        getTokenString('file', 1, 1, TT.FLOAT.value, '4.5'),
-        getTokenString('file', 1, 4, TT.NEWLINE.value),
-        getTokenString('file', 2, 1, TT.EOF.value),
+        getTokenString('file', 1, 1, TT.TAB.value),
+        getTokenString('file', 1, 2, TT.NEWLINE.value),
+        getTokenString('file', 2, 1, TT.TAB.value),
+        getTokenString('file', 2, 2, TT.NEWLINE.value),
+        getTokenString('file', 3, 1, TT.EOF.value),
     ]
-    lexer = Lexer('')
-    lexer.lex(input, 'file')
-    output = lexer.tokenList
+    lexer = Lexer(input)
+    output = lexer.run()
 
-    assert len(output) == 3
+    assert len(output) == 5
     for i in range(len(expectedOutput)):
         assert repr(output[i]) == expectedOutput[i]
 
 
-def test_lex_var():
-    input = '#variable'
+def test_lex_2_4_whitespaces_as_tabs():
+    input = {
+        'file': '        \n\t',
+    }
     expectedOutput = [
-        getTokenString('file', 1, 2, TT.VAR.value, 'variable'),
-        getTokenString('file', 1, 10, TT.NEWLINE.value),
+        getTokenString('file', 1, 1, TT.TAB.value),
+        getTokenString('file', 1, 2, TT.TAB.value),
+        getTokenString('file', 1, 3, TT.NEWLINE.value),
+        getTokenString('file', 2, 1, TT.TAB.value),
+        getTokenString('file', 2, 2, TT.NEWLINE.value),
+        getTokenString('file', 3, 1, TT.EOF.value),
+    ]
+    lexer = Lexer(input)
+    output = lexer.run()
+
+    assert len(output) == 6
+    for i in range(len(expectedOutput)):
+        assert repr(output[i]) == expectedOutput[i]
+
+
+def test_lex_dash():
+    input = '-'
+    expectedOutput = [
+        getTokenString('file', 1, 1, TT.DASH.value),
+        getTokenString('file', 1, 2, TT.NEWLINE.value),
         getTokenString('file', 2, 1, TT.EOF.value),
     ]
     lexer = Lexer('')
@@ -199,6 +232,25 @@ def test_lex_else():
         assert repr(output[i]) == expectedOutput[i]
 
 
+def test_lex_if_else():
+    input = 'if condition else something'
+    expectedOutput = [
+        getTokenString('file', 1, 1, TT.IF.value),
+        getTokenString('file', 1, 4, TT.STRING.value, 'condition'),
+        getTokenString('file', 1, 14, TT.ELSE.value),
+        getTokenString('file', 1, 19, TT.STRING.value, 'something'),
+        getTokenString('file', 1, 28, TT.NEWLINE.value),
+        getTokenString('file', 2, 1, TT.EOF.value),
+    ]
+    lexer = Lexer('')
+    lexer.lex(input, 'file')
+    output = lexer.tokenList
+
+    assert len(output) == 6
+    for i in range(len(expectedOutput)):
+        assert repr(output[i]) == expectedOutput[i]
+
+
 def test_lex_true():
     input = 'true '
     expectedOutput = [
@@ -231,10 +283,10 @@ def test_lex_false():
         assert repr(output[i]) == expectedOutput[i]
 
 
-def test_lex_tab():
-    input = '\t'
+def test_lex_int():
+    input = '8'
     expectedOutput = [
-        getTokenString('file', 1, 1, TT.TAB.value),
+        getTokenString('file', 1, 1, TT.INT.value, '8'),
         getTokenString('file', 1, 2, TT.NEWLINE.value),
         getTokenString('file', 2, 1, TT.EOF.value),
     ]
@@ -247,66 +299,11 @@ def test_lex_tab():
         assert repr(output[i]) == expectedOutput[i]
 
 
-def test_lex_4_whitespaces_as_tab():
-    input = {
-        'file': '    \n\t',
-    }
+def test_lex_float():
+    input = '4.5'
     expectedOutput = [
-        getTokenString('file', 1, 1, TT.TAB.value),
-        getTokenString('file', 1, 2, TT.NEWLINE.value),
-        getTokenString('file', 2, 1, TT.TAB.value),
-        getTokenString('file', 2, 2, TT.NEWLINE.value),
-        getTokenString('file', 3, 1, TT.EOF.value),
-    ]
-    lexer = Lexer(input)
-    output = lexer.run()
-
-    assert len(output) == 5
-    for i in range(len(expectedOutput)):
-        assert repr(output[i]) == expectedOutput[i]
-
-
-def test_lex_2_4_whitespaces_as_tabs():
-    input = {
-        'file': '        \n\t',
-    }
-    expectedOutput = [
-        getTokenString('file', 1, 1, TT.TAB.value),
-        getTokenString('file', 1, 2, TT.TAB.value),
-        getTokenString('file', 1, 3, TT.NEWLINE.value),
-        getTokenString('file', 2, 1, TT.TAB.value),
-        getTokenString('file', 2, 2, TT.NEWLINE.value),
-        getTokenString('file', 3, 1, TT.EOF.value),
-    ]
-    lexer = Lexer(input)
-    output = lexer.run()
-
-    assert len(output) == 6
-    for i in range(len(expectedOutput)):
-        assert repr(output[i]) == expectedOutput[i]
-
-
-def test_lex_newline():
-    input = '\n'
-    expectedOutput = [
-        getTokenString('file', 1, 1, TT.NEWLINE.value),
-        getTokenString('file', 2, 1, TT.NEWLINE.value),
-        getTokenString('file', 3, 1, TT.EOF.value),
-    ]
-    lexer = Lexer('')
-    lexer.lex(input, 'file')
-    output = lexer.tokenList
-
-    assert len(output) == 3
-    for i in range(len(expectedOutput)):
-        assert repr(output[i]) == expectedOutput[i]
-
-
-def test_lex_colon():
-    input = ':'
-    expectedOutput = [
-        getTokenString('file', 1, 1, TT.COLUMN.value),
-        getTokenString('file', 1, 2, TT.NEWLINE.value),
+        getTokenString('file', 1, 1, TT.FLOAT.value, '4.5'),
+        getTokenString('file', 1, 4, TT.NEWLINE.value),
         getTokenString('file', 2, 1, TT.EOF.value),
     ]
     lexer = Lexer('')
@@ -318,18 +315,19 @@ def test_lex_colon():
         assert repr(output[i]) == expectedOutput[i]
 
 
-def test_lex_dash():
-    input = '-'
+def test_lex_string():
+    input = 'bucket nom-8'
     expectedOutput = [
-        getTokenString('file', 1, 1, TT.DASH.value),
-        getTokenString('file', 1, 2, TT.NEWLINE.value),
+        getTokenString('file', 1, 1, TT.STRING.value, 'bucket'),
+        getTokenString('file', 1, 8, TT.STRING.value, 'nom-8'),
+        getTokenString('file', 1, 13, TT.NEWLINE.value),
         getTokenString('file', 2, 1, TT.EOF.value),
     ]
     lexer = Lexer('')
     lexer.lex(input, 'file')
     output = lexer.tokenList
 
-    assert len(output) == 3
+    assert len(output) == 4
     for i in range(len(expectedOutput)):
         assert repr(output[i]) == expectedOutput[i]
 
