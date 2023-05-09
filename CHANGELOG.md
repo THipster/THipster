@@ -2,6 +2,13 @@
 
 <!--next-version-placeholder-->
 
+## v0.7.0 (2023-05-09)
+### :sparkles:
+* :sparkles: feat: add local repository ([#78](https://github.com/THipster/THipster/issues/78)) ([`5273193`](https://github.com/THipster/THipster/commit/52731936933ae1f0b2e45d5bc9f755b90d6ee585))
+
+### Other
+* :green_heart: fix: update pre-commit ([#77](https://github.com/THipster/THipster/issues/77)) ([`e1b4f21`](https://github.com/THipster/THipster/commit/e1b4f214267e22676ae2c917354302caae473992))
+
 ## v0.6.1 (2023-05-03)
 ### :bug:
 * :bug: fix: update gh repo ([#72](https://github.com/THipster/THipster/issues/72)) ([`572d886`](https://github.com/THipster/THipster/commit/572d8868ce8e191af2cabc0e5684e7e1fcbe4ef6))
