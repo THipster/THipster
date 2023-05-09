@@ -37,7 +37,7 @@ class Lexer():
         return self.__tokenList
 
     def run(self) -> list[Token]:
-        """Function to launch the Lexer
+        """Launch the Lexer
 
         Returns
         -------
@@ -62,7 +62,7 @@ class Lexer():
         startLine: int = 1,
         startColumn: int = 1,
     ) -> None:
-        """Function to tokenize a file contents
+        """Tokenize a file contents
 
         Parameters
         ----------
@@ -113,7 +113,7 @@ class Lexer():
         self.__logger.debug('Finished lexing file %s', fileName)
 
     def __iterateNextChar(self):
-        """Function to iterate to the next character
+        """Iterate to the next character
 
         Add the current character to the current Token
         """
@@ -124,14 +124,14 @@ class Lexer():
         pass
 
     def __handleSyntaxTokens(self) -> None:
-        """Function to handle single character tokens
+        """Handle single character tokens
 
         Check if the current character is a special token and calls the corresponding
         function.
         If it isn't, it calls the '__iterateNextChar' function
         """
         singleCharTokens = {
-            ':': self.__handleColumnToken,
+            ':': self.__handleColonToken,
             '"': self.__handleDoubleQuotes,
             '#': self.__handleHashToken,
             '\n': self.__handleNewlineToken,
@@ -142,7 +142,7 @@ class Lexer():
         singleCharTokens.get(self.__currentChar, self.__iterateNextChar)()
 
     def __handleCurrentToken(self) -> None:
-        """Function to process the current stored token
+        """Process the current stored token
 
         Check if the current token is a keyword, calls the cprresponding function, or
         the '__handleLiteralsAndVariables' otherwise.
@@ -165,7 +165,7 @@ class Lexer():
         )()
 
     def __handleLiteralsAndVariables(self) -> None:
-        """Function to create a literal or var token
+        """Create a literal or var token
 
         Checks the current token to create a var, int, float or string token
         """
@@ -184,7 +184,7 @@ class Lexer():
             self.__addLiteralTokenToList(TT.STRING.value, currentToken)
 
     def __addLiteralTokenToList(self, tokenType: str, value: str):
-        """Function to add a literal token to the token list
+        """Add a literal token to the token list
 
         Parameters
         ----------
@@ -206,7 +206,7 @@ class Lexer():
         value: str = None,
         isCurrentToken: bool = False,
     ) -> None:
-        """Basic function to add a token to the token list
+        """Add a token to the token list
 
         Parameters
         ----------
@@ -239,7 +239,7 @@ class Lexer():
         self,
         resetCurrentToken: bool = True,
     ) -> None:
-        """Basic function to update the lexer's current position
+        """Update the lexer's current position
 
         Parameters
         ----------
@@ -261,7 +261,7 @@ class Lexer():
         handleCurrentToken: bool = True,
         resetCurrentToken: bool = True,
     ) -> None:
-        """Basic function to handle a token creation and lexer position
+        """Handle a token creation and lexer position
 
         Parameters
         ----------
@@ -281,13 +281,13 @@ class Lexer():
         self.__addBaseToken(tokenType, value, isCurrentToken)
         self.__basePositionUpdate(resetCurrentToken)
 
-    def __handleColumnToken(self):
-        """Function to handle a COLUMN token ':'
+    def __handleColonToken(self):
+        """Handle a COLON token ':'
         """
-        self.__handleBaseToken(TT.COLUMN.value)
+        self.__handleBaseToken(TT.COLON.value)
 
     def __handleHashToken(self) -> None:
-        """Function to handle a HASH token '#'
+        """Handle a HASH token '#'
 
         Sets a variable to indicate that the following literal is a Variable
         """
@@ -296,7 +296,7 @@ class Lexer():
         self.__lexerPosition.setIsVariable(True)
 
     def __handleWhitespace(self) -> None:
-        """Function to handle a WHITESPACE token ' '
+        """Handle a WHITESPACE token ' '
 
         Replaces 4 following whitespaces by a TAB token
         """
@@ -313,19 +313,19 @@ class Lexer():
             self.__lexerPosition.setCurrentTokenIndex()
 
     def __handleNewlineToken(self) -> None:
-        """Function to handle a NEWLINE token '\\n'
+        """Handle a NEWLINE token '\\n'
         """
         self.__handleBaseToken(TT.NEWLINE.value)
         self.__lexerPosition.newLine()
         self.__lexerPosition.setCurrentTokenIndex(1)
 
     def __handleTabToken(self) -> None:
-        """Function to handle a TAB token '\\t'
+        """Handle a TAB token '\\t'
         """
         self.__handleBaseToken(TT.TAB.value)
 
     def __handleDoubleQuotes(self) -> None:
-        """Function to handle a DOUBLEQUOTES token '"'
+        """Handle a DOUBLEQUOTES token '"'
 
         Sets a variable to indicate that the following characters are a STRING token.
         """
@@ -342,37 +342,37 @@ class Lexer():
         self.__lexerPosition.resetCurrentToken()
 
     def __handleDashToken(self):
-        """Function to handle a DASH token '-'
+        """Handle a DASH token '-'
         """
         self.__lexerPosition.resetConsecutiveWhitespaces()
         self.__addBaseToken(TT.DASH.value, isCurrentToken=True)
 
     def __handleAmountToken(self):
-        """Function to handle an AMOUNT token 'amount'
+        """Handle an AMOUNT token 'amount'
         """
         self.__lexerPosition.resetConsecutiveWhitespaces()
         self.__addBaseToken(TT.AMOUNT.value, isCurrentToken=True)
 
     def __handleIfToken(self):
-        """Function to handle an IF token 'if'
+        """Handle an IF token 'if'
         """
         self.__lexerPosition.resetConsecutiveWhitespaces()
         self.__addBaseToken(TT.IF.value, isCurrentToken=True)
 
     def __handleElifToken(self):
-        """Function to handle an ELIF token 'elif'
+        """Handle an ELIF token 'elif'
         """
         self.__lexerPosition.resetConsecutiveWhitespaces()
         self.__addBaseToken(TT.ELIF.value, isCurrentToken=True)
 
     def __handleElseToken(self):
-        """Function to handle an ELSE token 'else'
+        """Handle an ELSE token 'else'
         """
         self.__lexerPosition.resetConsecutiveWhitespaces()
         self.__addBaseToken(TT.ELSE.value, isCurrentToken=True)
 
     def __handleBooleanToken(self):
-        """Function to handle a BOOLEAN token 'true' or 'false'
+        """Handle a BOOLEAN token 'true' or 'false'
         """
         self.__lexerPosition.resetConsecutiveWhitespaces()
         self.__addBaseToken(
@@ -380,12 +380,12 @@ class Lexer():
         )
 
     def __handleEofToken(self) -> None:
-        """Function to add an EOF token at the end of each file
+        """Add an EOF token at the end of each file
         """
         self.__addBaseToken(TT.EOF.value)
 
     def __addTokenToList(self, token: Token | None) -> None:
-        """Function to add a new token to the parser's token list
+        """Add a new token to the parser's token list
 
         Parameters
         ----------
@@ -397,7 +397,7 @@ class Lexer():
         self.__tokenList.append(token)
 
     def __addFileEnd(self) -> None:
-        """Function to add a NEWLINE and an EOF token at the end of each file
+        """Add a NEWLINE and an EOF token at the end of each file
         """
         if len(self.__lexerPosition.currentToken.strip()) > 0:
             self.__handleCurrentToken()
@@ -406,7 +406,7 @@ class Lexer():
         self.__handleEofToken()
 
     def __isfloat(self, num: str) -> bool:
-        """_summary_
+        """Check if the string is a float
 
         Parameters
         ----------
@@ -432,7 +432,7 @@ class LexerPosition():
         startLine: int = 1,
         startColumn: int = 1,
     ) -> None:
-        """Class to represent the state and position if the lexer
+        """Class to represent the state and position of the lexer
 
         Parameters
         ----------
@@ -501,13 +501,13 @@ class LexerPosition():
         )
 
     def newLine(self) -> None:
-        """Function to set the position to the next line
+        """Get the position to the next line
         """
         self.__currentLine += 1
         self.__currentColumn = 1
 
     def nextColumn(self, step: int = 1) -> None:
-        """Function to set the position to a new column
+        """Get the position to a new column
 
         Parameters
         ----------
@@ -520,7 +520,7 @@ class LexerPosition():
             self.__currentColumn = 0  # Raise exception ?
 
     def addCharToCurrentToken(self, char) -> None:
-        """_Function to add a char to the current stored token
+        """Add a char to the current stored token
 
         Parameters
         ----------
@@ -530,7 +530,7 @@ class LexerPosition():
         self.__currentToken += char
 
     def setCurrentTokenIndex(self, newIndex: int = None) -> None:
-        """Function to modify the stored token index
+        """Modify the stored token index
 
         Parameters
         ----------
@@ -543,7 +543,7 @@ class LexerPosition():
             self.__currentTokenIndex = self.__currentColumn
 
     def resetCurrentToken(self, newIndex: int = None) -> None:
-        """Function to reset the current stored token and its index
+        """Reset the current stored token and its index
 
         Parameters
         ----------
@@ -554,17 +554,17 @@ class LexerPosition():
         self.setCurrentTokenIndex(newIndex)
 
     def addConsecutiveWhitespace(self) -> None:
-        """Function to add a consecutive whitespace to the lexer state
+        """Add a consecutive whitespace to the lexer state
         """
         self.__consecutiveWhitespaces += 1
 
     def resetConsecutiveWhitespaces(self) -> None:
-        """Function to reset consecutive whitespaces of the lexer state to 0
+        """Reset consecutive whitespaces of the lexer state to 0
         """
         self.__consecutiveWhitespaces = 0
 
     def setIsVariable(self, value: bool = False) -> None:
-        """Function to set the current stored token as a variable
+        """Set the current stored token as a variable
 
         Parameters
         ----------
@@ -574,7 +574,7 @@ class LexerPosition():
         self.__isVariable = value
 
     def setIsString(self, value: bool = False) -> None:
-        """Function to set the current stored token as a string
+        """Set the current stored token as a string
 
         Parameters
         ----------

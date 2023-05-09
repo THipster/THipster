@@ -24,10 +24,10 @@ def test_create_lexer():
     assert len(lexer.tokenList) == 0
 
 
-def test_lex_column():
+def test_lex_colon():
     input = ':'
     expectedOutput = [
-        getTokenString('file', 1, 1, TT.COLUMN.value),
+        getTokenString('file', 1, 1, TT.COLON.value),
         getTokenString('file', 1, 2, TT.NEWLINE.value),
         getTokenString('file', 2, 1, TT.EOF.value),
     ]
@@ -340,9 +340,9 @@ def test_run_lexer():
     expectedOutput = [
         getTokenString('file', 1, 1, TT.STRING.value, 'bucket'),
         getTokenString('file', 1, 8, TT.STRING.value, 'nom-8'),
-        getTokenString('file', 1, 13, TT.COLUMN.value),
+        getTokenString('file', 1, 13, TT.COLON.value),
         getTokenString('file', 1, 15, TT.AMOUNT.value),
-        getTokenString('file', 1, 21, TT.COLUMN.value),
+        getTokenString('file', 1, 21, TT.COLON.value),
         getTokenString('file', 1, 23, TT.INT.value, '5'),
         getTokenString('file', 1, 25, TT.NEWLINE.value),
         getTokenString('file', 2, 1, TT.TAB.value),
@@ -352,9 +352,9 @@ def test_run_lexer():
         getTokenString('file2', 1, 1, TT.STRING.value, 'network'),
         getTokenString('file2', 1, 9, TT.STRING.value, 'aaaa-'),
         getTokenString('file2', 1, 15, TT.VAR.value, 'i'),
-        getTokenString('file2', 1, 16, TT.COLUMN.value),
+        getTokenString('file2', 1, 16, TT.COLON.value),
         getTokenString('file2', 1, 18, TT.STRING.value, 'nombre'),
-        getTokenString('file2', 1, 24, TT.COLUMN.value),
+        getTokenString('file2', 1, 24, TT.COLON.value),
         getTokenString('file2', 1, 26, TT.INT.value, '2'),
         getTokenString('file2', 1, 28, TT.FLOAT.value, '4.5'),
         getTokenString('file2', 1, 31, TT.NEWLINE.value),
@@ -383,7 +383,7 @@ def test_run_lexer_var_in_name():
         getTokenString('file', 1, 18, 'NEWLINE'),
         getTokenString('file', 2, 1, 'TAB'),
         getTokenString('file', 2, 3, 'STRING', 'toto'),
-        getTokenString('file', 2, 7, 'COLUMN'),
+        getTokenString('file', 2, 7, 'COLON'),
         getTokenString('file', 2, 9, 'STRING', 'tata'),
         getTokenString('file', 2, 13, 'NEWLINE'),
         getTokenString('file', 3, 1, 'EOF'),
