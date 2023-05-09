@@ -193,6 +193,7 @@ class Lexer():
         value : str
             Value of the token
         """
+        self.__lexerPosition.resetConsecutiveWhitespaces()
         self.__addBaseToken(
             tokenType,
             value,
@@ -343,31 +344,37 @@ class Lexer():
     def __handleDashToken(self):
         """Function to handle a DASH token '-'
         """
+        self.__lexerPosition.resetConsecutiveWhitespaces()
         self.__addBaseToken(TT.DASH.value, isCurrentToken=True)
 
     def __handleAmountToken(self):
         """Function to handle an AMOUNT token 'amount'
         """
+        self.__lexerPosition.resetConsecutiveWhitespaces()
         self.__addBaseToken(TT.AMOUNT.value, isCurrentToken=True)
 
     def __handleIfToken(self):
         """Function to handle an IF token 'if'
         """
+        self.__lexerPosition.resetConsecutiveWhitespaces()
         self.__addBaseToken(TT.IF.value, isCurrentToken=True)
 
     def __handleElifToken(self):
         """Function to handle an ELIF token 'elif'
         """
+        self.__lexerPosition.resetConsecutiveWhitespaces()
         self.__addBaseToken(TT.ELIF.value, isCurrentToken=True)
 
     def __handleElseToken(self):
         """Function to handle an ELSE token 'else'
         """
+        self.__lexerPosition.resetConsecutiveWhitespaces()
         self.__addBaseToken(TT.ELSE.value, isCurrentToken=True)
 
     def __handleBooleanToken(self):
         """Function to handle a BOOLEAN token 'true' or 'false'
         """
+        self.__lexerPosition.resetConsecutiveWhitespaces()
         self.__addBaseToken(
             TT.BOOLEAN.value, self.__lexerPosition.currentToken, True,
         )

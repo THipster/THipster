@@ -1,4 +1,4 @@
-from parser.dsl_parser.Lexer import Lexer
+from parser.dsl_parser.Lexer import Lexer, DSLParserNoEndingQuotes
 from parser.dsl_parser.Token import TOKENTYPES as TT
 import pytest
 
@@ -61,7 +61,7 @@ def test_lex_quoted_string_error():
         'file': 'bucket nom-8: "amount: 5 \n\t',
     }
     lexer = Lexer(input)
-    with pytest.raises(SyntaxError):
+    with pytest.raises(DSLParserNoEndingQuotes):
         lexer.run()
 
 
