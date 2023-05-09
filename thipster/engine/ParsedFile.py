@@ -4,7 +4,7 @@
 from abc import ABC, abstractmethod
 
 
-class I_Parsed_Value(ABC):
+class I_ParsedValue(ABC):
     """Parsed Value Interface
 
     Attributes
@@ -111,11 +111,11 @@ class Position():
             raise TypeError('Value must be a Position')
 
 
-class Parsed_Attribute():
+class ParsedAttribute():
     """Class reprensenting a Parsed Attribute Object
     """
 
-    def __init__(self, name: str, position: Position, value: I_Parsed_Value):
+    def __init__(self, name: str, position: Position, value: I_ParsedValue):
         """
         Parameters
         ----------
@@ -150,11 +150,11 @@ class Parsed_Attribute():
         return self.__position
 
 
-class Parsed_List(I_Parsed_Value):
+class ParsedList(I_ParsedValue):
     """Class representing a Parsed List Object
     """
 
-    def __init__(self, value: list[I_Parsed_Value]):
+    def __init__(self, value: list[I_ParsedValue]):
         """
         Parameters
         ----------
@@ -185,7 +185,7 @@ class Parsed_List(I_Parsed_Value):
         return ret
 
 
-class Parsed_Literal(I_Parsed_Value):
+class ParsedLiteral(I_ParsedValue):
     """Class representing a Parsed Literal Object
     """
 
@@ -206,12 +206,12 @@ class Parsed_Literal(I_Parsed_Value):
 
         return self.__value
 
-    
-class Parsed_Dict(I_Parsed_Value):
+
+class ParsedDict(I_ParsedValue):
     """Class representing a Parsed Dictionnary Object
     """
 
-    def __init__(self, value: list[Parsed_Attribute]):
+    def __init__(self, value: list[ParsedAttribute]):
         """
         Parameters
         ----------
@@ -238,7 +238,7 @@ class ParsedResource():
             type: str,
             name: str,
             position: Position,
-            attributes=list[Parsed_Attribute],
+            attributes=list[ParsedAttribute],
     ):
         """
         Parameters
@@ -276,7 +276,7 @@ class ParsedResource():
         return self.__position
 
     @property
-    def attributes(self) -> list[Parsed_Attribute]:
+    def attributes(self) -> list[ParsedAttribute]:
         """List of Attributes of the Parsed Resource
         """
 
