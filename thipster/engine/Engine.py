@@ -1,3 +1,6 @@
+"""_Engine.py module.
+"""
+
 from engine.I_Parser import I_Parser
 from engine.I_Repository import I_Repository
 from engine.I_Auth import I_Auth
