@@ -1,6 +1,7 @@
 from engine.ParsedFile import ParsedDict, ParsedFile, ParsedList, ParsedLiteral
 from parser.dsl_parser.DSLParser import DSLParser
 from parser.dsl_parser.DSLParser import DSLParserPathNotFound
+from parser.dsl_parser.Token import TOKENTYPES as TT
 import os
 from parser.dsl_parser.TokenParser import DSLSyntaxException, DSLUnexpectedEOF
 import pytest
@@ -362,18 +363,22 @@ def __test_parser_raises(mocker, input: str, exception: Exception)\
     return exc_info
 
 
-def __test_syntax_error(mocker, input: str, ln: int, col: int):
+def __test_syntax_error(mocker, input: str, ln: int, col: int, expected: str, got: str):
     exc_info = __test_parser_raises(mocker, input, DSLSyntaxException)
 
-    assert repr(exc_info.value) == f'Syntax error at (File : \
-{os.getcwd()}/test/test_file.thips, Ln {str(ln)}, Col {str(col)})'
+    assert repr(exc_info.value) == f'(File : \
+{os.getcwd()}/test/test_file.thips, Ln {str(ln)}, Col {str(col)}) :\n\t\
+Syntax error : Expected {str(expected.value)}, got {str(got.value)}'
 
 
 def test_syntax_error_resource(mocker):
     # MISSING NAME
     input = """bucket :
             """
-    __test_syntax_error(mocker, input=input, ln=1, col=8)
+    __test_syntax_error(
+        mocker, input=input, ln=1, col=8,
+        expected=TT.STRING, got=TT.COLUMN,
+    )
 
 
 def test_syntax_error_dict(mocker):
@@ -382,14 +387,20 @@ def test_syntax_error_dict(mocker):
 bucket my-bucket:
 \tregion euw
             """
-    __test_syntax_error(mocker, input=input, ln=3, col=9)
+    __test_syntax_error(
+        mocker, input=input, ln=3, col=9,
+        expected=TT.COLUMN, got=TT.STRING,
+    )
 
     # MISSING TAB
     input = """
 bucket my-bucket:
 region: euw
             """
-    __test_syntax_error(mocker, input=input, ln=3, col=1)
+    __test_syntax_error(
+        mocker, input=input, ln=3, col=1,
+        expected=TT.TAB, got=TT.STRING,
+    )
 
     # MISSING VALUE
     input = """
@@ -397,7 +408,10 @@ bucket my-bucket:
 \ttest:
 \tregion: euw
 """
-    __test_syntax_error(mocker, input=input, ln=4, col=1)
+    __test_syntax_error(
+        mocker, input=input, ln=3, col=7,
+        expected=TT.STRING, got=TT.NEWLINE,
+    )
 
     # MISSING VALUE 2
     input = """
@@ -422,14 +436,20 @@ def test_syntax_error_amount(mocker):
 bucket my-bucket: amount 3
 \tregion: euw
 """
-    __test_syntax_error(mocker, input=input, ln=2, col=26)
+    __test_syntax_error(
+        mocker, input=input, ln=2, col=26,
+        expected=TT.COLUMN, got=TT.INT,
+    )
 
     # NO INTEGER
     input = """
 bucket my-bucket: amount: str
 \tregion: euw
 """
-    __test_syntax_error(mocker, input=input, ln=2, col=27)
+    __test_syntax_error(
+        mocker, input=input, ln=2, col=27,
+        expected=TT.INT, got=TT.STRING,
+    )
 
 
 def test_syntax_error_if(mocker):
@@ -437,13 +457,19 @@ def test_syntax_error_if(mocker):
     input = """
 bucket my-bucket: if
 """
-    __test_syntax_error(mocker, input=input, ln=2, col=21)
+    __test_syntax_error(
+        mocker, input=input, ln=2, col=21,
+        expected=TT.STRING, got=TT.NEWLINE,
+    )
 
     # UNEXPECTED IF ELSE
     input = """
 bucket my-bucket: if aaa else bbb
 """
-    __test_syntax_error(mocker, input=input, ln=2, col=26)
+    __test_syntax_error(
+        mocker, input=input, ln=2, col=26,
+        expected=TT.NEWLINE, got=TT.ELSE,
+    )
 
 
 def test_syntax_error_if_else(mocker):
@@ -453,7 +479,10 @@ bucket my-bucket:
 \ttoto:
 \t\t- foo : bar if aaa else
 """
-    __test_syntax_error(mocker, input=input, ln=4, col=26)
+    __test_syntax_error(
+        mocker, input=input, ln=4, col=26,
+        expected=TT.STRING, got=TT.NEWLINE,
+    )
 
     # MISSING CONDITION VALUE
     input = """
@@ -461,7 +490,10 @@ bucket my-bucket:
 \ttoto:
 \t\t- foo : bar if  else bbb
 """
-    __test_syntax_error(mocker, input=input, ln=4, col=19)
+    __test_syntax_error(
+        mocker, input=input, ln=4, col=19,
+        expected=TT.STRING, got=TT.ELSE,
+    )
 
 
 def test_syntax_error_unexpected_token(mocker):
@@ -470,4 +502,7 @@ def test_syntax_error_unexpected_token(mocker):
 bucket if:
 \tregion: euw
 """
-    __test_syntax_error(mocker, input=input, ln=2, col=8)
+    __test_syntax_error(
+        mocker, input=input, ln=2, col=8,
+        expected=TT.STRING, got=TT.IF,
+    )
