@@ -9,8 +9,8 @@ from engine.I_Repository import I_Repository
 from engine.I_Auth import I_Auth
 from cdktf_cdktf_provider_google.provider import GoogleProvider
 from engine.I_Terraform import I_Terraform
-from engine.ParsedFile import ParsedFile
-from helpers import logger
+import engine.ParsedFile as pf
+from engine.ResourceModel import ResourceModel
 
 # from cdktf_cdktf_provider_google.provider import GoogleProvider
 
@@ -18,7 +18,6 @@ from helpers import logger
 
 
 class Engine():
-
     def __init__(
             self, parser: I_Parser,
             repository: I_Repository,
@@ -30,23 +29,50 @@ class Engine():
         self.__auth = auth
         self.__terraform = terraform
 
-    def __pip_install(self, package: str):
+    def _pip_install(package: str):
         subprocess.check_call(
             [sys.executable, '-m', 'pip', 'install', package],
         )
 
-    def __import(self, packageName: str, moduleName: str, className: str) -> type:
+    def _import(packageName: str, moduleName: str, className: str) -> type:
 
         module = importlib.import_module(f'{packageName}.{moduleName}')
         clazz = getattr(module, className)
 
         return clazz
 
-    @logger('Engine')
+    def _create_resource(self, model: ResourceModel, resource: pf.ParsedResource):
+        # 3 - TODO: vérifie les paramètres de la ressource correspondent à ceux du
+        # modèle
+        # 4 - TODO: vérifie chaque dépendance explicite est bien déclarée dans le
+        # fichier
+
+        # # 5 - TODO: ajoute la ressource et ses dépendances dans un graphe orienté
+        # # 6 - TODO: ajoute une relation dans le graphe orienté
+
+        # Import
+        Engine._pip_install(model.cdk_provider)
+
+        resourceClass = Engine._import(
+            model.cdk_provider, model.cdk_module, model.cdk_name,
+        )
+
+        resource_args = {
+            model.name_key: resource.name,
+        }
+
+        for a in resource.attributes:
+            resource_args[model.attributes[a.name].cdk_name] = a.value
+        # 8 - TODO: y crée les dépendances implicites
+
+        # 9 - y crée la ressource à l’aide des paramètres demandés et les
+        # valeurs par défaut si nécessaire
+        resourceClass(self, resource.name, **resource_args)
+
     def run(self, path: str):
         # Parse files
         file = self.__parser.run(path)
-        assert type(file) == ParsedFile
+        assert type(file) == pf.ParsedFile
 
         # Get needed models
         types = [r.type for r in file.resources]
@@ -56,38 +82,10 @@ class Engine():
         app = App()
 
         for resource in file.resources:
-            model = models[resource.type]
-
-            # 3 - TODO: vérifie les paramètres de la ressource correspondent à ceux du
-            # modèle
-            # 4 - TODO: vérifie chaque dépendance explicite est bien déclarée dans le
-            # fichier
-
-            # # 5 - TODO: ajoute la ressource et ses dépendances dans un graphe orienté
-            # # 6 - TODO: ajoute une relation dans le graphe orienté
-
-            # Import
-            self.__pip_install(model.cdk_provider)
-
-            resourceClass = self.__import(
-                model.cdk_provider, model.cdk_module, model.cdk_name,
-            )
-
-            resource_args = {
-                model.name_key: resource.name,
-            }
-
-            for a in resource.attributes:
-                resource_args[model.attributes[a.name].cdk_name] = a.value
-
             # 7 - déclare un nouvel objet stack dans le CDK Terraform
-            class ResourceStack(TerraformStack):
+            class __ResourceStack(TerraformStack):
                 def __init__(self, scope: Construct, ns: str):
                     super().__init__(scope, ns)
-                    # 8 - TODO: y crée les dépendances implicites
-
-                    # 9 - y crée la ressource à l’aide des paramètres demandés et les
-                    # valeurs par défaut si nécessaire
 
                     GoogleProvider(
                         self, f"{resource.name}_google",
@@ -100,14 +98,19 @@ class Engine():
                         region="europe-west1",
                         zone="europe-west1-b",
                     )
-                    resourceClass(self, resource.name, **resource_args)
 
-            ResourceStack(app, f'{resource.type}/{resource.name}')
+                    Engine._create_resource(
+                        self,
+                        model=models[resource.type],
+                        resource=resource,
+                    )
+
+            __ResourceStack(app, f'{resource.type}/{resource.name}')
 
         # 10 - L’engine synthétise les fichiers
         app.synth()
 
-        self.__auth.run()
-        self.__terraform.run()
+        # self.__auth.run()
+        # self.__terraform.run()
 
         return [f'{app.outdir}/stacks/{c.node.path}' for c in app.node.children]

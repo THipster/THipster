@@ -1,10 +1,20 @@
 import engine.Engine as eng
 from engine.ParsedFile import ParsedFile
 from engine.ResourceModel import ResourceModel
-from helpers import logger
 
 import pytest
 import os
+
+
+def logger(name: str):
+    def wrapper(function):
+        def internal_wrapper(*args, **kwargs):
+            print(f'{name} starting')
+            res = function(*args, **kwargs)
+            print(f'{name} returned :\n{str(res)}')
+            return res
+        return internal_wrapper
+    return wrapper
 
 
 class MockException(Exception):

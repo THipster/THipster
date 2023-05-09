@@ -1,7 +1,9 @@
+import pytest
 from repository.GithubRepo import GithubRepo
 from engine.ResourceModel import ResourceModel
 
 
+@pytest.mark.optional
 def test_get_bucket():
     resources = ['gcp/bucket']
 
@@ -21,6 +23,7 @@ def test_get_bucket():
     assert bucket.type == 'gcp/bucket'
 
 
+@pytest.mark.optional
 def test_get_vm():
     resources = ['gcp/vm']
 

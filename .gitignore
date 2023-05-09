@@ -137,4 +137,4 @@ dmypy.json
 
 *-credentials.json
 *.tfstate
-cdktf.out/*
+cdktf.out

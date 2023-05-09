@@ -4,7 +4,6 @@ from engine.ParsedFile import ParsedAttribute, ParsedDict, ParsedFile, ParsedLis
 
 import os
 import yaml
-from helpers import logger
 
 
 class YAMLParserBaseException(Exception):
@@ -48,7 +47,6 @@ class YAMLParser(I_Parser):
 
         return files
 
-    @logger('- YAML Parser')
     def run(self, path: str) -> ParsedFile:
         try:
             files = self.__getfiles(path)
