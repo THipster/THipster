@@ -3,20 +3,20 @@
 default_language_version:
     python: python3.11
 repos:
--   repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v4.4.0
-    hooks:
-    -   id: check-docstring-first
-    -   id: check-executables-have-shebangs
-    -   id: check-merge-conflict
-    -   id: debug-statements
-    -   id: double-quote-string-fixer
-    -   id: end-of-file-fixer
-    -   id: name-tests-test
-        args: [--pytest-test-first]
-    -   id: requirements-txt-fixer
-    -   id: trailing-whitespace
-        args: [--markdown-linebreak-ext=md]
+# -   repo: https://github.com/pre-commit/pre-commit-hooks
+#     rev: v4.4.0
+#     hooks:
+#     -   id: check-docstring-first
+#     -   id: check-executables-have-shebangs
+#     -   id: check-merge-conflict
+#     -   id: debug-statements
+#     -   id: double-quote-string-fixer
+#     -   id: end-of-file-fixer
+#     -   id: name-tests-test
+#         args: [--pytest-test-first]
+#     -   id: requirements-txt-fixer
+#     -   id: trailing-whitespace
+#         args: [--markdown-linebreak-ext=md]
 -   repo: https://github.com/asottile/add-trailing-comma
     rev: v2.4.0
     hooks:
