@@ -5,12 +5,18 @@ from parser.dsl_parser.AST import BoolNode, DictNode, FileNode, FloatNode, IfEls
 
 
 class DSLSyntaxException(Exception):
-    def __init__(self, token: Token, *args: object) -> None:
+    def __init__(self, token: Token, expected: TT, *args: object) -> None:
         super().__init__(*args)
-        self.__pos = token.position
+        self.__tok = token
+        self.__exp = expected
 
     def __repr__(self) -> str:
-        return f'Syntax error at {str(self.__pos)}'
+        return f"""{str(self.__tok.position)} :\n\tSyntax error : Expected \
+{str(self.__exp.value)}, got {str(self.__tok.tokenType)}"""
+
+    @property
+    def tok(self):
+        return self.__tok
 
 
 class DSLUnexpectedEOF(Exception):
@@ -44,7 +50,7 @@ class TokenParser():
         """Get next token and pop it from the list"""
         tok = self.__get_next_type()
         if expected and tok != expected.value:
-            raise DSLSyntaxException(self.__tokens[0])
+            raise DSLSyntaxException(self.__tokens[0], expected)
         return self.__tokens.pop(0)
 
     def __check(self, expected: TT, index: int = 0) -> Token | None:
@@ -82,8 +88,10 @@ class TokenParser():
             end += 1
 
     def __get_newline(self):
-        self.__next(TT.NEWLINE)
+        nl = self.__next(TT.NEWLINE)
         self.__trim_newlines()
+
+        return nl
 
     def __create_resource(self, indent=0) -> ResourceNode | IfNode | AmountNode:
         """type, name, ":", [amt_ctrl], [if_ctrl] ,"\\n"
@@ -172,10 +180,16 @@ class TokenParser():
         # [if_ctrl], "\n" (liste | dict)
         try:
             ifCtrl = self.__get_if_ctrl()
-            self.__get_newline()
+            nl = self.__get_newline()
             properties = self.__get_properties(indent+1)
-        except:
-            raise
+        except DSLSyntaxException as e:
+            if e.tok.tokenType == TT.TAB.value:
+                raise DSLSyntaxException(
+                    token=nl,
+                    expected=TT.STRING,
+                )
+
+            raise e
 
         parameter = ParameterNode(
             name=StringNode(name),
@@ -265,7 +279,7 @@ class TokenParser():
                 props = self.__get_list(indent)
 
         else:
-            raise DSLSyntaxException(self.__next())
+            raise DSLSyntaxException(self.__next(), TT.TAB)
 
         return props
 
@@ -342,6 +356,6 @@ class TokenParser():
         elif nextType == TT.VAR.value:
             value = LiteralNode(VariableNode(self.__next()))
         else:
-            raise DSLSyntaxException(self.__next())
+            raise DSLSyntaxException(self.__next(), TT.STRING)
 
         return value
