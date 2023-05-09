@@ -4,7 +4,7 @@ from helpers import logger
 
 from parser.dsl_parser.DSLParser import DSLParserPathNotFound
 from parser.dsl_parser.TokenParser import DSLSyntaxException
-from repository.GithubRepo import GithubRepo
+from repository.LocalRepo import LocalRepo
 
 
 class MockAuth(eng.I_Auth):
@@ -22,7 +22,7 @@ class MockTerraform(eng.I_Terraform):
 def demo():
     file = input()
     engine = eng.Engine(
-        ParserFactory(), GithubRepo('Thipster/models'),
+        ParserFactory(), LocalRepo('/home/rcattin/models'),
         MockAuth(), MockTerraform(),
     )
 

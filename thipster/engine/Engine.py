@@ -1,9 +1,13 @@
 import subprocess
 import sys
+import os
 import importlib
+from constructs import Construct
+from cdktf import App, TerraformStack
 from engine.I_Parser import I_Parser
 from engine.I_Repository import I_Repository
 from engine.I_Auth import I_Auth
+from cdktf_cdktf_provider_google.provider import GoogleProvider
 from engine.I_Terraform import I_Terraform
 from engine.ParsedFile import ParsedFile
 from helpers import logger
@@ -48,14 +52,19 @@ class Engine():
         types = [r.type for r in file.resources]
         models = self.__repository.get(types)
 
+        # Init CDK
+        app = App()
+
         for resource in file.resources:
             model = models[resource.type]
 
-            # 3 - vérifie les paramètres de la ressource correspondent à ceux du modèle
-            # 4 - vérifie chaque dépendance explicite est bien déclarée dans le fichier
+            # 3 - TODO: vérifie les paramètres de la ressource correspondent à ceux du
+            # modèle
+            # 4 - TODO: vérifie chaque dépendance explicite est bien déclarée dans le
+            # fichier
 
-            # # 5 - ajoute la ressource et ses dépendances dans un graphe orienté
-            # # 6 - ajoute une relation dans le graphe orienté
+            # # 5 - TODO: ajoute la ressource et ses dépendances dans un graphe orienté
+            # # 6 - TODO: ajoute une relation dans le graphe orienté
 
             # Import
             self.__pip_install(model.cdk_provider)
@@ -64,16 +73,41 @@ class Engine():
                 model.cdk_provider, model.cdk_module, model.cdk_name,
             )
 
-            bucket = resourceClass()
-            repr(bucket)
-            # 7 - déclare un nouvel objet stack dans le CDK Terraform
-            # 8 - y crée les dépendances implicites
-            # 9 - y crée la ressource à l’aide des paramètres demandés et
-            # les valeurs par défaut si nécessaire
+            resource_args = {
+                model.name_key: resource.name,
+            }
 
-            # 10 - L’engine synthétise les fichiers
+            for a in resource.attributes:
+                resource_args[model.attributes[a.name].cdk_name] = a.value
+
+            # 7 - déclare un nouvel objet stack dans le CDK Terraform
+            class ResourceStack(TerraformStack):
+                def __init__(self, scope: Construct, ns: str):
+                    super().__init__(scope, ns)
+                    # 8 - TODO: y crée les dépendances implicites
+
+                    # 9 - y crée la ressource à l’aide des paramètres demandés et les
+                    # valeurs par défaut si nécessaire
+
+                    GoogleProvider(
+                        self, f"{resource.name}_google",
+                        project="rcattin-sandbox",
+                        credentials=os.path.join(
+                            os.getcwd(),
+                            "rcattin-sandbox-credentials.json",
+                        ),
+
+                        region="europe-west1",
+                        zone="europe-west1-b",
+                    )
+                    resourceClass(self, resource.name, **resource_args)
+
+            ResourceStack(app, f'{resource.type}/{resource.name}')
+
+        # 10 - L’engine synthétise les fichiers
+        app.synth()
 
         self.__auth.run()
         self.__terraform.run()
 
-        return models
+        return [f'{app.outdir}/stacks/{c.node.path}' for c in app.node.children]

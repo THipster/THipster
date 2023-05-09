@@ -6,6 +6,7 @@ def test_create_empty_resource():
         'test_type',
         attributes=None,
         dependencies=None,
+        name_key='test_key',
         cdk_provider='test_provider',
         cdk_module='test_module',
         cdk_name='test_name',
@@ -23,6 +24,7 @@ def test_create_resource_with_dependencies():
             'dependency_'+str(i),
             attributes=None,
             dependencies=None,
+            name_key='test_key',
             cdk_provider='test_provider',
             cdk_module='test_module',
             cdk_name='test_name_'+str(i),
@@ -33,6 +35,7 @@ def test_create_resource_with_dependencies():
         'test_type',
         attributes=None,
         dependencies=dependencies,
+        name_key='test_key',
         cdk_provider='test_provider',
         cdk_module='test_module',
         cdk_name='test_name',
@@ -50,7 +53,10 @@ def test_create_resource_with_dependencies():
 def test_create_num_attr():
     val = rm.Model_Literal(3)
 
-    attr = rm.Model_Attribute('test_attr', default=val, optional=False)
+    attr = rm.Model_Attribute(
+        cdk_name='test_attr',
+        default=val, optional=False,
+    )
 
     assert isinstance(attr, rm.Model_Attribute)
     assert isinstance(attr._Model_Attribute__default, rm.Model_Literal)
@@ -60,7 +66,10 @@ def test_create_num_attr():
 def test_create_str_attr():
     val = rm.Model_Literal('test_default')
 
-    attr = rm.Model_Attribute('test_attr', default=val, optional=False)
+    attr = rm.Model_Attribute(
+        cdk_name='test_attr',
+        default=val, optional=False,
+    )
 
     assert isinstance(attr, rm.Model_Attribute)
     assert isinstance(attr._Model_Attribute__default, rm.Model_Literal)
@@ -72,7 +81,10 @@ def test_create_list_str_attr():
         [rm.Model_Literal('test_default_' + str(i)) for i in range(3)],
     )
 
-    attr = rm.Model_Attribute('test_attr', default=val, optional=False)
+    attr = rm.Model_Attribute(
+        cdk_name='test_attr',
+        default=val, optional=False,
+    )
 
     assert isinstance(attr, rm.Model_Attribute)
     assert isinstance(attr._Model_Attribute__default, rm.Model_List)
@@ -87,7 +99,10 @@ def test_create_dict_str_attr():
         {rm.Model_Literal('test_default_' + str(i)) for i in range(3)},
     )
 
-    attr = rm.Model_Attribute('test_attr', default=val, optional=False)
+    attr = rm.Model_Attribute(
+        cdk_name='test_attr',
+        default=val, optional=False,
+    )
 
     assert isinstance(attr, rm.Model_Attribute)
     assert isinstance(attr._Model_Attribute__default, rm.Model_Dict)
@@ -98,19 +113,19 @@ def test_create_dict_str_attr():
 
 
 def test_create_resource_with_attributes():
-    attr = [
-        rm.Model_Attribute(
-            'attr_num',
+    attr = {
+        'attr_num': rm.Model_Attribute(
+            cdk_name='attr_num',
             default=rm.Model_Literal(3),
             optional=False,
         ),
-        rm.Model_Attribute(
-            'attr_str',
+        'attr_str': rm.Model_Attribute(
+            cdk_name='attr_str',
             default=rm.Model_Literal('test'),
             optional=False,
         ),
-        rm.Model_Attribute(
-            'attr_list',
+        'attr_list': rm.Model_Attribute(
+            cdk_name='attr_list',
             default=rm.Model_List([
                 rm.Model_Literal('test_list_1'),
                 rm.Model_Literal('test_list_2'),
@@ -118,8 +133,8 @@ def test_create_resource_with_attributes():
             ]),
             optional=False,
         ),
-        rm.Model_Attribute(
-            'attr_dict',
+        'attr_dict': rm.Model_Attribute(
+            cdk_name='attr_dict',
             default=rm.Model_Dict([
                 rm.Model_Attribute(
                     'attr_dict_1',
@@ -134,12 +149,13 @@ def test_create_resource_with_attributes():
             ]),
             optional=False,
         ),
-    ]
+    }
 
     model = rm.ResourceModel(
         'test_type',
         attributes=attr,
         dependencies=None,
+        name_key='test_key',
         cdk_provider='test_provider',
         cdk_module='test_provider',
         cdk_name='test_provider',
@@ -147,8 +163,8 @@ def test_create_resource_with_attributes():
 
     assert isinstance(model, rm.ResourceModel)
     assert model.type == 'test_type'
-    assert isinstance(model.attributes, list)
-    for attribute in model.attributes:
+    assert isinstance(model.attributes, dict)
+    for _, attribute in model.attributes.items():
         assert isinstance(attribute, rm.Model_Attribute)
         assert isinstance(
             attribute._Model_Attribute__default, rm.I_Model_Value,

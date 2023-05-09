@@ -31,7 +31,7 @@ class JSONRepo(I_Repository, ABC):
         return rm.Model_Literal(val)
 
     def __create_attribute(self, raw: dict[str, str]):
-        attributes = []
+        attributes = {}
 
         for name, attr in raw.items():
             optional = attr['optional'] if 'optional' in attr.keys(
@@ -42,12 +42,10 @@ class JSONRepo(I_Repository, ABC):
 
             default = self.__create_value(value)
 
-            attributes.append(
-                rm.Model_Attribute(
-                    name,
-                    default=default,
-                    optional=optional,
-                ),
+            attributes[name] = rm.Model_Attribute(
+                attr['cdk_key'],
+                default=default,
+                optional=optional,
             )
 
         return attributes
@@ -64,6 +62,7 @@ class JSONRepo(I_Repository, ABC):
             name,
             attributes=self.__create_attribute(json_model['attributes']),
             dependencies=json_model['dependencies'],
+            name_key=json_model['cdk_name_key'],
             cdk_provider=json_model['cdk_provider'],
             cdk_module=json_model['cdk_module'],
             cdk_name=json_model['cdk_class'],
