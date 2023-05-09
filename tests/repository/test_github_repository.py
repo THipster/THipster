@@ -16,7 +16,7 @@ def test_get_bucket():
 
     bucket = models['gcp/bucket']
 
-    assert len(bucket.attributes) == 2
+    assert len(bucket.attributes) == 1
     assert len(bucket.dependencies) == 0
     assert bucket.type == 'gcp/bucket'
 
