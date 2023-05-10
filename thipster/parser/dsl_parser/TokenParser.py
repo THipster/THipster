@@ -102,7 +102,7 @@ class TokenParser():
 
             resType = self.__next(TT.STRING)
             name = self.__next(TT.STRING)
-            self.__next(TT.COLUMN)
+            self.__next(TT.COLON)
 
             nbCtrl = self.__get_nb_ctrl()
             ifCtrl = self.__get_if_ctrl()
@@ -146,7 +146,7 @@ class TokenParser():
         """name, ":", (value, [if_else_ctrl] | [if_ctrl], "\\n", (list | dict))"""
         try:
             name = self.__next(TT.STRING)
-            self.__next(TT.COLUMN)
+            self.__next(TT.COLON)
         except DSLSyntaxException as e:
             raise e
 
@@ -273,7 +273,7 @@ class TokenParser():
         elif next == TT.DASH.value:
             diff = self.__get_next_type(indent+2)
 
-            if diff == TT.COLUMN.value:
+            if diff == TT.COLON.value:
                 props = self.__get_dict(indent)
             else:
                 props = self.__get_list(indent)
@@ -291,7 +291,7 @@ class TokenParser():
             if not nextToken:
                 return None
 
-            self.__next(TT.COLUMN)
+            self.__next(TT.COLON)
             nb = self.__next(TT.INT)
         except DSLSyntaxException as e:
             raise e

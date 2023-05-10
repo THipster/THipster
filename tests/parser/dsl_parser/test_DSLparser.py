@@ -377,19 +377,19 @@ def test_syntax_error_resource(mocker):
             """
     __test_syntax_error(
         mocker, input=input, ln=1, col=8,
-        expected=TT.STRING, got=TT.COLUMN,
+        expected=TT.STRING, got=TT.COLON,
     )
 
 
 def test_syntax_error_dict(mocker):
-    # MISSING COLUMN
+    # MISSING COLON
     input = """
 bucket my-bucket:
 \tregion euw
             """
     __test_syntax_error(
         mocker, input=input, ln=3, col=9,
-        expected=TT.COLUMN, got=TT.STRING,
+        expected=TT.COLON, got=TT.STRING,
     )
 
     # MISSING TAB
@@ -431,14 +431,14 @@ bucket my-bucket:
 
 
 def test_syntax_error_amount(mocker):
-    # MISSING COLUMN
+    # MISSING COLON
     input = """
 bucket my-bucket: amount 3
 \tregion: euw
 """
     __test_syntax_error(
         mocker, input=input, ln=2, col=26,
-        expected=TT.COLUMN, got=TT.INT,
+        expected=TT.COLON, got=TT.INT,
     )
 
     # NO INTEGER
