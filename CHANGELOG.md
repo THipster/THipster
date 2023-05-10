@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v0.10.0 (2023-05-10)
+### :sparkles:
+* :sparkles: feat: jinja execution ([#81](https://github.com/THipster/THipster/issues/81)) ([`12506a9`](https://github.com/THipster/THipster/commit/12506a9b2a69aa56d8b95721cad13345559621c7))
+
 ## v0.9.0 (2023-05-10)
 ### :sparkles:
 * :sparkles: feat: POC terraform code generation ([#80](https://github.com/THipster/THipster/issues/80)) ([`67d36e5`](https://github.com/THipster/THipster/commit/67d36e5fea1471e8fbc913d9de2e5cc62a392846))
