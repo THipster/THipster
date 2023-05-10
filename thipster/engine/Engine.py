@@ -16,10 +16,6 @@ from engine.I_Terraform import I_Terraform
 import engine.ParsedFile as pf
 from engine.ResourceModel import ResourceModel
 
-# from cdktf_cdktf_provider_google.provider import GoogleProvider
-
-# from cdktf import App, LocalBackend, TerraformStack
-
 
 class Engine():
     """Class representing the engine of thipster
