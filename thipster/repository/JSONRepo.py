@@ -78,7 +78,7 @@ class JSONRepo(I_Repository, ABC):
             Attributes of the resource model
         """
 
-        attributes = []
+        attributes = {}
 
         for name, attr in raw.items():
             optional = attr['optional'] if 'optional' in attr.keys(

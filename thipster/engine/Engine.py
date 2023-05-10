@@ -20,6 +20,7 @@ from engine.ResourceModel import ResourceModel
 
 # from cdktf import App, LocalBackend, TerraformStack
 
+
 class Engine():
     """Class representing the engine of thipster
 
@@ -33,7 +34,6 @@ class Engine():
 
     """
 
-class Engine():
     def __init__(
             self, parser: I_Parser,
             repository: I_Repository,

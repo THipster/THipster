@@ -9,6 +9,7 @@ from repository.LocalRepo import LocalRepo
 class MockAuth(eng.I_Auth):
     """Mock of the Authentification module
     """
+
     def run(self):
         pass
 
