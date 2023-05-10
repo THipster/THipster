@@ -255,21 +255,21 @@ class ParsedResource():
         self.__attributes = attributes
 
     @property
-    def type(self):
+    def type(self) -> str:
         """Type of the Parsed Resource
         """
 
         return self.__type
 
     @property
-    def name(self):
+    def name(self) -> str:
         """Name of the Parsed Resource
         """
 
         return self.__name
 
     @property
-    def position(self):
+    def position(self) -> Position:
         """Position of the Parsed Resource in its origin file
         """
 
