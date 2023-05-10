@@ -9,11 +9,7 @@ async def test():
     """Runs all the automated tests
     """
     async with dagger.Connection(dagger.Config(log_output=sys.stderr)) as client:
-        python = (
-            base.pythonBase(client, '3.11')
-            .with_exec(['pip', 'install', '-e', '.[test]'])
-            .with_exec(['pytest', 'tests'])
-        )
+        python = add_all_tests_step(base.pythonBase(client, '3.11'))
 
         # execute
         await python.exit_code()
@@ -34,10 +30,19 @@ def add_all_tests_step(precedent_container: dagger.Container) -> dagger.Containe
     Container
         Returns a container with the step to run all the automated tests
     """
-    tests_step = precedent_container.with_exec(
-        ['pip', 'install', '-e', '.[test]'],
-    ).with_exec(['pytest', 'tests'])
-    return tests_step
+    return (
+        precedent_container
+        # Install Terraform CDK
+        .with_exec(['wget', 'https://releases.hashicorp.com/terraform/1.4.6/terraform_1.4.6_linux_amd64.zip'])
+        .with_exec(['unzip', 'terraform_1.4.6_linux_amd64.zip'])
+        .with_exec(['mv', 'terraform', '/usr/bin/terraform'])
+        # Install NodeJS
+        .with_exec(['apk', 'add', 'nodejs', 'npm'])
+        # Install Python dependencies
+        .with_exec(['pip', 'install', '-e', '.[test]'])
+        .with_exec(['pytest', 'tests'])
+
+    )
 
 
 if __name__ == '__main__':

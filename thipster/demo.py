@@ -1,16 +1,15 @@
 import engine.Engine as eng
-from parser.dsl_parser.DSLParser import DSLParser
-from helpers import logger
+from parser.ParserFactory import ParserFactory
 
 from parser.dsl_parser.DSLParser import DSLParserPathNotFound
 from parser.dsl_parser.TokenParser import DSLSyntaxException
-from repository.GithubRepo import GithubRepo
+from repository.LocalRepo import LocalRepo
 
 
 class MockAuth(eng.I_Auth):
     """Mock of the Authentification module
     """
-    @logger('- Authentifier')
+
     def run(self):
         pass
 
@@ -18,7 +17,7 @@ class MockAuth(eng.I_Auth):
 class MockTerraform(eng.I_Terraform):
     """Mock of the Terraform module
     """
-    @logger('- Terraform')
+
     def run(self):
         pass
 
@@ -28,7 +27,7 @@ def demo():
     """
     file = input()
     engine = eng.Engine(
-        DSLParser(), GithubRepo('Thipster/models'),
+        ParserFactory(), LocalRepo('/home/rcattin/models'),
         MockAuth(), MockTerraform(),
     )
 

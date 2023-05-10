@@ -21,6 +21,9 @@ setup(
             'dagger.io',
             'pre-commit',
         ],
+        'google': [
+            'cdktf-cdktf-provider-google==7.0.3',
+        ],
     },
     entry_points={
         'console_scripts': [

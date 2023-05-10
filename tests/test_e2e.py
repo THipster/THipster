@@ -1,6 +1,20 @@
-from repository.LocalRepo import LocalRepo
-from engine.ResourceModel import ResourceModel
 import os
+
+from engine.Engine import Engine
+from engine.I_Auth import I_Auth
+from engine.I_Terraform import I_Terraform
+from parser.ParserFactory import ParserFactory
+from repository.LocalRepo import LocalRepo
+
+
+class MockAuth(I_Auth):
+    def run(self):
+        pass
+
+
+class MockTerraform(I_Terraform):
+    def run(self):
+        pass
 
 
 def create_dir(dirname: str, files: dict[str, str]):
@@ -29,8 +43,37 @@ def create_file(filename: str, content: str, dirname: str = 'test'):
     file.close()
 
 
-def __setup_local():
+def __test_file(file: str):
+    __destroy_models = __setup_local()
+
     path_input = 'test'
+    _destroy_dir = create_dir(
+        path_input,
+        {
+            'test_file.thips':
+            file,
+        },
+    )
+
+    engine = Engine(
+        ParserFactory(),
+        LocalRepo(os.getcwd()),
+        MockAuth(),
+        MockTerraform(),
+    )
+    try:
+        output = engine.run(path_input)
+    except Exception as e:
+        raise e
+    finally:
+        _destroy_dir()
+        __destroy_models()
+
+    return output
+
+
+def __setup_local():
+    path_input = 'test_models'
     return create_dir(
         path_input,
         {
@@ -42,7 +85,12 @@ def __setup_local():
         "region": {
             "optional": true,
             "default": "euw",
-            "cdk_key": "region"
+            "cdk_key": "location"
+        },
+        "name": {
+            "optional": false,
+            "cdk_key": "name",
+            "cdk_key": "location"
         }
     },
     "cdk_name_key": "name",
@@ -60,7 +108,7 @@ def __setup_local():
         "region": {
             "optional": true,
             "default": "euw",
-            "cdk_key": "region"
+            "cdk_key": "location"
         }
     },
     "cdk_name_key": "name",
@@ -80,15 +128,15 @@ def __setup_local():
         "region": {
             "optional": true,
             "default": "euw",
-            "cdk_key": "region"
+            "cdk_key": "location"
         },
         "type": {
             "optional": false,
-            "cdk_key": "type"
+            "cdk_key": "location"
         }
     },
     "cdk_name_key": "name",
-    
+
     "cdk_provider":"test_provider",
     "cdk_module":"test_module",
     "cdk_class":"vm_class"
@@ -98,53 +146,15 @@ def __setup_local():
     )
 
 
-def test_get_bucket():
-    _destroy_dir = __setup_local()
-    resources = ['test/bucket']
-    repo = LocalRepo(os.getcwd())
+def test_bucket():
+    out = __test_file(
+        """
+test_models/bucket my-bucket:
+\tregion : euw
+    """,
+    )
 
-    models = repo.get(resources)
-    _destroy_dir()
+    assert isinstance(out, list)
+    assert len(out) == 1
 
-    assert isinstance(models, dict)
-    assert len(models) == 1
-
-    assert 'test/bucket' in models.keys()
-    assert isinstance(models['test/bucket'], ResourceModel)
-
-    bucket = models['test/bucket']
-
-    assert len(bucket.attributes) == 1
-    assert len(bucket.dependencies) == 0
-    assert bucket.type == 'test/bucket'
-
-
-def test_get_vm():
-    _destroy_dir = __setup_local()
-    resources = ['test/vm']
-
-    repo = LocalRepo(os.getcwd())
-
-    models = repo.get(resources)
-    _destroy_dir()
-
-    assert isinstance(models, dict)
-    assert len(models) == 2
-
-    assert 'test/vm' in models.keys()
-    assert isinstance(models['test/vm'], ResourceModel)
-
-    vm = models['test/vm']
-
-    assert vm.type == 'test/vm'
-    assert len(vm.attributes) == 2
-    assert len(vm.dependencies) == 1
-
-    assert 'test/network' in models.keys()
-    assert isinstance(models['test/network'], ResourceModel)
-
-    network = models['test/network']
-
-    assert network.type == 'test/network'
-    assert len(network.attributes) == 1
-    assert len(network.dependencies) == 0
+    assert out[0] == 'cdktf.out/stacks/test_models--bucket--my-bucket'

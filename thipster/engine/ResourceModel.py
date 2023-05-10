@@ -18,7 +18,9 @@ class Model_Attribute():
     """Represents a Resource Model attribute
     """
 
-    def __init__(self, name: str, default: I_Model_Value = None, optional: bool = True):
+    def __init__(
+            self, cdk_name: str, default: I_Model_Value = None, optional: bool = True,
+    ):
         """
         Parameters
         ----------
@@ -29,7 +31,7 @@ class Model_Attribute():
         optional : bool, optional
             Is attribute optional ?, by default True
         """
-        self.__name = name
+        self.__cdk_name = cdk_name
         self.__default = default
         self.__optional = optional
 
@@ -38,8 +40,8 @@ class Model_Attribute():
         return self.__default.value
 
     @property
-    def name(self):
-        return self.__name
+    def cdk_name(self):
+        return self.__cdk_name
 
     @property
     def optional(self):
@@ -118,8 +120,9 @@ class ResourceModel():
     def __init__(
             self,
             type: str,
-            attributes: list[Model_Attribute],
+            attributes: dict[str, Model_Attribute],
             dependencies: dict[str, str],
+            name_key: str,
             cdk_provider: str,
             cdk_module: str,
             cdk_name: str,
@@ -127,6 +130,7 @@ class ResourceModel():
         self.__type = type
         self.__attributes = attributes
         self.__dependencies = dependencies
+        self.__name_key = name_key
         self.__cdk_provider = cdk_provider
         self.__cdk_module = cdk_module
         self.__cdk_name = cdk_name
@@ -142,6 +146,10 @@ class ResourceModel():
     @property
     def dependencies(self):
         return self.__dependencies
+
+    @property
+    def name_key(self):
+        return self.__name_key
 
     @property
     def cdk_provider(self):

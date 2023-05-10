@@ -12,5 +12,5 @@ class I_Repository(ABC):
 
     """
     @abstractmethod
-    def get(self, resourceNames: list[str]) -> list[ResourceModel]:
+    def get(self, resourceNames: list[str]) -> dict[str, ResourceModel]:
         pass
