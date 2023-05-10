@@ -9,14 +9,7 @@ async def pre_commit():
     """Runs pre-commit on all project files
     """
     async with dagger.Connection(dagger.Config(log_output=sys.stderr)) as client:
-        python = (
-            base.pythonBase(client, '3.11')
-            .with_exec(['apk', 'add', 'git', 'libgcc'])
-            .with_exec(['git', 'config', '--global', 'safe.directory', '*'])
-            .with_exec(['git', 'add', '.pre-commit-config.yaml'])
-            .with_exec(['pip', 'install', 'pre-commit'])
-            .with_exec(['pre-commit', 'run', '--all-files'])
-        )
+        python = add_pre_commit_step(base.pythonBase(client, '3.11'))
 
         # execute
         await python.exit_code()
