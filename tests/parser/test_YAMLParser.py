@@ -83,6 +83,29 @@ def test_parse_simple_file():
     assert region.value == 'euw'
 
 
+def test_parse_simple_jinja_file():
+    out = __test_file(
+        file="""
+{% set name = "test_name" %}
+{% set region = "europe-west1" %}
+bucket:
+  name: {{ name|lower }}
+  region: {{ region }}
+""",
+    )
+    assert len(out.resources) == 1
+
+    bucket = out.resources[0]
+    assert bucket.type == 'bucket'
+    assert bucket.name == 'test_name'
+    assert len(bucket.attributes) == 1
+
+    region = bucket.attributes[0]
+    assert region.name == 'region'
+    assert type(region._ParsedAttribute__value) == ParsedLiteral
+    assert region.value == 'europe-west1'
+
+
 def test_parse_two_resources():
     out = __test_file(
         file="""bucket:

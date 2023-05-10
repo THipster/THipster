@@ -1,6 +1,7 @@
 from engine.I_Parser import I_Parser
 from engine.ParsedFile import ParsedAttribute, ParsedDict, ParsedFile, ParsedList,\
     ParsedLiteral, ParsedResource
+from jinja2 import Environment, FileSystemLoader
 
 import os
 import yaml
@@ -53,9 +54,14 @@ class YAMLParser(I_Parser):
             parsedFile = ParsedFile()
 
             for file in files:
-                with open(file, 'r') as stream:
-                    content = yaml.safe_load(stream)
-                    parsedFile.resources += self.__convert(content)
+                filedir, filename = os.path.split(file)
+
+                environment = Environment(loader=FileSystemLoader(filedir))
+                template = environment.get_template(filename)
+                rendered = template.render()
+                content = yaml.safe_load(rendered)
+
+                parsedFile.resources += self.__convert(content)
 
             return parsedFile
         except yaml.YAMLError as exc:
