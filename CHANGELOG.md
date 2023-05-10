@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v0.8.1 (2023-05-10)
+### Other
+* ♻️ fix(parser): Refactor lexer to use a factory pattern ([#74](https://github.com/THipster/THipster/issues/74)) ([`8f097b3`](https://github.com/THipster/THipster/commit/8f097b36ba9527a472bc5257bf0f4bee8a6f5bf0))
+
 ## v0.8.0 (2023-05-09)
 ### :sparkles:
 * :sparkles: feat: better errors (#40) ([#75](https://github.com/THipster/THipster/issues/75)) ([`5671162`](https://github.com/THipster/THipster/commit/5671162881f00a8519369e821aa86fd805ea23b5))
