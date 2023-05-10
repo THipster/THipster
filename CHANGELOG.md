@@ -2,6 +2,13 @@
 
 <!--next-version-placeholder-->
 
+## v0.9.0 (2023-05-10)
+### :sparkles:
+* :sparkles: feat: POC terraform code generation ([#80](https://github.com/THipster/THipster/issues/80)) ([`67d36e5`](https://github.com/THipster/THipster/commit/67d36e5fea1471e8fbc913d9de2e5cc62a392846))
+
+### Other
+* 📝 fix: Add documentation ([#79](https://github.com/THipster/THipster/issues/79)) ([`1bf5c0a`](https://github.com/THipster/THipster/commit/1bf5c0a95bbd49da1b3c9bb1d07e207a6516ee9a))
+
 ## v0.8.1 (2023-05-10)
 ### Other
 * ♻️ fix(parser): Refactor lexer to use a factory pattern ([#74](https://github.com/THipster/THipster/issues/74)) ([`8f097b3`](https://github.com/THipster/THipster/commit/8f097b36ba9527a472bc5257bf0f4bee8a6f5bf0))
