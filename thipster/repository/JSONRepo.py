@@ -10,10 +10,11 @@ import engine.ResourceModel as rm
 
 class JSONRepo(I_Repository, ABC):
     """Class representing a JSON resources Repository
-    
+
     JSON Models of resources and services offered by supported cloud providers are
     stored in a repository.
     """
+
     def __init__(self) -> None:
         super().__init__()
         self.model_list = {}
@@ -76,7 +77,7 @@ class JSONRepo(I_Repository, ABC):
         list[Model_Attribute]
             Attributes of the resource model
         """
-        
+
         attributes = []
 
         for name, attr in raw.items():
@@ -111,7 +112,7 @@ class JSONRepo(I_Repository, ABC):
         ResourceModel
             Resource model corresponding to the name given
         """
-        
+
         model = self.get_json(name)
 
         json_model = json.loads(model)
@@ -143,7 +144,7 @@ class JSONRepo(I_Repository, ABC):
         ResourceModel
             Resource model corresponding to the name given
         """
-        
+
         if model not in self.model_list.keys():
             self.model_list[model] = self.__create_model(model)
 

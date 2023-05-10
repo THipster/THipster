@@ -4,7 +4,7 @@
 from repository.JSONRepo import JSONRepo
 import requests
 
-        
+
 class GithubRepo(JSONRepo):
     """Class representing a GitHub resources Repository
 
