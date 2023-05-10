@@ -20,7 +20,7 @@ class StringNode(Node):
         return f"<STRING {' '.join(list(map(lambda x : str(x), self.__value)))}>"
 
     @property
-    def values(self):
+    def values(self) -> list[str]:
         return list(map(lambda x: x.value, self.__value))
 
     def accept(self, visitor):
@@ -69,7 +69,7 @@ class BoolNode(Node):
 
     @property
     def value(self) -> bool:
-        return self.__value.value
+        return bool(self.__value.value)
 
     def accept(self, visitor):
         return visitor.visitBool(self)
@@ -117,7 +117,7 @@ class VariableDefinitionNode(Node):
 
 
 class IfNode(Node):
-    def __init__(self, condition: StringNode, ifCase: Node) -> None:
+    def __init__(self, condition: StringNode, ifCase: Node | None) -> None:
         super().__init__()
         self.__condition = condition
         self.__ifCase = ifCase
@@ -142,7 +142,10 @@ class IfNode(Node):
 
 
 class IfElseNode(IfNode):
-    def __init__(self, condition: StringNode, ifCase: Node, elseCase: Node) -> None:
+    def __init__(
+        self, condition: StringNode, ifCase: Node | None,
+        elseCase: Node | None,
+    ) -> None:
         super().__init__(condition, ifCase)
         self.__elseCase = elseCase
 
@@ -159,7 +162,10 @@ class IfElseNode(IfNode):
 
 
 class AmountNode(Node):
-    def __init__(self, amount: IntNode, variable: VariableDefinitionNode, node: Node)\
+    def __init__(
+        self,
+        amount: IntNode, variable: VariableDefinitionNode | None, node: Node | None,
+    )\
             -> None:
         super().__init__()
         self.__amount = amount
@@ -170,7 +176,7 @@ class AmountNode(Node):
         return f'<AMOUNT {self.__amount} #{self.__variable}: {self.__node}>'
 
     @property
-    def node(self) -> Node:
+    def node(self) -> Node | None:
         return self.__node
 
     @property
@@ -178,7 +184,7 @@ class AmountNode(Node):
         return self.__amount
 
     @property
-    def variable(self) -> VariableDefinitionNode:
+    def variable(self) -> VariableDefinitionNode | None:
         return self.__variable
 
     @node.setter
@@ -195,8 +201,17 @@ class ValueNode(Node, ABC):
     def accept(self, visitor):
         raise NotImplementedError()
 
+    @property
+    @abstractmethod
+    def value(self):
+        raise NotImplementedError()
+
 
 class ParameterNode(Node):
+    pass
+
+
+class ParameterNode(Node):  # noqa: F811
     def __init__(self, name: StringNode, value: ValueNode) -> None:
         super().__init__()
         self.__name = name
@@ -215,7 +230,7 @@ class ParameterNode(Node):
         return self.__value
 
     @property
-    def position(self):
+    def position(self) -> Position | None:
         return self.__position
 
     @value.setter
@@ -279,7 +294,7 @@ class ResourceNode(Node):
         self,
         resourceType: StringNode,
         name: StringNode,
-        parameters: ValueNode,
+        parameters: DictNode | ListNode,
     ) -> None:
         super().__init__()
         self.__type = resourceType
@@ -300,11 +315,11 @@ name = {str(self.__name)}, parameters = {str(self.__parameters)}>'
         return self.__name
 
     @property
-    def position(self) -> Position:
+    def position(self) -> Position | None:
         return self.__position
 
     @property
-    def parameters(self) -> ValueNode:
+    def parameters(self) -> DictNode | ListNode:
         return self.__parameters
 
     def accept(self, visitor):
@@ -317,7 +332,7 @@ class FileNode(Node):
         super().__init__()
         self.__resources = []
 
-    def add(self, item: ResourceNode) -> None:
+    def add(self, item: ResourceNode | IfNode | AmountNode) -> None:
         self.__resources.append(item)
 
     def __str__(self) -> str:

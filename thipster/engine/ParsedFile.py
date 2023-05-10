@@ -115,7 +115,7 @@ class ParsedAttribute():
     """Class reprensenting a Parsed Attribute Object
     """
 
-    def __init__(self, name: str, position: Position, value: I_ParsedValue):
+    def __init__(self, name: str, position: Position | None, value: I_ParsedValue):
         """
         Parameters
         ----------
@@ -189,7 +189,7 @@ class ParsedLiteral(I_ParsedValue):
     """Class representing a Parsed Literal Object
     """
 
-    def __init__(self, value: bool | int | float):
+    def __init__(self, value: bool | int | float | str):
         """
         Parameters
         ----------
@@ -237,8 +237,8 @@ class ParsedResource():
             self,
             type: str,
             name: str,
-            position: Position,
-            attributes=list[ParsedAttribute],
+            position: Position | None,
+            attributes: list[ParsedAttribute],
     ):
         """
         Parameters
@@ -269,7 +269,7 @@ class ParsedResource():
         return self.__name
 
     @property
-    def position(self) -> Position:
+    def position(self) -> Position | None:
         """Position of the Parsed Resource in its origin file
         """
 

@@ -12,7 +12,20 @@ from parser.dsl_parser.DSLExceptions import DSLParserPathNotFound, \
 
 class DSLParser(I_Parser):
 
-    def __getfiles(self, path: str) -> dict[str, str]:
+    def __getfiles(path: str) -> dict[str, str]:
+        """Recursively get all files in the requested directory and its sudirectories
+        Can be run on a path file aswell
+
+        Parameters
+        ----------
+        path: str
+            Path to run this function into
+
+        Returns
+        -------
+        dict[str, str]
+            A dictionary that links a filename to its content, fileName : fileContent
+        """
 
         path = os.path.abspath(path)
 
@@ -23,7 +36,7 @@ class DSLParser(I_Parser):
 
         if os.path.isdir(path):
             for content in os.listdir(path):
-                files.update(self.__getfiles(f'{path}/{content}'))
+                files.update(DSLParser.__getfiles(f'{path}/{content}'))
 
         if os.path.isfile(path):
             with open(path, 'r') as f:
@@ -33,19 +46,31 @@ class DSLParser(I_Parser):
 
         return files
 
-    def run(self, path: str) -> ParsedFile:
+    def run(path: str) -> ParsedFile:
+        """Run the DSLParser
+
+        Parameters
+        ----------
+        path: str
+            Path to run the parser into
+
+        Returns
+        -------
+        ParsedFile
+            A ParsedFile object with the content of all the files in the input path
+        """
 
         try:
-            files = self.__getfiles(path)
+            files = DSLParser.__getfiles(path)
             lexer = Lexer(files)
             token_list = lexer.run()
             parser = TokenParser(token_list)
             ast = parser.run()
 
             interpreter = Interpreter()
-            parsedFiles = interpreter.run(ast)
+            parsedFile = interpreter.run(ast)
 
-            return parsedFiles
+            return parsedFile
         except DSLParserBaseException as e:
             print(e.message)
             raise e
