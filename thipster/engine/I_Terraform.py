@@ -2,7 +2,22 @@ from abc import ABC, abstractmethod
 
 
 class I_Terraform(ABC):
+    """Terraform module interface
 
+    Methods
+    -------
+    run()
+        Abstract run method
+
+    """
     @abstractmethod
     def run(self):
-        pass
+        """Abstract run method
+
+        Raises
+        ------
+        NotImplementedError
+            If method is not implemented in inheriting classes
+
+        """
+        raise NotImplementedError('Should implement run()')

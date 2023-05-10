@@ -7,16 +7,23 @@ from repository.LocalRepo import LocalRepo
 
 
 class MockAuth(eng.I_Auth):
+    """Mock of the Authentification module
+    """
     def run(self):
         pass
 
 
 class MockTerraform(eng.I_Terraform):
+    """Mock of the Terraform module
+    """
+
     def run(self):
         pass
 
 
 def demo():
+    """Script to launch the sprint demo
+    """
     file = input()
     engine = eng.Engine(
         ParserFactory(), LocalRepo('/home/rcattin/models'),

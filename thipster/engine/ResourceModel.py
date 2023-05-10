@@ -1,7 +1,13 @@
+"""ResourceModel.py module.
+"""
+
 from abc import ABC, abstractmethod
 
 
 class I_Model_Value(ABC):
+    """Model Attribute Value Interface
+    """
+
     @property
     @abstractmethod
     def value(self):
@@ -9,9 +15,22 @@ class I_Model_Value(ABC):
 
 
 class Model_Attribute():
+    """Represents a Resource Model attribute
+    """
+
     def __init__(
             self, cdk_name: str, default: I_Model_Value = None, optional: bool = True,
     ):
+        """
+        Parameters
+        ----------
+        name : str
+            Attribute name
+        default : I_Model_Value, optional
+            Default Attribute value if there is one, by default None
+        optional : bool, optional
+            Is attribute optional ?, by default True
+        """
         self.__cdk_name = cdk_name
         self.__default = default
         self.__optional = optional
@@ -30,6 +49,9 @@ class Model_Attribute():
 
 
 class Model_List(I_Model_Value):
+    """Represents a List of values for a Resource Model attribute
+    """
+
     def __init__(self, value: list[I_Model_Value]):
         super().__init__()
         self.__value = value
@@ -53,6 +75,9 @@ class Model_List(I_Model_Value):
 
 
 class Model_Literal(I_Model_Value):
+    """Represents a literal value for a Resource Model attribute
+    """
+
     def __init__(self, value):
         super().__init__()
         self.__value = value
@@ -63,6 +88,9 @@ class Model_Literal(I_Model_Value):
 
 
 class Model_Dict(I_Model_Value):
+    """Represents a dictionary value for a Resource Model attribute
+    """
+
     def __init__(self, value: dict[str, Model_Attribute]):
         super().__init__()
         self.__value = value
@@ -86,6 +114,9 @@ class Model_Dict(I_Model_Value):
 
 
 class ResourceModel():
+    """Represents a Resource Model
+    """
+
     def __init__(
             self,
             type: str,
