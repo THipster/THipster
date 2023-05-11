@@ -71,7 +71,7 @@ class TokenParser():
 
     def __trim_newlines(self):
         while self.__check(TT.NEWLINE):
-            self.__rm_empty_lines()
+            pass
 
     def __rm_empty_lines(self):
         # Detect empty line
