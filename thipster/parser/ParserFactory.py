@@ -59,6 +59,7 @@ class ParserFactory(I_Parser):
         __parsers = {
             '.yaml': self.__yamlParser,
             '.yml': self.__yamlParser,
+            '.jinja': self.__yamlParser,
             '.thips': self.__dslParser,
         }
 
