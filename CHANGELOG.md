@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v0.10.1 (2023-05-11)
+### :bug:
+* :bug: fix: add jinja to parser facory ([#82](https://github.com/THipster/THipster/issues/82)) ([`6935d84`](https://github.com/THipster/THipster/commit/6935d84d278c3c9746710d0c3ec18f0e269bb14d))
+
 ## v0.10.0 (2023-05-10)
 ### :sparkles:
 * :sparkles: feat: jinja execution ([#81](https://github.com/THipster/THipster/issues/81)) ([`12506a9`](https://github.com/THipster/THipster/commit/12506a9b2a69aa56d8b95721cad13345559621c7))
