@@ -5,6 +5,7 @@ import subprocess
 import sys
 import os
 import importlib
+import time
 from constructs import Construct
 from cdktf import App, TerraformStack
 
@@ -30,6 +31,8 @@ class Engine():
 
     """
 
+    importedPackages = []
+
     def __init__(
             self, parser: I_Parser,
             repository: I_Repository,
@@ -54,10 +57,12 @@ class Engine():
         self.__auth = auth
         self.__terraform = terraform
 
-    def _pip_install(package: str):
-        subprocess.check_call(
-            [sys.executable, '-m', 'pip', 'install', package],
-        )
+    def pip_install(package: str):
+        if package not in Engine.importedPackages:
+            subprocess.check_call(
+                [sys.executable, '-m', 'pip', 'install', '-qqq', package],
+            )
+            Engine.importedPackages.append(package)
 
     def _import(packageName: str, moduleName: str, className: str) -> type:
 
@@ -76,7 +81,7 @@ class Engine():
         # # 6 - TODO: ajoute une relation dans le graphe orienté
 
         # Import
-        Engine._pip_install(model.cdk_provider)
+        Engine.pip_install(model.cdk_provider)
 
         resourceClass = Engine._import(
             model.cdk_provider, model.cdk_module, model.cdk_name,
@@ -111,13 +116,22 @@ class Engine():
         list[ResourceModel]
             List of resource models
         """
+        start = time.time()
         # Parse files
         file = self.__parser.run(path)
         assert type(file) == pf.ParsedFile
 
+        end = time.time()
+        print("Parsed:", end - start)
+        start = time.time()
+
         # Get needed models
         types = [r.type for r in file.resources]
         models = self.__repository.get(types)
+
+        end = time.time()
+        print("Models:", end - start)
+        start = time.time()
 
         # Init CDK
         app = App()
@@ -150,6 +164,9 @@ class Engine():
 
         # 10 - L’engine synthétise les fichiers
         app.synth()
+
+        end = time.time()
+        print("CDK:", end - start)
 
         # self.__auth.run()
         # self.__terraform.run()
