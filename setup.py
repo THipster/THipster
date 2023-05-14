@@ -22,7 +22,7 @@ setup(
             'pre-commit',
         ],
         'google': [
-            'cdktf-cdktf-provider-google==7.0.3',
+            'cdktf-cdktf-provider-google==7.0.4',
         ],
     },
     entry_points={
