@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v0.10.3 (2023-05-15)
+### Other
+* :fire: feat: improve parser factory + doc ([#86](https://github.com/THipster/THipster/issues/86)) ([`59fdfb1`](https://github.com/THipster/THipster/commit/59fdfb16ded4d5e4be7bf6b6a48fa18d72b11183))
+
 ## v0.10.2 (2023-05-15)
 ### :zap:
 * :zap: fix: improve tokenParser and engine perf ([#84](https://github.com/THipster/THipster/issues/84)) ([`ce15e1f`](https://github.com/THipster/THipster/commit/ce15e1f0424c5809903fa6739b5bfa880b22c498))
