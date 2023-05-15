@@ -9,6 +9,7 @@ import engine.ResourceModel as rm
 
 
 class JSONRepo(I_Repository, ABC):
+    _parentStack = []
     """Class representing a JSON resources Repository
 
     JSON Models of resources and services offered by supported cloud providers are
@@ -116,7 +117,8 @@ class JSONRepo(I_Repository, ABC):
         json_model = json.loads(model)
 
         for _, dep in json_model['dependencies'].items():
-            self.__add_model(dep)
+            if dep not in self.model_list.keys():
+                self.__add_model(dep)
 
         res = rm.ResourceModel(
             name,
@@ -145,6 +147,7 @@ class JSONRepo(I_Repository, ABC):
         """
 
         if model not in self.model_list.keys():
+            self.model_list[model] = None
             self.model_list[model] = self.__create_model(model)
 
         return self.model_list[model]

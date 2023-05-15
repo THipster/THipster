@@ -29,12 +29,17 @@ def create_file(filename: str, content: str, dirname: str = 'test'):
     file.close()
 
 
-def __setup_local():
+def __setup_local(models: dict[str, str]):
     path_input = 'test'
     return create_dir(
         path_input,
-        {
-            'bucket.json':
+        models,
+    )
+
+
+def test_get_bucket():
+    _destroy_dir = __setup_local({
+        'bucket.json':
             """
 {
     "dependencies": {},
@@ -52,7 +57,29 @@ def __setup_local():
     "cdk_class":"StorageBucket"
 }
 """,
-            'network.json':
+    })
+    resources = ['test/bucket']
+    repo = LocalRepo(os.getcwd())
+
+    models = repo.get(resources)
+    _destroy_dir()
+
+    assert isinstance(models, dict)
+    assert len(models) == 1
+
+    assert 'test/bucket' in models.keys()
+    assert isinstance(models['test/bucket'], ResourceModel)
+
+    bucket = models['test/bucket']
+
+    assert len(bucket.attributes) == 1
+    assert len(bucket.dependencies) == 0
+    assert bucket.type == 'test/bucket'
+
+
+def test_get_vm():
+    _destroy_dir = __setup_local({
+        'network.json':
             """
 {
     "dependencies": {},
@@ -94,33 +121,7 @@ def __setup_local():
     "cdk_class":"vm_class"
 }
 """,
-        },
-    )
-
-
-def test_get_bucket():
-    _destroy_dir = __setup_local()
-    resources = ['test/bucket']
-    repo = LocalRepo(os.getcwd())
-
-    models = repo.get(resources)
-    _destroy_dir()
-
-    assert isinstance(models, dict)
-    assert len(models) == 1
-
-    assert 'test/bucket' in models.keys()
-    assert isinstance(models['test/bucket'], ResourceModel)
-
-    bucket = models['test/bucket']
-
-    assert len(bucket.attributes) == 1
-    assert len(bucket.dependencies) == 0
-    assert bucket.type == 'test/bucket'
-
-
-def test_get_vm():
-    _destroy_dir = __setup_local()
+    })
     resources = ['test/vm']
 
     repo = LocalRepo(os.getcwd())
@@ -148,3 +149,39 @@ def test_get_vm():
     assert network.type == 'test/network'
     assert len(network.attributes) == 1
     assert len(network.dependencies) == 0
+
+
+def test_cyclic_import():
+    _destroy_dir = __setup_local({
+        'cyclic.json':
+            """
+{
+    "dependencies": {
+        "network": "test/cyclic"
+    },
+    "attributes":{
+        "region": {
+            "optional": true,
+            "default": "euw",
+            "cdk_key": "region"
+        }
+    },
+    "cdk_name_key": "name",
+    
+    "cdk_provider":"test_provider",
+    "cdk_module":"test_module",
+    "cdk_class":"vm_class"
+}
+""",
+    })
+    resources = ['test/cyclic']
+    repo = LocalRepo(os.getcwd())
+
+    models = repo.get(resources)
+    _destroy_dir()
+
+    assert isinstance(models, dict)
+    assert len(models) == 1
+
+    assert 'test/cyclic' in models.keys()
+    assert isinstance(models['test/cyclic'], ResourceModel)
