@@ -2,6 +2,7 @@ from parser.dsl_parser.Token import Token, TOKENTYPES as TT
 from engine.ParsedFile import Position
 from helpers import createLogger
 from parser.dsl_parser.DSLExceptions import DSLParserBaseException
+from parser.dsl_parser.LexerPosition import LexerPosition
 
 
 class DSLParserNoEndingQuotes(DSLParserBaseException):
@@ -25,7 +26,7 @@ class Lexer():
         self.__logger = createLogger(__name__)
         self.__files = files
         self.__tokenList = []
-        self.__lexerPosition = LexerPosition('')
+        self.__lexerPosition = LexerPosition()
         self.__currentChar = ''
 
     @property
@@ -95,6 +96,9 @@ class Lexer():
                 continue
 
             if char == '\n':
+                if self.__lexerPosition.isCurrentTokenMultiLine:
+                    self.__lexerPosition.newLine()
+                    continue
                 position = str(
                     Position(
                         self.__lexerPosition.currentFile,
@@ -135,6 +139,7 @@ class Lexer():
             '"': self.__handleDoubleQuotes,
             '#': self.__handleHashToken,
             '\n': self.__handleNewlineToken,
+            '\\': self.__handleBackSlashToken,
             '\t': self.__handleTabToken,
             ' ': self.__handleWhitespace,
         }
@@ -153,9 +158,11 @@ class Lexer():
             '': self.__handleEmptyToken,
             '-': self.__handleDashToken,
             'amount': self.__handleAmountToken,
+            'and': self.__handleAndToken,
             'if': self.__handleIfToken,
             'elif': self.__handleElifToken,
             'else': self.__handleElseToken,
+            'or': self.__handleOrToken,
             'true': self.__handleBooleanToken,
             'false': self.__handleBooleanToken,
         }
@@ -315,9 +322,20 @@ class Lexer():
     def __handleNewlineToken(self) -> None:
         """Handle a NEWLINE token '\\n'
         """
-        self.__handleBaseToken(TT.NEWLINE.value)
+        if not self.__lexerPosition.isCurrentTokenMultiLine:
+            self.__handleBaseToken(TT.NEWLINE.value)
+
+        self.__lexerPosition.setIsMultiLine(value=False)
         self.__lexerPosition.newLine()
         self.__lexerPosition.setCurrentTokenIndex(1)
+
+    def __handleBackSlashToken(self) -> None:
+        """Handle a BACKSLASH token '\\'
+
+        Sets a variable to indicate that the following line is part of the same token.
+        """
+        self.__lexerPosition.setIsMultiLine(value=True)
+        self.__lexerPosition.nextColumn()
 
     def __handleTabToken(self) -> None:
         """Handle a TAB token '\\t'
@@ -353,6 +371,12 @@ class Lexer():
         self.__lexerPosition.resetConsecutiveWhitespaces()
         self.__addBaseToken(TT.AMOUNT.value, isCurrentToken=True)
 
+    def __handleAndToken(self):
+        """Handle an AND token 'and'
+        """
+        self.__lexerPosition.resetConsecutiveWhitespaces()
+        self.__addBaseToken(TT.AND.value, isCurrentToken=True)
+
     def __handleIfToken(self):
         """Handle an IF token 'if'
         """
@@ -370,6 +394,12 @@ class Lexer():
         """
         self.__lexerPosition.resetConsecutiveWhitespaces()
         self.__addBaseToken(TT.ELSE.value, isCurrentToken=True)
+
+    def __handleOrToken(self):
+        """Handle an OR token 'or'
+        """
+        self.__lexerPosition.resetConsecutiveWhitespaces()
+        self.__addBaseToken(TT.OR.value, isCurrentToken=True)
 
     def __handleBooleanToken(self):
         """Handle a BOOLEAN token 'true' or 'false'
@@ -423,162 +453,3 @@ class Lexer():
             return True
         except ValueError:
             return False
-
-
-class LexerPosition():
-    def __init__(
-        self,
-        fileName: str,
-        startLine: int = 1,
-        startColumn: int = 1,
-    ) -> None:
-        """Class to represent the state and position of the lexer
-
-        Parameters
-        ----------
-        fileName : str
-            Name of the current file
-        startLine : int, optional
-            Starting line in the current file, by default 1
-        startColumn : int, optional
-            Starting column in the current file, by default 1
-        """
-        self.__currentFile = fileName
-        self.__currentLine = startLine
-        self.__currentColumn = startColumn
-        self.__currentToken = ''
-        self.__currentTokenIndex = startColumn
-        self.__isVariable = False
-        self.__inQuotedString = False
-        self.__consecutiveWhitespaces = 0
-
-    @property
-    def currentFile(self):
-        return self.__currentFile
-
-    @property
-    def currentLine(self):
-        return self.__currentLine
-
-    @property
-    def currentColumn(self):
-        return self.__currentColumn
-
-    @property
-    def currentToken(self):
-        return self.__currentToken
-
-    @property
-    def currentTokenIndex(self):
-        return self.__currentTokenIndex
-
-    @property
-    def isCurrentTokenAVariable(self):
-        return self.__isVariable
-
-    @property
-    def isCurrentTokenAString(self):
-        return self.__inQuotedString
-
-    @property
-    def consecutiveWhitespaces(self):
-        return self.__consecutiveWhitespaces
-
-    @property
-    def currentCharPosition(self) -> Position:
-        return Position(
-            self.__currentFile,
-            self.__currentLine,
-            self.__currentColumn,
-        )
-
-    @property
-    def currentTokenPosition(self) -> Position:
-        return Position(
-            self.__currentFile,
-            self.__currentLine,
-            self.__currentTokenIndex,
-        )
-
-    def newLine(self) -> None:
-        """Get the position to the next line
-        """
-        self.__currentLine += 1
-        self.__currentColumn = 1
-
-    def nextColumn(self, step: int = 1) -> None:
-        """Get the position to a new column
-
-        Parameters
-        ----------
-        step : int
-            Step to modify the current column, by default 1
-        """
-        if (self.__currentColumn + step) > 0:
-            self.__currentColumn += step
-        else:
-            self.__currentColumn = 0  # Raise exception ?
-
-    def addCharToCurrentToken(self, char) -> None:
-        """Add a char to the current stored token
-
-        Parameters
-        ----------
-        char : _type_
-            Char to add to the token
-        """
-        self.__currentToken += char
-
-    def setCurrentTokenIndex(self, newIndex: int | None = None) -> None:
-        """Modify the stored token index
-
-        Parameters
-        ----------
-        newIndex : int, optional
-            New index of the stored token, by default None
-        """
-        if newIndex:
-            self.__currentTokenIndex = newIndex
-        else:
-            self.__currentTokenIndex = self.__currentColumn
-
-    def resetCurrentToken(self, newIndex: int | None = None) -> None:
-        """Reset the current stored token and its index
-
-        Parameters
-        ----------
-        newIndex : int, optional
-            New index of the stored token, by default None
-        """
-        self.__currentToken = ''
-        self.setCurrentTokenIndex(newIndex)
-
-    def addConsecutiveWhitespace(self) -> None:
-        """Add a consecutive whitespace to the lexer state
-        """
-        self.__consecutiveWhitespaces += 1
-
-    def resetConsecutiveWhitespaces(self) -> None:
-        """Reset consecutive whitespaces of the lexer state to 0
-        """
-        self.__consecutiveWhitespaces = 0
-
-    def setIsVariable(self, value: bool = False) -> None:
-        """Set the current stored token as a variable
-
-        Parameters
-        ----------
-        value : bool, optional
-            Is the stored token a variable True or False, by default False
-        """
-        self.__isVariable = value
-
-    def setIsString(self, value: bool = False) -> None:
-        """Set the current stored token as a string
-
-        Parameters
-        ----------
-        value : bool, optional
-            Is the stored token a string True or False, by default False
-        """
-        self.__inQuotedString = value

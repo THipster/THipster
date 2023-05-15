@@ -4,6 +4,7 @@ from enum import Enum
 
 class TOKENTYPES(Enum):
     AMOUNT = 'AMOUNT'
+    AND = 'AND'
     BOOLEAN = 'BOOLEAN'
     COLON = 'COLON'
     DASH = 'DASH'
@@ -14,6 +15,7 @@ class TOKENTYPES(Enum):
     IF = 'IF'
     INT = 'INT'
     NEWLINE = 'NEWLINE'
+    OR = 'OR'
     STRING = 'STRING'
     TAB = 'TAB'
     VAR = 'VAR'
@@ -24,7 +26,7 @@ class Token():
     """Class representing a Token
     """
 
-    def __init__(self, position: Position, tokenType: str, value: str = None):
+    def __init__(self, position: Position, tokenType: str, value: str | None = None):
         """
 
         Parameters
