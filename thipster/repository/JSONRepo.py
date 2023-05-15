@@ -117,8 +117,8 @@ class JSONRepo(I_Repository, ABC):
         json_model = json.loads(model)
 
         for _, dep in json_model['dependencies'].items():
-            if dep not in self.model_list.keys():
-                self.__add_model(dep)
+            if dep['resource'] not in self.model_list.keys():
+                self.__add_model(dep['resource'])
 
         res = rm.ResourceModel(
             name,

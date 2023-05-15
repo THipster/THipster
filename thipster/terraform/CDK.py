@@ -4,7 +4,7 @@ import sys
 import os
 import importlib
 from constructs import Construct
-from cdktf import App, TerraformStack
+from cdktf import App, TerraformStack, TerraformOutput
 
 import engine.ResourceModel as rm
 import engine.ParsedFile as pf
@@ -53,14 +53,17 @@ class CDK(I_Terraform):
 
         return clazz
 
-    def _create_default_resource(self, typ: str, parentName: str = None):
+    def _create_default_resource(
+        self, typ: str, parentName: str = None,
+        noModif: bool = True,
+    ):
         if typ in CDK._parentStack:
             raise CDKCyclicDependencies(CDK._parentStack)
 
         CDK._parentStack.append(typ)
 
         model = CDK._models[typ]
-        if not all(map(lambda x: x.optional, model.attributes.values())):
+        if noModif and not all(map(lambda x: x.optional, model.attributes.values())):
             raise CDKMissingAttributeInDependency()
 
         name = f"{parentName}{typ}"
@@ -81,11 +84,13 @@ class CDK(I_Terraform):
             resource_args[v.cdk_name] = v.default
 
         # 8 - Crée les dépendances
-        for d in deps.values():
-            c, n, a = CDK._create_default_resource(self, d, name)
-            c(self, n, **a)
+        for k, d in deps.items():
+            c, n, a = CDK._create_default_resource(self, d['resource'], name)
+            id = c(self, n, **a).id
+            if k:
+                resource_args[k] = id
 
-            CDK._parentStack.remove(d)
+            CDK._parentStack.remove(d['resource'])
 
         return (resourceClass, name, resource_args)
 
@@ -93,11 +98,11 @@ class CDK(I_Terraform):
         resourceClass, _, resource_args = CDK._create_default_resource(
             self,
             resource.type,
+            noModif=False,
         )
         model = CDK._models[resource.type]
 
-        # 3 - vérifie les paramètres de la ressource correspondent à ceux du
-        # modèle
+        # 3 - vérifie les paramètres de la ressource correspondent à ceux du modèle
         deps = copy.deepcopy(model.dependencies)
 
         for _, v in model.attributes.items():
@@ -116,8 +121,8 @@ class CDK(I_Terraform):
             resource_args[model.attributes[a.name].cdk_name] = a.value
 
         # 9 - Crée la ressource
-        resourceClass(self, resource.name, **resource_args)
         CDK._parentStack.remove(resource.type)
+        return resourceClass(self, resource.name, **resource_args)
 
     def generate(self, file: pf.ParsedFile, models: dict[str, rm.ResourceModel]):
 
@@ -143,9 +148,14 @@ class CDK(I_Terraform):
                         zone="europe-west1-b",
                     )
 
-                    CDK._create_resource(
+                    res = CDK._create_resource(
                         self,
                         resource=resource,
+                    )
+
+                    TerraformOutput(
+                        self, 'id',
+                        value=res.id,
                     )
 
             _ResourceStack(app, f'{resource.type}/{resource.name}')

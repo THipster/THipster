@@ -37,7 +37,7 @@ class Model_Attribute():
 
     @property
     def default(self):
-        return self.__default.value
+        return self.__default.value if self.__default else None
 
     @property
     def cdk_name(self):
