@@ -135,6 +135,13 @@ dmypy.json
 # Ruff
 .ruff_cache
 
+# Terraform
 *-credentials.json
 *.tfstate
 cdktf.out
+
+# Sphinx doc generation
+docs/build
+docs/source/*
+!docs/source/index.rst
+!docs/source/conf.py

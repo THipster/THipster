@@ -24,6 +24,9 @@ setup(
         'google': [
             'cdktf-cdktf-provider-google==7.0.4',
         ],
+        'doc': [
+            'sphinx',
+        ],
     },
     entry_points={
         'console_scripts': [
