@@ -3,6 +3,8 @@ ci:
 - any: ['.github/**/*','!.github/ISSUE_TEMPLATE/*','!.github/PULL_REQUEST_TEMPLATE/*']
 - pipelines/**/*
 - .pre-commit-config.yaml
+
+gitignore:
 - .gitignore
 
 github_actions:
