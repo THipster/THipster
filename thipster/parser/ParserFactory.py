@@ -19,6 +19,20 @@ class ParserPathNotFound(Exception):
 class ParserFactory(I_Parser):
 
     def __getfiles(self, path: str) -> list[str]:
+        """Recursively get all files names in the requested directory and its\
+              sudirectories
+        Can be run on a path file aswell
+
+        Parameters
+        ----------
+        path: str
+            Path to run this function into
+
+        Returns
+        -------
+        list[str]
+            A list of all the filenames 
+        """
 
         path = os.path.abspath(path)
 
@@ -37,15 +51,27 @@ class ParserFactory(I_Parser):
         return files
 
     def __yamlParser(self) -> YAMLParser:
-        return YAMLParser()
+        return YAMLParser
 
     def __dslParser(self) -> DSLParser:
-        return DSLParser()
+        return DSLParser
 
     def __noParser(self):
         raise Exception()
 
     def run(self, path: str) -> ParsedFile:
+        """Run the ParserFactory
+
+        Parameters
+        ----------
+        path: str
+            Path to run the parser into
+
+        Returns
+        -------
+        ParsedFile
+            A ParsedFile object with the content of all the files in the input path
+        """
         files = self.__getfiles(path)
 
         res = ParsedFile()

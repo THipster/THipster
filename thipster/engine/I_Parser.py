@@ -12,7 +12,7 @@ class I_Parser(ABC):
 
     """
     @abstractmethod
-    def run(self) -> ParsedFile:
+    def run(self, path: str) -> ParsedFile:
         """Abstract run method
 
         Returns

@@ -40,7 +40,7 @@ def test_get_files():
         {f'test_file{i}.thips': 'content' for i in range(1, 4)},
     )
 
-    parser = DSLParser()
+    parser = DSLParser
 
     files = parser._DSLParser__getfiles(path_input)
 
@@ -57,7 +57,7 @@ def test_get_files():
 def test_get_absent_files():
     with pytest.raises(DSLParserPathNotFound):
 
-        parser = DSLParser()
+        parser = DSLParser
         parser._DSLParser__getfiles('inexistant_path')
 
 
@@ -71,7 +71,7 @@ def __test_file(file: str):
         },
     )
 
-    parser = DSLParser()
+    parser = DSLParser
     try:
         output = parser.run(path_input)
 

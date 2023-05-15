@@ -1,65 +1,198 @@
-from engine.ParsedFile import ParsedAttribute, ParsedDict, ParsedFile, ParsedList, \
-    ParsedLiteral, ParsedResource
-from parser.dsl_parser.AST import AmountNode, BoolNode, DictNode, FileNode, FloatNode, \
-    IfElseNode, IfNode, IntNode, ListNode, LiteralNode, ParameterNode, ResourceNode, \
-    StringNode, VariableDefinitionNode, VariableNode
+import engine.ParsedFile as pf
+import parser.dsl_parser.AST as ast
 from parser.dsl_parser.DSLExceptions import DSLParserBaseException
 
 
 class DSLParserVariableAlreadyUsed(DSLParserBaseException):
-    def __init__(self, var, *args: object) -> None:
+    def __init__(self, var: str, *args: object) -> None:
         super().__init__(f'Variable already used : {var}', *args)
 
 
 class DSLParserVariableNotDeclared(DSLParserBaseException):
-    def __init__(self, var, *args: object) -> None:
+    def __init__(self, var: str, *args: object) -> None:
         super().__init__(f'Variable already used : {var}', *args)
 
 
 class Interpreter():
+    """Interpreter class for the DSL Parser
+
+    Implements a visitor design pattern on the AST nodes
+    """
+
     def __init__(self) -> None:
         super().__init__()
 
-        self.__variables = {}
+        self.__variables = dict[str, int]()
 
-    def run(self, tree: FileNode) -> ParsedFile:
+    def run(self, tree: ast.FileNode) -> pf.ParsedFile:
+        """Runs the interpreter on an Abstract Syntax Tree
+
+        Parameters
+        ----------
+        tree: FileNode
+            The root node of the abstract syntax tree
+
+        Returns
+        -------
+        ParsedFile
+            The parsed file stucture assiociated to the given AST
+        """
         return tree.accept(self)
 
-    def visitString(self, element: StringNode):
+    def visitString(self, element: ast.StringNode) -> str:
+        """Visitor for a StringNode
+
+        Parameters
+        ----------
+        element: StringNode
+            The visited node
+
+        Returns
+        -------
+        str
+            The string value of the node
+        """
         return ''.join(element.values)
 
-    def visitVariableDefinition(self, element: VariableDefinitionNode):
+    def visitVariableDefinition(self, element: ast.VariableDefinitionNode) -> str:
+        """Visitor for a VariableDefinitionNode
+
+        Parameters
+        ----------
+        element: VariableDefinitionNode
+            The visited node
+
+        Returns
+        -------
+        str
+            The name of the declared variable
+
+        Raises
+        ------
+        DSLParserVariableAlreadyUsed
+            Tried to declare a varible that was already declared
+        """
         if element.name in self.__variables:
-            raise DSLParserVariableAlreadyUsed
+            raise DSLParserVariableAlreadyUsed(element.name)
 
         self.__variables[element.name] = element.value.accept(self)
 
         return element.name
 
-    def visitVariable(self, element: VariableNode):
+    def visitVariable(self, element: ast.VariableNode) -> object:
+        """Visitor for a VariableNode
+
+        Parameters
+        ----------
+        element: VariableNode
+            The visited node
+
+        Returns
+        -------
+        object
+            The value of the declared variable
+
+        Raises
+        ------
+        DSLParserVariableNotDeclared
+            Tried to use a varible that was not declared
+        """
         if element.name not in self.__variables:
-            raise DSLParserVariableNotDeclared
+            raise DSLParserVariableNotDeclared(element.name)
 
         return self.__variables[element.name]
 
-    def visitInt(self, element: IntNode):
+    def visitInt(self, element: ast.IntNode) -> int:
+        """Visitor for an IntNode
+
+        Parameters
+        ----------
+        element: IntNode
+            The visited node
+
+        Returns
+        -------
+        int
+            The value of the node
+        """
         return int(element.value)
 
-    def visitFloat(self, element: FloatNode):
+    def visitFloat(self, element: ast.FloatNode) -> float:
+        """Visitor for a FloatNode
+
+        Parameters
+        ----------
+        element: FloatNode
+            The visited node
+
+        Returns
+        -------
+        float
+            The value of the node
+        """
         return float(element.value)
 
-    def visitBool(self, element: BoolNode):
+    def visitBool(self, element: ast.BoolNode) -> bool:
+        """Visitor for a BoolNode
+
+        Parameters
+        ----------
+        element: BoolNode
+            The visited node
+
+        Returns
+        -------
+        bool
+            The value of the node
+        """
         return bool(element.value)
 
-    def visitIf(self, element: IfNode):
+    def visitIf(self, element: ast.IfNode) -> object | None:
+        """Visitor for an IfNode
+
+        Parameters
+        ----------
+        element: IfNode
+            The visited node
+
+        Returns
+        -------
+        object | None
+            The value of the child node if the condition is true, else None
+        """
         return element.ifCase.accept(self) if eval(element.condition.accept(self)) \
             else None
 
-    def visitIfElse(self, element: IfElseNode):
+    def visitIfElse(self, element: ast.IfElseNode):
+        """Visitor for an IfElseNode
+
+        Parameters
+        ----------
+        element: IfElseNode
+            The visited node
+
+        Returns
+        -------
+        object | None
+            The value of the "if" child node if the condition is true, else the value\
+                  of the "else" child node
+        """
         return element.ifCase.accept(self) if eval(element.condition.accept(self))\
             else element.elseCase.accept(self)
 
-    def visitAmount(self, element: AmountNode):
+    def visitAmount(self, element: ast.AmountNode) -> list[object]:
+        """Visitor for an AmountNode
+
+        Parameters
+        ----------
+        element: AmountNode
+            The visited node
+
+        Returns
+        -------
+        list[object]
+            A list with the required number of object (resource, list item, ...) 
+        """
         var = element.variable.accept(self) if element.variable else None
         res = []
 
@@ -69,25 +202,86 @@ class Interpreter():
                 self.__variables[var] += 1
         return res
 
-    def visitParameter(self, element: ParameterNode):
-        return ParsedAttribute(
+    def visitParameter(self, element: ast.ParameterNode) -> pf.ParsedAttribute:
+        """Visitor for an ParameterNode
+
+        Parameters
+        ----------
+        element: ParameterNode
+            The visited node
+
+        Returns
+        -------
+        ParsedAttribute
+            A ParsedAttribute object containing the name, position and value of \
+                the node
+        """
+        return pf.ParsedAttribute(
             name=element.name.accept(self),
             position=element.position,
             value=element.value.accept(self),
         )
 
-    def visitDict(self, element: DictNode):
-        return ParsedDict([v.accept(self) for v in element.value])
+    def visitDict(self, element: ast.DictNode) -> pf.ParsedDict:
+        """Visitor for an DictNode
 
-    def visitLiteral(self, element: LiteralNode):
-        return ParsedLiteral(element.value.accept(self))
+        Parameters
+        ----------
+        element: DictNode
+            The visited node
 
-    def visitList(self, element: ListNode):
-        return ParsedList([v.accept(self) for v in element.value])
+        Returns
+        -------
+        ParsedDict
+            A ParsedDict object based on the node attributes 
+        """
+        return pf.ParsedDict([v.accept(self) for v in element.value])
 
-    def visitResource(self, element: ResourceNode):
+    def visitLiteral(self, element: ast.LiteralNode) -> pf.ParsedLiteral:
+        """Visitor for an LiteralNode
+
+        Parameters
+        ----------
+        element: LiteralNode
+            The visited node
+
+        Returns
+        -------
+        ParsedLiteral
+            A ParsedLiteral object based on the node value
+        """
+        return pf.ParsedLiteral(element.value.accept(self))
+
+    def visitList(self, element: ast.ListNode) -> pf.ParsedList:
+        """Visitor for an ListNode
+
+        Parameters
+        ----------
+        element: ListNode
+            The visited node
+
+        Returns
+        -------
+        ParsedList
+            A ParsedLiteral object based on the node elements
+        """
+        return pf.ParsedList([v.accept(self) for v in element.value])
+
+    def visitResource(self, element: ast.ResourceNode) -> list[pf.ParsedResource]:
+        """Visitor for an ResourceNode
+
+        Parameters
+        ----------
+        element: ResourceNode
+            The visited node
+
+        Returns
+        -------
+        int
+            A ParsedResource object based on the node's attributes
+        """
         return [
-            ParsedResource(
+            pf.ParsedResource(
                 type=element.type.accept(self),
                 name=element.name.accept(self),
                 position=element.position,
@@ -95,8 +289,20 @@ class Interpreter():
             ),
         ]
 
-    def visitFile(self, element: FileNode):
-        file = ParsedFile()
+    def visitFile(self, element: ast.FileNode):
+        """Visitor for an FileNode
+
+        Parameters
+        ----------
+        element: FileNode
+            The visited node
+
+        Returns
+        -------
+        ParsedFile
+            A ParsedFile object based on the node's resources
+        """
+        file = pf.ParsedFile()
         for res in element.resources:
             file.resources += res.accept(self)
 

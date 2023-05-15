@@ -50,7 +50,7 @@ def __test_file(file: str):
         },
     )
 
-    parser = YAMLParser()
+    parser = YAMLParser
     try:
         output = parser.run(path_input)
 

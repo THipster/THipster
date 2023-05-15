@@ -45,8 +45,8 @@ class Lexer():
             List of Tokens representing the input files
         """
         self.__logger.info('Start Lexer')
-        for fileName in self.files:
-            self.lex(self.files.get(fileName), fileName, 1, 1)
+        for fileName, fileContent in self.files.items():
+            self.lex(fileContent, fileName, 1, 1)
 
         self.__logger.info(
             'Shuting down Lexer, processed %d file(s) and generated %d tokens',
@@ -203,7 +203,7 @@ class Lexer():
     def __addBaseToken(
         self,
         tokenType: str,
-        value: str = None,
+        value: str | None = None,
         isCurrentToken: bool = False,
     ) -> None:
         """Add a token to the token list
@@ -256,7 +256,7 @@ class Lexer():
     def __handleBaseToken(
         self,
         tokenType: str,
-        value: str = None,
+        value: str | None = None,
         isCurrentToken: bool = False,
         handleCurrentToken: bool = True,
         resetCurrentToken: bool = True,
@@ -529,7 +529,7 @@ class LexerPosition():
         """
         self.__currentToken += char
 
-    def setCurrentTokenIndex(self, newIndex: int = None) -> None:
+    def setCurrentTokenIndex(self, newIndex: int | None = None) -> None:
         """Modify the stored token index
 
         Parameters
@@ -542,7 +542,7 @@ class LexerPosition():
         else:
             self.__currentTokenIndex = self.__currentColumn
 
-    def resetCurrentToken(self, newIndex: int = None) -> None:
+    def resetCurrentToken(self, newIndex: int | None = None) -> None:
         """Reset the current stored token and its index
 
         Parameters
