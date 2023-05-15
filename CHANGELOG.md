@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v0.10.2 (2023-05-15)
+### :zap:
+* :zap: fix: improve tokenParser and engine perf ([#84](https://github.com/THipster/THipster/issues/84)) ([`ce15e1f`](https://github.com/THipster/THipster/commit/ce15e1f0424c5809903fa6739b5bfa880b22c498))
+
 ## v0.10.1 (2023-05-11)
 ### :bug:
 * :bug: fix: add jinja to parser facory ([#82](https://github.com/THipster/THipster/issues/82)) ([`6935d84`](https://github.com/THipster/THipster/commit/6935d84d278c3c9746710d0c3ec18f0e269bb14d))
