@@ -41,8 +41,16 @@ class MockRepository(eng.I_Repository):
 
 
 class MockTerraform(eng.I_Terraform):
-    @logger('- Terraform')
-    def run(self):
+    @logger('- Terraform:apply')
+    def apply(self):
+        pass
+
+    @logger('- Terraform:generate')
+    def generate(self, a, b):
+        pass
+
+    @logger('- Terraform:plan')
+    def plan(self):
         pass
 
 
@@ -81,7 +89,7 @@ def test_engine_calls():
     engine = eng.Engine(parser, repository, auth, terraform)
     res = engine.run('test.file')
 
-    assert res == []
+    assert res is None
 
 
 def test_parser_failure(mocker):

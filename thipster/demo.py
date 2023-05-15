@@ -4,6 +4,7 @@ from parser.ParserFactory import ParserFactory
 from parser.dsl_parser.DSLParser import DSLParserPathNotFound
 from parser.dsl_parser.TokenParser import DSLSyntaxException
 from repository.LocalRepo import LocalRepo
+from terraform.CDK import CDK
 
 
 class MockAuth(eng.I_Auth):
@@ -28,7 +29,7 @@ def demo():
     file = input()
     engine = eng.Engine(
         ParserFactory(), LocalRepo('/home/rcattin/models'),
-        MockAuth(), MockTerraform(),
+        MockAuth(), CDK(),
     )
 
     try:
