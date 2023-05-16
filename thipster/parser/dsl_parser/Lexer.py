@@ -136,6 +136,9 @@ class Lexer():
         """
         singleCharTokens = {
             ':': self.__handleColonToken,
+            ',': self.__handleCommaToken,
+            '[': self.__handleBracketsStartToken,
+            ']': self.__handleBracketsEndToken,
             '"': self.__handleDoubleQuotes('"'),
             "'": self.__handleDoubleQuotes("'"),
             '#': self.__handleHashToken,
@@ -293,6 +296,21 @@ class Lexer():
         """Handle a COLON token ':'
         """
         self.__handleBaseToken(TT.COLON)
+
+    def __handleCommaToken(self):
+        """Handle a COMMA token ','
+        """
+        self.__handleBaseToken(TT.COMMA)
+
+    def __handleBracketsStartToken(self):
+        """Handle a BRACKETS_START token '['
+        """
+        self.__handleBaseToken(TT.BRACKETS_START)
+
+    def __handleBracketsEndToken(self):
+        """Handle a BRACKETS_END token ']'
+        """
+        self.__handleBaseToken(TT.BRACKETS_END)
 
     def __handleHashToken(self) -> None:
         """Handle a HASH token '#'

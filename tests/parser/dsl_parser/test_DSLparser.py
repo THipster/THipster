@@ -161,6 +161,65 @@ bucket my-bucket2:
         assert region.value == 'euw'
 
 
+def test_parse_list():
+    out = __test_file(
+        file="""bucket my-bucket:
+\tregion: 
+\t\t- toto
+\t\t- titi
+\t\t- tata
+""",
+    )
+
+    assert len(out.resources) == 1
+
+    bucket = out.resources[0]
+    assert bucket.type == 'bucket'
+    assert bucket.name == 'my-bucket'
+    assert len(bucket.attributes) == 1
+
+    region = bucket.attributes[0]
+    assert region.name == 'region'
+    assert type(region._ParsedAttribute__value) == ParsedList
+    assert len(region.value) == 3
+
+    out = __test_file(
+        file="""bucket my-bucket:
+\tregion: [toto, titi, tata]
+""",
+    )
+
+    assert len(out.resources) == 1
+
+    bucket = out.resources[0]
+    assert bucket.type == 'bucket'
+    assert bucket.name == 'my-bucket'
+    assert len(bucket.attributes) == 1
+
+    region = bucket.attributes[0]
+    assert region.name == 'region'
+    assert type(region._ParsedAttribute__value) == ParsedList
+    assert len(region.value) == 3
+
+    out = __test_file(
+        file="""bucket my-bucket:
+\tregion: []
+""",
+    )
+
+    assert len(out.resources) == 1
+
+    bucket = out.resources[0]
+    assert bucket.type == 'bucket'
+    assert bucket.name == 'my-bucket'
+    assert len(bucket.attributes) == 1
+
+    region = bucket.attributes[0]
+    assert region.name == 'region'
+    assert type(region._ParsedAttribute__value) == ParsedList
+    assert len(region.value) == 0
+
+
 def test_parse_dict_list_in_dict():
     out = __test_file(
         file="""bucket my-bucket:

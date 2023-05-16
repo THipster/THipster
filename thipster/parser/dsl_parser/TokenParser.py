@@ -46,11 +46,16 @@ class TokenParser():
 
         return tree
 
-    def __next(self, expected: TT | None = None) -> Token:
+    def __next(self, expected: TT | list[TT] | None = None) -> Token:
         """Get next token and pop it from the list"""
         tok = self.__get_next_type()
-        if expected is not None and tok != expected:
-            raise DSLSyntaxException(self.__tokens[0], expected)
+
+        if expected:
+            if type(expected) is list:
+                if tok not in expected:
+                    raise DSLSyntaxException(self.__tokens[0], str(expected))
+            elif tok != expected:
+                raise DSLSyntaxException(self.__tokens[0], expected)
         return self.__tokens.pop(0)
 
     def __check(self, expected: TT, index: int = 0) -> Token | None:
@@ -169,6 +174,7 @@ class TokenParser():
             TT.INT,
             TT.STRING,
             TT.VAR,
+            TT.BRACKETS_START,
         ]:
             # value, [if_else_ctrl]
             try:
@@ -215,6 +221,35 @@ class TokenParser():
             parameter = ifCtrl
 
         return parameter
+
+    def __get_inline_list(self) -> ListNode:
+        items = []
+
+        self.__next(TT.BRACKETS_START)
+        self.__get_whitespaces()
+        next = self.__get_next_type()
+
+        if next in [
+            TT.BOOLEAN,
+            TT.FLOAT,
+            TT.INT,
+            TT.STRING,
+            TT.VAR,
+            TT.BRACKETS_START,
+        ]:
+            items.append(self.__get_value())
+            while not self.__check(TT.BRACKETS_END):
+                self.__next([TT.COMMA, TT.NEWLINE])
+                while self.__check(TT.TAB):
+                    pass
+                self.__get_whitespaces()
+
+                items.append(self.__get_value())
+                self.__get_whitespaces()
+        else:
+            self.__next(TT.BRACKETS_END)
+
+        return ListNode(items)
 
     def __get_list(self, indent: int) -> ListNode:
         """{ "-", value, [amt_ctrl], [if_else_ctrl], "\\n"}"""
@@ -380,6 +415,8 @@ class TokenParser():
             value = LiteralNode(StringNode(self.__next()))
         elif nextType == TT.VAR:
             value = LiteralNode(VariableNode(self.__next()))
+        elif nextType == TT.BRACKETS_START:
+            value = self.__get_inline_list()
         else:
             raise DSLSyntaxException(self.__next(), TT.STRING)
 

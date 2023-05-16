@@ -61,6 +61,28 @@ def test_lex_colon():
     __single_token_test(':', TT.COLON)
 
 
+def test_lex_comma():
+    __single_token_test(',', TT.COMMA)
+
+
+def test_lex_brackets():
+    lexer = Lexer({'': ''})
+    input = '[toto]'
+    expectedOutput = [
+        __getTokenString('file', 1, 1, TT.BRACKETS_START),
+        __getTokenString('file', 1, 2, TT.STRING, 'toto'),
+        __getTokenString('file', 1, 6, TT.BRACKETS_END),
+        __getTokenString('file', 1, 7, TT.NEWLINE),
+        __getTokenString('file', 2, 1, TT.EOF),
+    ]
+    lexer.lex(input, 'file')
+    output = lexer.tokenList
+
+    assert len(output) == len(expectedOutput)
+    for i in range(len(expectedOutput)):
+        assert repr(output[i]) == expectedOutput[i]
+
+
 def test_lex_quoted_string():
     lexer = Lexer({'': ''})
 
