@@ -150,3 +150,24 @@ loadbalancer my-lb:
     assert 'cdktf.out/stacks/network--lb-net' in out
     assert 'cdktf.out/stacks/subnetwork--lb-subnet' in out
     assert 'cdktf.out/stacks/loadbalancer--my-lb' in out
+
+
+def test_internal_object():
+    out = __test_file(
+        file="""
+internal_obj_test_parent testParent:
+\tauto_create_subnetworks: true
+        """,
+    )
+    assert 'cdktf.out/stacks/internal_obj_test_parent--testParent' in out
+
+    out = __test_file(
+        file="""
+internal_obj_test_parent testParent:
+\tauto_create_subnetworks: true
+
+\tchild:
+\t\tregion: na
+        """,
+    )
+    assert 'cdktf.out/stacks/internal_obj_test_parent--testParent' in out

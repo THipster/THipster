@@ -121,7 +121,8 @@ class ResourceModel():
             self,
             type: str,
             attributes: dict[str, Model_Attribute],
-            dependencies: dict[str, str],
+            dependencies: dict[str, dict[str, object]],
+            internalObjects: dict[str, dict[str, object]],
             name_key: str,
             cdk_provider: str,
             cdk_module: str,
@@ -130,6 +131,7 @@ class ResourceModel():
         self.__type = type
         self.__attributes = attributes
         self.__dependencies = dependencies
+        self.__internal_objects = internalObjects
         self.__name_key = name_key
         self.__cdk_provider = cdk_provider
         self.__cdk_module = cdk_module
@@ -146,6 +148,10 @@ class ResourceModel():
     @property
     def dependencies(self):
         return self.__dependencies
+
+    @property
+    def internalObjects(self):
+        return self.__internal_objects
 
     @property
     def name_key(self):

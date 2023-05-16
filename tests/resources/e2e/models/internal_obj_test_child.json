@@ -1,0 +1,17 @@
+{
+    "dependencies": {},
+    "internalObjects": {
+    },
+    "attributes":{
+        "region": {
+            "optional": true,
+            "default": "euw",
+            "cdk_key": "location"
+        }
+    },
+    "cdk_name_key": "name",
+
+    "cdk_provider":"cdktf_cdktf_provider_google",
+    "cdk_module":"compute_network",
+    "cdk_class":"ComputeNetwork"
+}

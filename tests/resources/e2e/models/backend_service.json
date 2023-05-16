@@ -12,9 +12,7 @@
         },
         "health_checks":{
             "resource" : "health_check",
-            "default" : [{
-            
-            }]
+            "default" : []
         }
     },
     "attributes":{

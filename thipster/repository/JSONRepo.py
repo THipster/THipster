@@ -120,10 +120,15 @@ class JSONRepo(I_Repository, ABC):
             if dep['resource'] not in self.model_list.keys():
                 self.__add_model(dep['resource'])
 
+        for _, intObj in json_model['internalObjects'].items():
+            if intObj['resource'] not in self.model_list.keys():
+                self.__add_model(intObj['resource'])
+
         res = rm.ResourceModel(
             name,
             attributes=self.__create_attribute(json_model['attributes']),
             dependencies=json_model['dependencies'],
+            internalObjects=json_model['internalObjects'],
             name_key=json_model['cdk_name_key'],
             cdk_provider=json_model['cdk_provider'],
             cdk_module=json_model['cdk_module'],
