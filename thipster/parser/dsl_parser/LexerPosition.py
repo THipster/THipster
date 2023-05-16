@@ -26,7 +26,7 @@ class LexerPosition():
         self.__currentTokenIndex = startColumn
         self.__currentTokenLine = startColumn
         self.__isVariable = False
-        self.__inQuotedString = False
+        self.__isQuotedString = False
         self.__isMultiLine = False
         self.__consecutiveWhitespaces = 0
 
@@ -55,12 +55,16 @@ class LexerPosition():
         return self.__isVariable
 
     @property
-    def isCurrentTokenAString(self):
-        return self.__inQuotedString
-
-    @property
     def isCurrentTokenMultiLine(self):
         return self.__isMultiLine
+
+    @property
+    def isQuotedString(self):
+        return self.__isQuotedString
+
+    @isQuotedString.setter
+    def isQuotedString(self, value):
+        self.__isQuotedString = value
 
     @property
     def consecutiveWhitespaces(self):
@@ -155,16 +159,6 @@ class LexerPosition():
             Is the stored token a variable True or False, by default False
         """
         self.__isVariable = value
-
-    def setIsString(self, value: bool = False) -> None:
-        """Set the current stored token as a string
-
-        Parameters
-        ----------
-        value : bool, optional
-            Is the stored token a string True or False, by default False
-        """
-        self.__inQuotedString = value
 
     def setIsMultiLine(self, value: bool = False) -> None:
         """Set the current token as a multi-line input

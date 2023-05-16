@@ -62,13 +62,57 @@ def test_lex_colon():
 
 
 def test_lex_quoted_string():
-    input = '"bucket number 21"'
+    lexer = Lexer({'': ''})
+
+    input = '"bucket number 21""bucket number 22"'
+    expectedOutput = [
+        __getTokenString('file', 1, 2, TT.STRING, 'bucket number 21'),
+        __getTokenString('file', 1, 20, TT.STRING, 'bucket number 22'),
+        __getTokenString('file', 1, 37, TT.NEWLINE),
+        __getTokenString('file', 2, 1, TT.EOF),
+    ]
+    lexer.lex(input, 'file')
+    output = lexer.tokenList
+
+    assert len(output) == len(expectedOutput)
+    for i in range(len(expectedOutput)):
+        assert repr(output[i]) == expectedOutput[i]
+
+    lexer = Lexer({'': ''})
+    input = "'bucket number 21'"
     expectedOutput = [
         __getTokenString('file', 1, 2, TT.STRING, 'bucket number 21'),
         __getTokenString('file', 1, 19, TT.NEWLINE),
         __getTokenString('file', 2, 1, TT.EOF),
     ]
+    lexer.lex(input, 'file')
+    output = lexer.tokenList
+
+    assert len(output) == len(expectedOutput)
+    for i in range(len(expectedOutput)):
+        assert repr(output[i]) == expectedOutput[i]
+
     lexer = Lexer({'': ''})
+    input = "'bucket number \"21\"'"
+    expectedOutput = [
+        __getTokenString('file', 1, 2, TT.STRING, 'bucket number "21"'),
+        __getTokenString('file', 1, 21, TT.NEWLINE),
+        __getTokenString('file', 2, 1, TT.EOF),
+    ]
+    lexer.lex(input, 'file')
+    output = lexer.tokenList
+
+    assert len(output) == len(expectedOutput)
+    for i in range(len(expectedOutput)):
+        assert repr(output[i]) == expectedOutput[i]
+
+    lexer = Lexer({'': ''})
+    input = '"bucket number \'21\'"'
+    expectedOutput = [
+        __getTokenString('file', 1, 2, TT.STRING, "bucket number '21'"),
+        __getTokenString('file', 1, 21, TT.NEWLINE),
+        __getTokenString('file', 2, 1, TT.EOF),
+    ]
     lexer.lex(input, 'file')
     output = lexer.tokenList
 

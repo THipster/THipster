@@ -87,12 +87,12 @@ class Lexer():
         for char in codeString:
             self.__logger.debug('char %s', char)
             self.__currentChar = char
-            if not self.__lexerPosition.isCurrentTokenAString:
+            if not self.__lexerPosition.isQuotedString:
                 self.__handleSyntaxTokens()
                 continue
 
-            if char == '"':
-                self.__handleDoubleQuotes()
+            if char in ['"', "'"]:
+                self.__handleDoubleQuotes(char)()
                 continue
 
             if char == '\n':
@@ -136,7 +136,8 @@ class Lexer():
         """
         singleCharTokens = {
             ':': self.__handleColonToken,
-            '"': self.__handleDoubleQuotes,
+            '"': self.__handleDoubleQuotes('"'),
+            "'": self.__handleDoubleQuotes("'"),
             '#': self.__handleHashToken,
             '\n': self.__handleNewlineToken,
             '\\': self.__handleBackSlashToken,
@@ -346,22 +347,30 @@ class Lexer():
         """
         self.__handleBaseToken(TT.TAB)
 
-    def __handleDoubleQuotes(self) -> None:
+    def __handleDoubleQuotes(self, char) -> None:
         """Handle a DOUBLEQUOTES token '"'
 
         Sets a variable to indicate that the following characters are a STRING token.
         """
-        if self.__lexerPosition.isCurrentTokenAString:
-            self.__addLiteralTokenToList(
-                TT.STRING, self.__lexerPosition.currentToken,
-            )
-            self.__lexerPosition.setIsString()
-            self.__basePositionUpdate()
-        else:
-            self.__handleCurrentToken()
-            self.__lexerPosition.nextColumn()
-            self.__lexerPosition.setIsString(True)
-        self.__lexerPosition.resetCurrentToken()
+
+        def quoteHandler(self=self):
+
+            if self.__lexerPosition.isQuotedString:
+                if char == self.__lexerPosition.isQuotedString:
+                    self.__addLiteralTokenToList(
+                        TT.STRING, self.__lexerPosition.currentToken,
+                    )
+                    self.__lexerPosition.isQuotedString = False
+                    self.__basePositionUpdate()
+                else:
+                    self.__iterateNextChar()
+            else:
+                self.__handleCurrentToken()
+                self.__lexerPosition.nextColumn()
+                self.__lexerPosition.isQuotedString = char
+                self.__lexerPosition.resetCurrentToken()
+
+        return quoteHandler
 
     def __handleDashToken(self):
         """Handle a DASH token '-'
