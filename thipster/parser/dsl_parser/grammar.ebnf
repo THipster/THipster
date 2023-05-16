@@ -1,15 +1,36 @@
-resource        = type, name, ":", [nb_ctrl], [if_ctrl] ,"\n"
-                                {parameter, "\n"}
+[x] resource    = STRING, string, COLON, [nb_ctrl], [if_ctrl] ,NEWLINE
+                                {parameter, NEWLINE}
 
-parameter       = name, ":", 
+[x] parameter   = name, COLON, 
                         (" ", value, [if_else_ctrl]
-                        | [if_ctrl], "\n" (list | dict))
+                        | [if_ctrl], NEWLINE (list | dict))
 
-list           = { "-", value, [nb_ctrl], [if_else_ctrl], "\n"}
-dict            = { "-", name, ":", ( value, [nb_ctrl], [if_else_ctrl] | [nb_ctrl], [if_ctrl], "\n", list), "\n" }
+[x] list        = { MINUS, value, [nb_ctrl], [if_else_ctrl], NEWLINE}
+                | inline_list
 
-nb_ctrl         = "amount", ":", amount, ["#", name]
-if_else_ctrl    = if_ctrl, ["else" , value]
-if_ctrl         = "if", condition
+[x] inline_list = ( BRACKETS_START [ value { COMMA, value } ] BRACKETS_END )
 
-type, name, value, condition = chaine_char
+[x] dict        = { MINUS, name, COLON, ( value, [nb_ctrl], [if_else_ctrl] | [nb_ctrl], [if_ctrl], NEWLINE, list), NEWLINE }
+
+[x] nb_ctrl     = AMOUNT, COLON, arith-expr, ["#", name]
+[x] if_else_ctrl= if_ctrl, [ELSE , value]
+[x] if_ctrl     = IF, comp-expr
+
+[ ] value       = comp-expr|arith-expr|string|VAR|inline_list
+
+[x] comp-expr   = NOT comp-expr
+                | PARENTHESES_START comp-expr (AND|OR) comp-expr PARENTHESES_END
+                | arith-expr ((EE|LT|GT|LTE|GTE) arith-expr)
+                | BOOL
+
+[x] arith-expr  = term {(PLUS|MINUS) term}
+
+[x] term        = factor {(MUL|DIV) factor}
+
+[x] factor      = (PLUS|MINUS) factor
+                | atom {POW factor}
+
+[x] atom        = INT|FLOAT
+                | PARENTHESES_START arith-expr PARENTHESES_END
+
+[x] string      = STRING|VAR {INT|STRING|VAR}

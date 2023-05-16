@@ -10,7 +10,6 @@ class TOKENTYPES(Enum):
     BRACKETS_END = 'BRACKETS_END'
     COLON = 'COLON'
     COMMA = 'COMMA'
-    DASH = 'DASH'
     ELIF = 'ELIF'
     ELSE = 'ELSE'
     EOF = 'EOF'
@@ -18,6 +17,7 @@ class TOKENTYPES(Enum):
     IF = 'IF'
     INT = 'INT'
     NEWLINE = 'NEWLINE'
+    NOT = 'NOT'
     OR = 'OR'
     PARENTHESES_START = 'PARENTHESES_START'
     PARENTHESES_END = 'PARENTHESES_END'
@@ -25,6 +25,19 @@ class TOKENTYPES(Enum):
     TAB = 'TAB'
     VAR = 'VAR'
     WHITESPACE = 'WHITESPACE'
+
+    PLUS = 'PLUS'
+    MINUS = 'MINUS'
+    MUL = 'MUL'
+    DIV = 'DIV'
+    POW = 'POW'
+    EQ = 'EQ'
+    EE = 'EE'
+    NE = 'NE'
+    LT = 'LT'
+    LTE = 'LTE'
+    GT = 'GT'
+    GTE = 'GTE'
 
     def __str__(self) -> str:
         return self.value

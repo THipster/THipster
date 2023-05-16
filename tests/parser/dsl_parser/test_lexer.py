@@ -57,12 +57,24 @@ def test_create_lexer():
     assert len(lexer.tokenList) == 0
 
 
-def test_lex_colon():
-    __single_token_test(':', TT.COLON)
-
-
-def test_lex_comma():
-    __single_token_test(',', TT.COMMA)
+def test_lex_single_tokens():
+    for input, output in {
+        ':': TT.COLON,
+        ',': TT.COMMA,
+        '+': TT.PLUS,
+        '-': TT.MINUS,
+        '=': TT.EQ,
+        '*': TT.MUL,
+        '/': TT.DIV,
+        '==': TT.EE,
+        '!=': TT.NE,
+        '<': TT.LT,
+        '>': TT.GT,
+        '<=': TT.LTE,
+        '>=': TT.GTE,
+        '^': TT.POW,
+    }.items():
+        __single_token_test(input, output)
 
 
 def test_lex_brackets():
@@ -237,7 +249,7 @@ def test_lex_2_4_whitespaces_as_tabs():
 
 
 def test_lex_dash():
-    __single_token_test('-', TT.DASH)
+    __single_token_test('-', TT.MINUS)
 
 
 def test_lex_amount():
@@ -368,7 +380,7 @@ def test_run_lexer():
         __getTokenString('file2', 1, 28, TT.FLOAT, '4.5'),
         __getTokenString('file2', 1, 31, TT.NEWLINE),
         __getTokenString('file2', 2, 1, TT.TAB),
-        __getTokenString('file2', 2, 2, TT.DASH),
+        __getTokenString('file2', 2, 2, TT.MINUS),
         __getTokenString('file2', 2, 3, TT.WHITESPACE),
         __getTokenString('file2', 2, 4, TT.STRING, 'property'),
         __getTokenString('file2', 2, 12, TT.NEWLINE),

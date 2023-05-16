@@ -139,6 +139,8 @@ class Lexer():
             ',': self.__handleCommaToken,
             '[': self.__handleBracketsStartToken,
             ']': self.__handleBracketsEndToken,
+            '(': self.__handleParenthesesStartToken,
+            ')': self.__handleParenthesesEndToken,
             '"': self.__handleDoubleQuotes('"'),
             "'": self.__handleDoubleQuotes("'"),
             '#': self.__handleHashToken,
@@ -146,6 +148,10 @@ class Lexer():
             '\\': self.__handleBackSlashToken,
             '\t': self.__handleTabToken,
             ' ': self.__handleWhitespace,
+
+            '+': self._handlePlusToken,
+            '*': self._handleMulToken,
+            '^': self._handlePowToken,
         }
 
         singleCharTokens.get(self.__currentChar, self.__iterateNextChar)()
@@ -160,7 +166,15 @@ class Lexer():
 
         keyWordsAndTokens = {
             '': self.__handleEmptyToken,
-            '-': self.__handleDashToken,
+            '-': self._handleMinusToken,
+            '/': self._handleDivToken,
+            '=': self._handleEQToken,
+            '==': self._handleEEToken,
+            '!=': self._handleNEToken,
+            '<': self._handleLTToken,
+            '>': self._handleGTToken,
+            '<=': self._handleLTEToken,
+            '>=': self._handleGTEToken,
             'amount': self.__handleAmountToken,
             'and': self.__handleAndToken,
             'if': self.__handleIfToken,
@@ -169,6 +183,7 @@ class Lexer():
             'or': self.__handleOrToken,
             'true': self.__handleBooleanToken,
             'false': self.__handleBooleanToken,
+            'not': self.__handleNotToken,
         }
 
         keyWordsAndTokens.get(
@@ -312,6 +327,85 @@ class Lexer():
         """
         self.__handleBaseToken(TT.BRACKETS_END)
 
+    def __handleParenthesesStartToken(self):
+        """Handle a PARENTESES_START token '('
+        """
+        self.__handleBaseToken(TT.PARENTHESES_START)
+
+    def __handleParenthesesEndToken(self):
+        """Handle a PARENTHESES_END token ')'
+        """
+        self.__handleBaseToken(TT.PARENTHESES_END)
+
+    def _handlePlusToken(self):
+        """Handle a PLUS token '+'
+        """
+        self.__handleBaseToken(TT.PLUS)
+
+    def _handleMinusToken(self):
+        """Handle a MINUS token '-'
+        """
+        self.__lexerPosition.resetConsecutiveWhitespaces()
+        self.__addBaseToken(TT.MINUS, isCurrentToken=True)
+
+    def _handleMulToken(self):
+        """Handle a MUL token '*'
+        """
+        self.__handleBaseToken(TT.MUL)
+
+    def _handleDivToken(self):
+        """Handle a DIV token '/'
+        """
+        self.__lexerPosition.resetConsecutiveWhitespaces()
+        self.__addBaseToken(TT.DIV, isCurrentToken=True)
+
+    def _handleEQToken(self):
+        """Handle a EQ token '='
+        """
+        self.__lexerPosition.resetConsecutiveWhitespaces()
+        self.__addBaseToken(TT.EQ, isCurrentToken=True)
+
+    def _handleEEToken(self):
+        """Handle a EE token '=='
+        """
+        self.__lexerPosition.resetConsecutiveWhitespaces()
+        self.__addBaseToken(TT.EE, isCurrentToken=True)
+
+    def _handleNEToken(self):
+        """Handle a NE token '!='
+        """
+        self.__lexerPosition.resetConsecutiveWhitespaces()
+        self.__addBaseToken(TT.NE, isCurrentToken=True)
+
+    def _handleLTToken(self):
+        """Handle a LT token '<'
+        """
+        self.__lexerPosition.resetConsecutiveWhitespaces()
+        self.__addBaseToken(TT.LT, isCurrentToken=True)
+
+    def _handleLTEToken(self):
+        """Handle a LTE token '<='
+        """
+        self.__lexerPosition.resetConsecutiveWhitespaces()
+        self.__addBaseToken(TT.LTE, isCurrentToken=True)
+
+    def _handleGTToken(self):
+        """Handle a GT token '>'
+        """
+        self.__lexerPosition.resetConsecutiveWhitespaces()
+        self.__addBaseToken(TT.GT, isCurrentToken=True)
+
+    def _handleGTEToken(self):
+        """Handle a GTE token '>='
+        """
+        self.__lexerPosition.resetConsecutiveWhitespaces()
+        self.__addBaseToken(TT.GTE, isCurrentToken=True)
+
+    def _handlePowToken(self):
+        """Handle a POW token '^'
+        """
+        self.__handleBaseToken(TT.POW)
+
     def __handleHashToken(self) -> None:
         """Handle a HASH token '#'
 
@@ -390,12 +484,6 @@ class Lexer():
 
         return quoteHandler
 
-    def __handleDashToken(self):
-        """Handle a DASH token '-'
-        """
-        self.__lexerPosition.resetConsecutiveWhitespaces()
-        self.__addBaseToken(TT.DASH, isCurrentToken=True)
-
     def __handleAmountToken(self):
         """Handle an AMOUNT token 'amount'
         """
@@ -425,6 +513,12 @@ class Lexer():
         """
         self.__lexerPosition.resetConsecutiveWhitespaces()
         self.__addBaseToken(TT.ELSE, isCurrentToken=True)
+
+    def __handleNotToken(self):
+        """Handle an OR token 'or'
+        """
+        self.__lexerPosition.resetConsecutiveWhitespaces()
+        self.__addBaseToken(TT.NOT, isCurrentToken=True)
 
     def __handleOrToken(self):
         """Handle an OR token 'or'

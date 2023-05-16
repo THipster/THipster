@@ -72,7 +72,6 @@ class DSLParser(I_Parser):
 
             return parsedFile
         except DSLParserBaseException as e:
-            print(e.message)
             raise e
         except Exception as e:
             raise e

@@ -22,9 +22,9 @@ def test_simple_file():
 
     assert str(output) == '<RESOURCE \
 type = <STRING (STRING bucket)>, \
-name = <STRING (STRING nom-8)>, \
+name = <STRING-EXPR <STRING (STRING nom-8)>>, \
 parameters = <DICT <PARAMETER name = <STRING (STRING region)>, \
-value = <LITERAL <STRING (STRING euw)>>>>>'
+value = <STRING-EXPR <STRING (STRING euw)>>>>>'
 
 
 def test_newline_remover():
@@ -32,6 +32,7 @@ def test_newline_remover():
         Token(Position('file', 1, 14), TT.NEWLINE),
         Token(Position('file', 1, 14), TT.NEWLINE),
         Token(Position('file', 1, 1), TT.STRING, 'bucket'),
+        Token(Position('file', 1, 1), TT.WHITESPACE),
         Token(Position('file', 1, 8), TT.STRING, 'nom-8'),
         Token(Position('file', 1, 8), TT.COLON),
         Token(Position('file', 1, 14), TT.NEWLINE),
@@ -44,6 +45,7 @@ def test_newline_remover():
         Token(Position('file', 1, 14), TT.NEWLINE),
         Token(Position('file', 1, 14), TT.NEWLINE),
         Token(Position('file', 1, 1), TT.STRING, 'bucket'),
+        Token(Position('file', 1, 1), TT.WHITESPACE),
         Token(Position('file', 1, 8), TT.STRING, 'nom-8'),
         Token(Position('file', 1, 8), TT.COLON),
         Token(Position('file', 1, 14), TT.NEWLINE),
@@ -59,11 +61,11 @@ def test_newline_remover():
 
     assert str(output) == '<RESOURCE \
 type = <STRING (STRING bucket)>, \
-name = <STRING (STRING nom-8)>, \
+name = <STRING-EXPR <STRING (STRING nom-8)>>, \
 parameters = <DICT <PARAMETER name = <STRING (STRING region)>, \
-value = <LITERAL <STRING (STRING euw)>>>>>\n\
+value = <STRING-EXPR <STRING (STRING euw)>>>>>\n\
 <RESOURCE \
 type = <STRING (STRING bucket)>, \
-name = <STRING (STRING nom-8)>, \
+name = <STRING-EXPR <STRING (STRING nom-8)>>, \
 parameters = <DICT <PARAMETER name = <STRING (STRING region)>, \
-value = <LITERAL <STRING (STRING euw)>>>>>'
+value = <STRING-EXPR <STRING (STRING euw)>>>>>'

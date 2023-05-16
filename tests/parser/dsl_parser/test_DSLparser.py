@@ -3,7 +3,8 @@ from parser.dsl_parser.DSLParser import DSLParser
 from parser.dsl_parser.DSLParser import DSLParserPathNotFound
 from parser.dsl_parser.Token import TOKENTYPES as TT
 import os
-from parser.dsl_parser.TokenParser import DSLSyntaxException, DSLUnexpectedEOF
+from parser.dsl_parser.TokenParser import DSLConditionException, DSLSyntaxException,\
+    DSLUnexpectedEOF
 import pytest
 
 
@@ -251,7 +252,7 @@ def test_parse_if_else():
     # IN DICT
     out = __test_file(
         file="""bucket my-bucket:
-\tregion: euw if "1==1" else us
+\tregion: euw if 1 == 1 else us
 """,
     )
 
@@ -269,7 +270,7 @@ def test_parse_if_else():
     # ELSE CASE
     out = __test_file(
         file="""bucket my-bucket:
-\tregion: euw if "1==2" else us
+\tregion: euw if 1 == 2 else us
 """,
     )
 
@@ -288,7 +289,7 @@ def test_parse_if_else():
     out = __test_file(
         file="""bucket my-bucket:
 \tregion:
-\t\t- euw if "1==1" else us
+\t\t- euw if 1 == 1 else us
 """,
     )
 
@@ -412,6 +413,135 @@ def test_parse_amount():
         assert region.value == i
 
 
+def test_var_in_name():
+    out = __test_file(
+        file="""bucket my-bucket#i: amount: 3 #i
+\tregion: #i
+""",
+    )
+
+    assert len(out.resources) == 3
+    for bucket, i in zip(out.resources, range(1, 4)):
+        assert bucket.type == 'bucket'
+        assert bucket.name == 'my-bucket' + str(i)
+        assert len(bucket.attributes) == 1
+
+        region = bucket.attributes[0]
+        assert region.name == 'region'
+        assert region.value == i
+
+
+def test_comparisons():
+    # OR
+    out = __test_file(
+        file="""bucket my-bucket:
+\tregion: euw if (1 == 1 OR 1 == 2) else us
+""",
+    )
+
+    assert len(out.resources) == 1
+
+    bucket = out.resources[0]
+    assert bucket.type == 'bucket'
+    assert bucket.name == 'my-bucket'
+    assert len(bucket.attributes) == 1
+
+    region = bucket.attributes[0]
+    assert region.name == 'region'
+    assert region.value == 'euw'
+
+    # AND
+    out = __test_file(
+        file="""bucket my-bucket:
+\tregion: euw if (not 1 == 1 AND false) else us
+""",
+    )
+
+    assert len(out.resources) == 1
+
+    bucket = out.resources[0]
+    assert bucket.type == 'bucket'
+    assert bucket.name == 'my-bucket'
+    assert len(bucket.attributes) == 1
+
+    region = bucket.attributes[0]
+    assert region.name == 'region'
+    assert region.value == 'us'
+
+
+def test_arithmetic():
+    # PLUS
+    out = __test_file(
+        file="""bucket my-bucket:
+\tvalue: - 1 + 1 - 3
+""",
+    )
+
+    assert len(out.resources) == 1
+
+    bucket = out.resources[0]
+    assert bucket.type == 'bucket'
+    assert bucket.name == 'my-bucket'
+    assert len(bucket.attributes) == 1
+
+    region = bucket.attributes[0]
+    assert region.name == 'value'
+    assert region.value == 3
+
+    # OPERATION ORDER
+    out = __test_file(
+        file="""bucket my-bucket:
+\tvalue2: 10 / 2 + 3 * 3
+""",
+    )
+
+    assert len(out.resources) == 1
+
+    bucket = out.resources[0]
+    assert bucket.type == 'bucket'
+    assert bucket.name == 'my-bucket'
+    assert len(bucket.attributes) == 1
+
+    region = bucket.attributes[0]
+    assert region.name == 'value2'
+    assert region.value == 14
+
+    out = __test_file(
+        file="""bucket my-bucket:
+\tvalue: 10 / (2 + 3) * 3
+""",
+    )
+
+    assert len(out.resources) == 1
+
+    bucket = out.resources[0]
+    assert bucket.type == 'bucket'
+    assert bucket.name == 'my-bucket'
+    assert len(bucket.attributes) == 1
+
+    region = bucket.attributes[0]
+    assert region.name == 'value'
+    assert region.value == 6
+
+    # POW
+    out = __test_file(
+        file="""bucket my-bucket:
+\tvalue: ( - 2 ) ^ 4
+""",
+    )
+
+    assert len(out.resources) == 1
+
+    bucket = out.resources[0]
+    assert bucket.type == 'bucket'
+    assert bucket.name == 'my-bucket'
+    assert len(bucket.attributes) == 1
+
+    region = bucket.attributes[0]
+    assert region.name == 'value'
+    assert region.value == 16
+
+
 def __test_parser_raises(mocker, input: str, exception: Exception)\
         -> pytest.ExceptionInfo:
     with pytest.raises(exception) as exc_info:
@@ -422,12 +552,19 @@ def __test_parser_raises(mocker, input: str, exception: Exception)\
     return exc_info
 
 
-def __test_syntax_error(mocker, input: str, ln: int, col: int, expected: str, got: str):
+def __test_syntax_error(
+    mocker, input: str, ln: int, col: int,
+    expected: str, got: str,
+):
+
     exc_info = __test_parser_raises(mocker, input, DSLSyntaxException)
+
+    exp = str(' or '.join(list(map(lambda x: str(x), expected))))\
+        if isinstance(expected, list) else str(expected.value)
 
     assert repr(exc_info.value) == f'(File : \
 {os.getcwd()}/test/test_file.thips, Ln {str(ln)}, Col {str(col)}) :\n\t\
-Syntax error : Expected {str(expected.value)}, got {str(got.value)}'
+Syntax error : Expected {exp}, got {str(got.value)}'
 
 
 def test_syntax_error_resource(mocker):
@@ -436,7 +573,7 @@ def test_syntax_error_resource(mocker):
             """
     __test_syntax_error(
         mocker, input=input, ln=1, col=8,
-        expected=TT.STRING, got=TT.COLON,
+        expected=[TT.STRING, TT.VAR], got=TT.COLON,
     )
 
 
@@ -507,7 +644,7 @@ bucket my-bucket: amount: str
 """
     __test_syntax_error(
         mocker, input=input, ln=2, col=27,
-        expected=TT.INT, got=TT.STRING,
+        expected=[TT.INT, TT.FLOAT, TT.PARENTHESES_START], got=TT.STRING,
     )
 
 
@@ -516,17 +653,14 @@ def test_syntax_error_if(mocker):
     input = """
 bucket my-bucket: if
 """
-    __test_syntax_error(
-        mocker, input=input, ln=2, col=21,
-        expected=TT.STRING, got=TT.NEWLINE,
-    )
+    __test_parser_raises(mocker, input=input, exception=DSLConditionException)
 
     # UNEXPECTED IF ELSE
     input = """
-bucket my-bucket: if aaa else bbb
+bucket my-bucket: if 1 == 1 else bbb
 """
     __test_syntax_error(
-        mocker, input=input, ln=2, col=26,
+        mocker, input=input, ln=2, col=29,
         expected=TT.NEWLINE, got=TT.ELSE,
     )
 
@@ -536,11 +670,11 @@ def test_syntax_error_if_else(mocker):
     input = """
 bucket my-bucket:
 \ttoto:
-\t\tfoo : bar if aaa else
+\t\tfoo : bar if true else
 """
     __test_syntax_error(
-        mocker, input=input, ln=4, col=24,
-        expected=TT.STRING, got=TT.NEWLINE,
+        mocker, input=input, ln=4, col=25,
+        expected=[TT.INT, TT.FLOAT, TT.PARENTHESES_START], got=TT.NEWLINE,
     )
 
     # MISSING CONDITION VALUE
@@ -549,10 +683,7 @@ bucket my-bucket:
 \ttoto:
 \t\tfoo : bar if  else bbb
 """
-    __test_syntax_error(
-        mocker, input=input, ln=4, col=17,
-        expected=TT.STRING, got=TT.ELSE,
-    )
+    __test_parser_raises(mocker, input=input, exception=DSLConditionException)
 
 
 def test_syntax_error_unexpected_token(mocker):
@@ -563,5 +694,5 @@ bucket if:
 """
     __test_syntax_error(
         mocker, input=input, ln=2, col=8,
-        expected=TT.STRING, got=TT.IF,
+        expected=[TT.STRING, TT.VAR], got=TT.IF,
     )
