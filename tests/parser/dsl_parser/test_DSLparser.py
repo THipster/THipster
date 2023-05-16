@@ -477,10 +477,10 @@ def test_syntax_error_if_else(mocker):
     input = """
 bucket my-bucket:
 \ttoto:
-\t\t- foo : bar if aaa else
+\t\tfoo : bar if aaa else
 """
     __test_syntax_error(
-        mocker, input=input, ln=4, col=26,
+        mocker, input=input, ln=4, col=24,
         expected=TT.STRING, got=TT.NEWLINE,
     )
 
@@ -488,10 +488,10 @@ bucket my-bucket:
     input = """
 bucket my-bucket:
 \ttoto:
-\t\t- foo : bar if  else bbb
+\t\tfoo : bar if  else bbb
 """
     __test_syntax_error(
-        mocker, input=input, ln=4, col=19,
+        mocker, input=input, ln=4, col=17,
         expected=TT.STRING, got=TT.ELSE,
     )
 

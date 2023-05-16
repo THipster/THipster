@@ -308,13 +308,14 @@ class Lexer():
         Replaces 4 following whitespaces by a TAB token
         """
         self.__handleCurrentToken()
+        self.__addBaseToken(TT.WHITESPACE)
         self.__lexerPosition.nextColumn()
-
         self.__lexerPosition.resetCurrentToken()
         self.__lexerPosition.setIsVariable(False)
         self.__lexerPosition.addConsecutiveWhitespace()
         if self.__lexerPosition.consecutiveWhitespaces == 4:
             self.__lexerPosition.nextColumn(-4)
+            self.__rmLastTokens(4)
             self.__addBaseToken(TT.TAB)
             self.__lexerPosition.nextColumn(4)
             self.__lexerPosition.resetConsecutiveWhitespaces()
@@ -326,9 +327,11 @@ class Lexer():
         if not self.__lexerPosition.isCurrentTokenMultiLine:
             self.__handleBaseToken(TT.NEWLINE)
 
-        self.__lexerPosition.setIsMultiLine(value=False)
         self.__lexerPosition.newLine()
-        self.__lexerPosition.setCurrentTokenIndex(1)
+        if not self.__lexerPosition.isCurrentTokenMultiLine:
+            self.__lexerPosition.setCurrentTokenIndex()
+
+        self.__lexerPosition.setIsMultiLine(value=False)
 
     def __handleBackSlashToken(self) -> None:
         """Handle a BACKSLASH token '\\'
@@ -426,6 +429,9 @@ class Lexer():
         if not token:
             pass
         self.__tokenList.append(token)
+
+    def __rmLastTokens(self, amount: int = 1):
+        self.__tokenList = self.__tokenList[:-amount]
 
     def __addFileEnd(self) -> None:
         """Add a NEWLINE and an EOF token at the end of each file

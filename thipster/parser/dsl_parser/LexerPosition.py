@@ -24,6 +24,7 @@ class LexerPosition():
         self.__currentColumn = startColumn
         self.__currentToken = ''
         self.__currentTokenIndex = startColumn
+        self.__currentTokenLine = startColumn
         self.__isVariable = False
         self.__inQuotedString = False
         self.__isMultiLine = False
@@ -77,7 +78,7 @@ class LexerPosition():
     def currentTokenPosition(self) -> Position:
         return Position(
             self.__currentFile,
-            self.__currentLine,
+            self.__currentTokenLine,
             self.__currentTokenIndex,
         )
 
@@ -122,6 +123,7 @@ class LexerPosition():
             self.__currentTokenIndex = newIndex
         else:
             self.__currentTokenIndex = self.__currentColumn
+            self.__currentTokenLine = self.__currentLine
 
     def resetCurrentToken(self, newIndex: int | None = None) -> None:
         """Reset the current stored token and its index

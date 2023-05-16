@@ -93,6 +93,10 @@ class TokenParser():
 
         return nl
 
+    def __get_whitespaces(self):
+        while self.__check(TT.WHITESPACE):
+            pass
+
     def __create_resource(self, indent=0) -> ResourceNode | IfNode | AmountNode:
         """type, name, ":", [amt_ctrl], [if_ctrl] ,"\\n"
                                 (list | dict | {parameter, "\\n"})"""
@@ -101,11 +105,16 @@ class TokenParser():
                 self.__next(TT.TAB)
 
             resType = self.__next(TT.STRING)
+            self.__get_whitespaces()
             name = self.__next(TT.STRING)
+            self.__get_whitespaces()
             self.__next(TT.COLON)
+            self.__get_whitespaces()
 
             nbCtrl = self.__get_nb_ctrl()
+            self.__get_whitespaces()
             ifCtrl = self.__get_if_ctrl()
+            self.__get_whitespaces()
 
             self.__get_newline()
 
@@ -146,7 +155,9 @@ class TokenParser():
         """name, ":", (value, [if_else_ctrl] | [if_ctrl], "\\n", (list | dict))"""
         try:
             name = self.__next(TT.STRING)
+            self.__get_whitespaces()
             self.__next(TT.COLON)
+            self.__get_whitespaces()
         except DSLSyntaxException as e:
             raise e
 
@@ -162,7 +173,9 @@ class TokenParser():
             # value, [if_else_ctrl]
             try:
                 value = self.__get_value()
+                self.__get_whitespaces()
                 ifElseCtrl = self.__get_if_else_ctrl()
+                self.__get_whitespaces()
             except:
                 raise
 
@@ -180,6 +193,7 @@ class TokenParser():
         # [if_ctrl], "\n" (liste | dict)
         try:
             ifCtrl = self.__get_if_ctrl()
+            self.__get_whitespaces()
             nl = self.__get_newline()
             properties = self.__get_properties(indent+1)
         except DSLSyntaxException as e:
@@ -209,12 +223,16 @@ class TokenParser():
         try:
             while self.__get_tabs(indent):
                 self.__check(TT.DASH)
+                self.__get_whitespaces()
 
                 value = self.__get_value()
+                self.__get_whitespaces()
 
                 amountCtrl = self.__get_nb_ctrl()
+                self.__get_whitespaces()
 
                 ifElseCtrl = self.__get_if_else_ctrl()
+                self.__get_whitespaces()
 
                 if ifElseCtrl:
                     ifElseCtrl.ifCase = value
@@ -240,14 +258,15 @@ class TokenParser():
         return ListNode(items)
 
     def __get_dict(self, indent: int) -> DictNode:
-        """{ ["-"], parameter, "\\n" }
+        """{ parameter, "\\n" }
         """
         props = []
 
         try:
             while self.__get_tabs(indent):
-                self.__check(TT.DASH)
+                self.__get_whitespaces()
                 props.append(self.__get_parameter(indent))
+                self.__get_whitespaces()
                 self.__get_newline()
         except Exception as e:
             raise e
@@ -264,19 +283,17 @@ class TokenParser():
     def __get_properties(self, indent: int) -> list[ParameterNode]:
         """(list | dict)
         """
-
+        i = indent
         next = self.__get_next_type(indent)
+        while next == TT.WHITESPACE:
+            i += 1
+            next = self.__get_next_type(i)
 
         if next == TT.STRING:
             props = self.__get_dict(indent)
 
         elif next == TT.DASH:
-            diff = self.__get_next_type(indent+2)
-
-            if diff == TT.COLON:
-                props = self.__get_dict(indent)
-            else:
-                props = self.__get_list(indent)
+            props = self.__get_list(indent)
 
         else:
             raise DSLSyntaxException(self.__next(), TT.TAB)
@@ -290,9 +307,12 @@ class TokenParser():
             nextToken = self.__check(TT.AMOUNT)
             if not nextToken:
                 return None
+            self.__get_whitespaces()
 
             self.__next(TT.COLON)
+            self.__get_whitespaces()
             nb = self.__next(TT.INT)
+            self.__get_whitespaces()
         except DSLSyntaxException as e:
             raise e
 
@@ -313,10 +333,12 @@ class TokenParser():
         condition = self.__check(TT.IF)
         if not condition:
             return None
+        self.__get_whitespaces()
 
         try:
             # TODO : Add real conditions
             condition = self.__next(TT.STRING)
+            self.__get_whitespaces()
         except DSLSyntaxException as e:
             raise e
 
@@ -328,11 +350,14 @@ class TokenParser():
     def __get_if_else_ctrl(self) -> IfElseNode | None:
         """if_ctrl, ["else" , valeur]"""
         ifCtrl = self.__get_if_ctrl()
+        self.__get_whitespaces()
         if not ifCtrl:
             return None
 
         if self.__check(TT.ELSE):
+            self.__get_whitespaces()
             elseCase = self.__get_value()
+            self.__get_whitespaces()
         else:
             elseCase = None
 
