@@ -21,12 +21,18 @@ class TOKENTYPES(Enum):
     VAR = 'VAR'
     WHITESPACE = 'WHITESPACE'
 
+    def __str__(self) -> str:
+        return self.value
+
 
 class Token():
     """Class representing a Token
     """
 
-    def __init__(self, position: Position, tokenType: str, value: str | None = None):
+    def __init__(
+        self, position: Position,
+        tokenType: TOKENTYPES, value: str | None = None,
+    ):
         """
 
         Parameters
@@ -65,7 +71,7 @@ class Token():
             raise TypeError('Value must be a Token')
 
     def __repr__(self) -> str:
-        tokenString = f'(Type: {self.tokenType.upper()}, Position: {str(self.position)}'
+        tokenString = f'(Type: {str(self.tokenType)}, Position: {str(self.position)}'
         if self.value:
             tokenString += f', Value: {self.value}'
         tokenString += ')'

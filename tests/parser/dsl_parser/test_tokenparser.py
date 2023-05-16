@@ -1,20 +1,20 @@
 from engine.ParsedFile import Position
 from parser.dsl_parser.TokenParser import TokenParser
-from parser.dsl_parser.Token import Token
+from parser.dsl_parser.Token import Token, TOKENTYPES as TT
 
 
 def test_simple_file():
     input = [
-        Token(Position('file', 1, 1), 'STRING', 'bucket'),
-        Token(Position('file', 1, 8), 'STRING', 'nom-8'),
-        Token(Position('file', 1, 8), 'COLON'),
-        Token(Position('file', 1, 14), 'NEWLINE'),
-        Token(Position('file', 2, 1), 'TAB'),
-        Token(Position('file', 2, 2), 'STRING', 'region'),
-        Token(Position('file', 1, 8), 'COLON'),
-        Token(Position('file', 2, 3), 'STRING', 'euw'),
-        Token(Position('file', 1, 14), 'NEWLINE'),
-        Token(Position('file', 2, 4), 'EOF'),
+        Token(Position('file', 1, 1), TT.STRING, 'bucket'),
+        Token(Position('file', 1, 8), TT.STRING, 'nom-8'),
+        Token(Position('file', 1, 8), TT.COLON),
+        Token(Position('file', 1, 14), TT.NEWLINE),
+        Token(Position('file', 2, 1), TT.TAB),
+        Token(Position('file', 2, 2), TT.STRING, 'region'),
+        Token(Position('file', 1, 8), TT.COLON),
+        Token(Position('file', 2, 3), TT.STRING, 'euw'),
+        Token(Position('file', 1, 14), TT.NEWLINE),
+        Token(Position('file', 2, 4), TT.EOF),
     ]
 
     parser = TokenParser(input)
@@ -29,32 +29,31 @@ value = <LITERAL <STRING (STRING euw)>>>>>'
 
 def test_newline_remover():
     input = [
-        Token(Position('file', 1, 14), 'NEWLINE'),
-        Token(Position('file', 1, 14), 'NEWLINE'),
-        Token(Position('file', 1, 1), 'STRING', 'bucket'),
-        Token(Position('file', 1, 8), 'STRING', 'nom-8'),
-        Token(Position('file', 1, 8), 'COLON'),
-        Token(Position('file', 1, 14), 'NEWLINE'),
-        Token(Position('file', 1, 14), 'NEWLINE'),
-        Token(Position('file', 2, 1), 'TAB'),
-        Token(Position('file', 2, 2), 'STRING', 'region'),
-        Token(Position('file', 1, 8), 'COLON'),
-        Token(Position('file', 2, 3), 'STRING', 'euw'),
-        Token(Position('file', 1, 14), 'NEWLINE'),
-        Token(Position('file', 1, 14), 'NEWLINE'),
-        Token(Position('file', 1, 14), 'NEWLINE'),
-        Token(Position('file', 1, 1), 'STRING', 'bucket'),
-        Token(Position('file', 1, 8), 'STRING', 'nom-8'),
-        Token(Position('file', 1, 8), 'COLON'),
-        Token(Position('file', 1, 14), 'NEWLINE'),
-        Token(Position('file', 2, 1), 'TAB'),
-        Token(Position('file', 2, 2), 'STRING', 'region'),
-        Token(Position('file', 1, 8), 'COLON'),
-        Token(Position('file', 2, 3), 'STRING', 'euw'),
-        Token(Position('file', 1, 14), 'NEWLINE'),
-        Token(Position('file', 2, 4), 'EOF'),
+        Token(Position('file', 1, 14), TT.NEWLINE),
+        Token(Position('file', 1, 14), TT.NEWLINE),
+        Token(Position('file', 1, 1), TT.STRING, 'bucket'),
+        Token(Position('file', 1, 8), TT.STRING, 'nom-8'),
+        Token(Position('file', 1, 8), TT.COLON),
+        Token(Position('file', 1, 14), TT.NEWLINE),
+        Token(Position('file', 1, 14), TT.NEWLINE),
+        Token(Position('file', 2, 1), TT.TAB),
+        Token(Position('file', 2, 2), TT.STRING, 'region'),
+        Token(Position('file', 1, 8), TT.COLON),
+        Token(Position('file', 2, 3), TT.STRING, 'euw'),
+        Token(Position('file', 1, 14), TT.NEWLINE),
+        Token(Position('file', 1, 14), TT.NEWLINE),
+        Token(Position('file', 1, 14), TT.NEWLINE),
+        Token(Position('file', 1, 1), TT.STRING, 'bucket'),
+        Token(Position('file', 1, 8), TT.STRING, 'nom-8'),
+        Token(Position('file', 1, 8), TT.COLON),
+        Token(Position('file', 1, 14), TT.NEWLINE),
+        Token(Position('file', 2, 1), TT.TAB),
+        Token(Position('file', 2, 2), TT.STRING, 'region'),
+        Token(Position('file', 1, 8), TT.COLON),
+        Token(Position('file', 2, 3), TT.STRING, 'euw'),
+        Token(Position('file', 1, 14), TT.NEWLINE),
+        Token(Position('file', 2, 4), TT.EOF),
     ]
-
     parser = TokenParser(input)
     output = parser.run()
 

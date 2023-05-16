@@ -36,7 +36,7 @@ class TokenParser():
         tree = FileNode()
         try:
             self.__trim_newlines()
-            while self.__get_next_type() != TT.EOF.value:
+            while self.__get_next_type() != TT.EOF:
                 self.__trim_newlines()
 
                 tree.add(self.__create_resource())
@@ -49,7 +49,7 @@ class TokenParser():
     def __next(self, expected: TT | None = None) -> Token:
         """Get next token and pop it from the list"""
         tok = self.__get_next_type()
-        if expected and tok != expected.value:
+        if expected is not None and tok != expected:
             raise DSLSyntaxException(self.__tokens[0], expected)
         return self.__tokens.pop(0)
 
@@ -57,7 +57,7 @@ class TokenParser():
         """Check if the type of the next token is equal to the expected parameter. \
         Pop it from the list in that case"""
         token = self.__get_next_type(index=index)
-        if token != expected.value:
+        if token != expected:
             return None
 
         return self.__next(expected)
@@ -75,14 +75,14 @@ class TokenParser():
 
     def __rm_empty_lines(self):
         # Detect empty line
-        empty_types = [TT.TAB.value]
+        empty_types = [TT.TAB]
         end = 0
         while end < len(self.__tokens):
             begin = end
             while self.__get_next_type(end) in empty_types:
                 end += 1
 
-            if self.__get_next_type(index=end) == TT.NEWLINE.value:
+            if self.__get_next_type(index=end) == TT.NEWLINE:
                 for _ in range(begin, end):
                     self.__tokens.pop(begin)
             end += 1
@@ -134,9 +134,9 @@ class TokenParser():
     def __get_tabs(self, indent: int) -> bool:
         """Check if the number of tabs is correct/ if it is the end of the block"""
 
-        if self.__get_next_type() == TT.EOF.value:
+        if self.__get_next_type() == TT.EOF:
             return False
-        elif self.__get_next_type(indent-1) == TT.TAB.value:
+        elif self.__get_next_type(indent-1) == TT.TAB:
             for i in range(indent):
                 self.__next(TT.TAB)
             return True
@@ -153,11 +153,11 @@ class TokenParser():
         next = self.__get_next_type()
 
         if next in [
-            TT.BOOLEAN.value,
-            TT.FLOAT.value,
-            TT.INT.value,
-            TT.STRING.value,
-            TT.VAR.value,
+            TT.BOOLEAN,
+            TT.FLOAT,
+            TT.INT,
+            TT.STRING,
+            TT.VAR,
         ]:
             # value, [if_else_ctrl]
             try:
@@ -183,7 +183,7 @@ class TokenParser():
             nl = self.__get_newline()
             properties = self.__get_properties(indent+1)
         except DSLSyntaxException as e:
-            if e.tok.tokenType == TT.TAB.value:
+            if e.tok.tokenType == TT.TAB:
                 raise DSLSyntaxException(
                     token=nl,
                     expected=TT.STRING,
@@ -233,7 +233,7 @@ class TokenParser():
         self.__tokens.insert(
             0, Token(
                 position=self.__tokens[0].position,
-                tokenType=TT.NEWLINE.value,
+                tokenType=TT.NEWLINE,
             ),
         )
 
@@ -255,7 +255,7 @@ class TokenParser():
         self.__tokens.insert(
             0, Token(
                 position=self.__tokens[0].position,
-                tokenType=TT.NEWLINE.value,
+                tokenType=TT.NEWLINE,
             ),
         )
 
@@ -267,13 +267,13 @@ class TokenParser():
 
         next = self.__get_next_type(indent)
 
-        if next == TT.STRING.value:
+        if next == TT.STRING:
             props = self.__get_dict(indent)
 
-        elif next == TT.DASH.value:
+        elif next == TT.DASH:
             diff = self.__get_next_type(indent+2)
 
-            if diff == TT.COLON.value:
+            if diff == TT.COLON:
                 props = self.__get_dict(indent)
             else:
                 props = self.__get_list(indent)
@@ -345,15 +345,15 @@ class TokenParser():
     def __get_value(self) -> LiteralNode:
 
         nextType = self.__get_next_type()
-        if nextType == TT.BOOLEAN.value:
+        if nextType == TT.BOOLEAN:
             value = LiteralNode(BoolNode(self.__next()))
-        elif nextType == TT.FLOAT.value:
+        elif nextType == TT.FLOAT:
             value = LiteralNode(FloatNode(self.__next()))
-        elif nextType == TT.INT.value:
+        elif nextType == TT.INT:
             value = LiteralNode(IntNode(self.__next()))
-        elif nextType == TT.STRING.value:
+        elif nextType == TT.STRING:
             value = LiteralNode(StringNode(self.__next()))
-        elif nextType == TT.VAR.value:
+        elif nextType == TT.VAR:
             value = LiteralNode(VariableNode(self.__next()))
         else:
             raise DSLSyntaxException(self.__next(), TT.STRING)

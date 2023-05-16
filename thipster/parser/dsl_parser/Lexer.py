@@ -178,17 +178,17 @@ class Lexer():
         """
         currentToken = self.__lexerPosition.currentToken
         if self.__lexerPosition.isCurrentTokenAVariable:
-            self.__addLiteralTokenToList(TT.VAR.value, currentToken)
+            self.__addLiteralTokenToList(TT.VAR, currentToken)
             self.__lexerPosition.setIsVariable(False)
 
         elif currentToken.isdigit():
-            self.__addLiteralTokenToList(TT.INT.value, currentToken)
+            self.__addLiteralTokenToList(TT.INT, currentToken)
 
         elif self.__isfloat(currentToken):
-            self.__addLiteralTokenToList(TT.FLOAT.value, currentToken)
+            self.__addLiteralTokenToList(TT.FLOAT, currentToken)
 
         else:
-            self.__addLiteralTokenToList(TT.STRING.value, currentToken)
+            self.__addLiteralTokenToList(TT.STRING, currentToken)
 
     def __addLiteralTokenToList(self, tokenType: str, value: str):
         """Add a literal token to the token list
@@ -291,7 +291,7 @@ class Lexer():
     def __handleColonToken(self):
         """Handle a COLON token ':'
         """
-        self.__handleBaseToken(TT.COLON.value)
+        self.__handleBaseToken(TT.COLON)
 
     def __handleHashToken(self) -> None:
         """Handle a HASH token '#'
@@ -309,21 +309,22 @@ class Lexer():
         """
         self.__handleCurrentToken()
         self.__lexerPosition.nextColumn()
+
         self.__lexerPosition.resetCurrentToken()
         self.__lexerPosition.setIsVariable(False)
         self.__lexerPosition.addConsecutiveWhitespace()
         if self.__lexerPosition.consecutiveWhitespaces == 4:
             self.__lexerPosition.nextColumn(-4)
-            self.__addBaseToken(TT.TAB.value)
+            self.__addBaseToken(TT.TAB)
+            self.__lexerPosition.nextColumn(4)
             self.__lexerPosition.resetConsecutiveWhitespaces()
-            self.__lexerPosition.nextColumn()
             self.__lexerPosition.setCurrentTokenIndex()
 
     def __handleNewlineToken(self) -> None:
         """Handle a NEWLINE token '\\n'
         """
         if not self.__lexerPosition.isCurrentTokenMultiLine:
-            self.__handleBaseToken(TT.NEWLINE.value)
+            self.__handleBaseToken(TT.NEWLINE)
 
         self.__lexerPosition.setIsMultiLine(value=False)
         self.__lexerPosition.newLine()
@@ -340,7 +341,7 @@ class Lexer():
     def __handleTabToken(self) -> None:
         """Handle a TAB token '\\t'
         """
-        self.__handleBaseToken(TT.TAB.value)
+        self.__handleBaseToken(TT.TAB)
 
     def __handleDoubleQuotes(self) -> None:
         """Handle a DOUBLEQUOTES token '"'
@@ -349,7 +350,7 @@ class Lexer():
         """
         if self.__lexerPosition.isCurrentTokenAString:
             self.__addLiteralTokenToList(
-                TT.STRING.value, self.__lexerPosition.currentToken,
+                TT.STRING, self.__lexerPosition.currentToken,
             )
             self.__lexerPosition.setIsString()
             self.__basePositionUpdate()
@@ -363,56 +364,56 @@ class Lexer():
         """Handle a DASH token '-'
         """
         self.__lexerPosition.resetConsecutiveWhitespaces()
-        self.__addBaseToken(TT.DASH.value, isCurrentToken=True)
+        self.__addBaseToken(TT.DASH, isCurrentToken=True)
 
     def __handleAmountToken(self):
         """Handle an AMOUNT token 'amount'
         """
         self.__lexerPosition.resetConsecutiveWhitespaces()
-        self.__addBaseToken(TT.AMOUNT.value, isCurrentToken=True)
+        self.__addBaseToken(TT.AMOUNT, isCurrentToken=True)
 
     def __handleAndToken(self):
         """Handle an AND token 'and'
         """
         self.__lexerPosition.resetConsecutiveWhitespaces()
-        self.__addBaseToken(TT.AND.value, isCurrentToken=True)
+        self.__addBaseToken(TT.AND, isCurrentToken=True)
 
     def __handleIfToken(self):
         """Handle an IF token 'if'
         """
         self.__lexerPosition.resetConsecutiveWhitespaces()
-        self.__addBaseToken(TT.IF.value, isCurrentToken=True)
+        self.__addBaseToken(TT.IF, isCurrentToken=True)
 
     def __handleElifToken(self):
         """Handle an ELIF token 'elif'
         """
         self.__lexerPosition.resetConsecutiveWhitespaces()
-        self.__addBaseToken(TT.ELIF.value, isCurrentToken=True)
+        self.__addBaseToken(TT.ELIF, isCurrentToken=True)
 
     def __handleElseToken(self):
         """Handle an ELSE token 'else'
         """
         self.__lexerPosition.resetConsecutiveWhitespaces()
-        self.__addBaseToken(TT.ELSE.value, isCurrentToken=True)
+        self.__addBaseToken(TT.ELSE, isCurrentToken=True)
 
     def __handleOrToken(self):
         """Handle an OR token 'or'
         """
         self.__lexerPosition.resetConsecutiveWhitespaces()
-        self.__addBaseToken(TT.OR.value, isCurrentToken=True)
+        self.__addBaseToken(TT.OR, isCurrentToken=True)
 
     def __handleBooleanToken(self):
         """Handle a BOOLEAN token 'true' or 'false'
         """
         self.__lexerPosition.resetConsecutiveWhitespaces()
         self.__addBaseToken(
-            TT.BOOLEAN.value, self.__lexerPosition.currentToken, True,
+            TT.BOOLEAN, self.__lexerPosition.currentToken, True,
         )
 
     def __handleEofToken(self) -> None:
         """Add an EOF token at the end of each file
         """
-        self.__addBaseToken(TT.EOF.value)
+        self.__addBaseToken(TT.EOF)
 
     def __addTokenToList(self, token: Token | None) -> None:
         """Add a new token to the parser's token list

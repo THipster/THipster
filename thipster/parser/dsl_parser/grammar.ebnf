@@ -1,0 +1,15 @@
+resource        = type, name, ":", [nb_ctrl], [if_ctrl] ,"\n"
+                                {parameter, "\n"}
+
+parameter       = name, ":", 
+                        (" ", value, [if_else_ctrl]
+                        | [if_ctrl], "\n" (list | dict))
+
+list           = { "-", value, [nb_ctrl], [if_else_ctrl], "\n"}
+dict            = { "-", name, ":", ( value, [nb_ctrl], [if_else_ctrl] | [nb_ctrl], [if_ctrl], "\n", list), "\n" }
+
+nb_ctrl         = "amount", ":", amount, ["#", name]
+if_else_ctrl    = if_ctrl, ["else" , value]
+if_ctrl         = "if", condition
+
+type, name, value, condition = chaine_char
