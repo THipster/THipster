@@ -43,6 +43,7 @@ def test_get_bucket():
             """
 {
     "dependencies": {},
+    "internalObjects": {},
     "attributes":{
         "region": {
             "optional": true,
@@ -83,6 +84,7 @@ def test_get_vm():
             """
 {
     "dependencies": {},
+    "internalObjects": {},
     "attributes":{
         "region": {
             "optional": true,
@@ -101,8 +103,12 @@ def test_get_vm():
             """
 {
     "dependencies": {
-        "network": "test/network"
+        "network": {
+            "resource": "test/network",
+            "default": {}
+        }
     },
+    "internalObjects": {},
     "attributes":{
         "region": {
             "optional": true,
@@ -157,8 +163,12 @@ def test_cyclic_import():
             """
 {
     "dependencies": {
-        "network": "test/cyclic"
+        "network": {
+            "resource": "test/cyclic",
+            "default": {}
+        }
     },
+    "internalObjects": {},
     "attributes":{
         "region": {
             "optional": true,

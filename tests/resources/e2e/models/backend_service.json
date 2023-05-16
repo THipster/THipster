@@ -1,0 +1,53 @@
+{
+    "dependencies": {
+        "":{
+            "resource" : "firewall",
+            "default" : {}
+        }
+    },
+    "internalObjects": {
+        "backend":{
+            "resource" : "backend",
+            "defaults" : []
+        },
+        "health_checks":{
+            "resource" : "health_check",
+            "default" : [{
+            
+            }]
+        }
+    },
+    "attributes":{
+        "protocol": {
+            "optional": true,
+            "default": "HTTP",
+            "cdk_key": "protocol"
+        },
+        "port": {
+            "optional": true,
+            "default": "http",
+            "cdk_key": "port_name"
+        },
+        "load_balancing_scheme": {
+            "optional": true,
+            "default": "EXTERNAL",
+            "cdk_key": "load_balancing_scheme"
+        },
+        "timeout_sec": {
+            "optional": true,
+            "default": 10,
+            "cdk_key": "timeout_sec"
+        },
+        "enable_cdn": {
+            "optional": true,
+            "default": true,
+            "cdk_key": "enable_cdn"
+        }
+    
+    },
+    "cdk_name_key": "name",
+
+    "cdk_provider":"cdktf_cdktf_provider_google",
+    "cdk_module":"compute_backend_service",
+    "cdk_class":"ComputeBackendService"
+}

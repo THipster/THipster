@@ -1,0 +1,19 @@
+{
+    "dependencies": {
+        "default_service":{
+            "resource" : "backend_service",
+            "default" : {
+            
+            }
+        }
+    },
+    "internalObjects": {},
+    "attributes":{
+    
+    },
+    "cdk_name_key": "name",
+
+    "cdk_provider":"cdktf_cdktf_provider_google",
+    "cdk_module":"compute_url_map",
+    "cdk_class":"ComputeUrlMap"
+}

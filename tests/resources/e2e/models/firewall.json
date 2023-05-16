@@ -1,0 +1,35 @@
+{
+    "dependencies": {
+        "network": {
+            "resource" : "network",
+            "default" : {}
+        }
+    },
+    "internalObjects": {
+        "allow": {
+            "resource" : "firewall_allow",
+            "defaults" : [
+                {
+                    "protocol" : "tcp"
+                }
+            ]
+        }
+    },
+    "attributes":{
+        "direction": {
+            "optional": true,
+            "default": "INGRESS",
+            "cdk_key": "direction"
+        },
+        "source_ranges": {
+            "optional": true,
+            "default": [],
+            "cdk_key": "source_ranges"
+        }
+    },
+    "cdk_name_key": "name",
+
+    "cdk_provider":"cdktf_cdktf_provider_google",
+    "cdk_module":"compute_firewall",
+    "cdk_class":"ComputeFirewall"
+}

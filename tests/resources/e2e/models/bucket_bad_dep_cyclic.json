@@ -1,0 +1,16 @@
+{
+    "dependencies": {"bucketBadChild":"bucket_bad_dep_cyclic"},
+    "internalObjects": {},
+    "attributes":{
+        "region": {
+            "optional": true,
+            "default": "euw",
+            "cdk_key": "location"
+        }
+    },
+    "cdk_name_key": "name",
+
+    "cdk_provider":"cdktf_cdktf_provider_google",
+    "cdk_module":"storage_bucket",
+    "cdk_class":"StorageBucket"
+}

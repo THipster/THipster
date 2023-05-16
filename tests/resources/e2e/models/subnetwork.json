@@ -1,0 +1,25 @@
+{
+    "dependencies": {
+        "network" : {
+            "resource" : "network",
+            "default" : {}
+        }
+    },
+    "internalObjects": {},
+    "attributes": {
+        "ip_range": {
+            "optional": false,
+            "cdk_key": "ip_cidr_range"
+        },
+        "region": {
+            "optional": true,
+            "default": "europe-west1b",
+            "cdk_key": "region"
+        }
+    },
+    "cdk_name_key": "name",
+
+    "cdk_provider":"cdktf_cdktf_provider_google",
+    "cdk_module":"compute_subnetwork",
+    "cdk_class":"ComputeSubnetwork"
+}

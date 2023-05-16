@@ -1,0 +1,36 @@
+{
+    "dependencies": {
+        "ip_address":{
+            "resource" : "global_address",
+            "default" : {}
+        },
+        "target":{
+            "resource" : "target_http_proxy",
+            "default" : {}
+        }
+    },
+    "internalObjects": {},
+    "attributes":{
+        "ip_protocol": {
+            "optional": true,
+            "default": "TCP",
+            "cdk_key": "ip_protocol"
+        },
+        "port_range": {
+            "optional": true,
+            "default": "80",
+            "cdk_key": "port_range"
+        },
+        "load_balancing_scheme": {
+            "optional": true,
+            "default": "EXTERNAL",
+            "cdk_key": "load_balancing_scheme"
+        }
+        
+    },
+    "cdk_name_key": "name",
+
+    "cdk_provider":"cdktf_cdktf_provider_google",
+    "cdk_module":"compute_global_forwarding_rule",
+    "cdk_class":"ComputeGlobalForwardingRule"
+}
