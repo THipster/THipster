@@ -127,24 +127,13 @@ class CDK(I_Terraform):
             if attribute.name and model.name_key:
                 resource_args[model.name_key] = attribute.name
 
-            # Checks if attribute is an already declared dependency
-            if attribute.name in deps:
-                del deps[attribute.name]
-                continue
-
-            # Checks if attribute is an internal object
-            if attribute.name in model.internalObjects:
-                CDK._create_resource_from_args(
-                    self,
-                    model.internalObjects[attribute.name]['resource'],
-                    attribute.value,
-                )
-
-            # Checks if attribute is required
-            if attribute.name not in model.attributes:
-                raise CDKInvalidAttribute(attribute.name, model.type)
-
-            resource_args[model.attributes[attribute.name].cdk_name] = attribute.value
+            resource_args, deps = CDK._process_attribute(
+                self,
+                model=model,
+                attribute=attribute,
+                resource_args=resource_args,
+                deps=deps,
+            )
 
         # Create resource
         CDK._parentStack.remove(typ)
@@ -169,37 +158,65 @@ class CDK(I_Terraform):
             resource_args[v.cdk_name] = v.default
 
         for attribute in resource.attributes:
-            # Checks if attribute is an already declared dependency
-            if attribute.name in deps:
-                del deps[attribute.name]
-                continue
 
-            # Checks if attribute is an internal object
-            if attribute.name in model.internalObjects:
-                res = CDK._create_resource_from_args(
-                    self,
-                    model.internalObjects[attribute.name]['resource'],
-                    attribute.value,
-                )
-
-                if model.internalObjects[attribute.name]['is_list']:
-                    if attribute.name not in resource_args:
-                        resource_args[attribute.name] = []
-                    resource_args[attribute.name] += [res]
-                    continue
-
-                resource_args[attribute.name] = res
-                continue
-
-            # Checks if attribute is required
-            if attribute.name not in model.attributes:
-                raise CDKInvalidAttribute(attribute.name, model.type)
-
-            resource_args[model.attributes[attribute.name].cdk_name] = attribute.value
+            resource_args, deps = CDK._process_attribute(
+                self,
+                model=model,
+                attribute=attribute,
+                resource_args=resource_args,
+                deps=deps,
+            )
 
         # Create resource
         CDK._parentStack.remove(resource.type)
         return resourceClass(self, resource.name, **resource_args)
+
+    def _process_attribute(
+        self,
+        model: rm.ResourceModel,
+        attribute: pf.ParsedAttribute,
+        resource_args: dict[str, object],
+        deps: dict[str, dict[str, object]] | None,
+    ):
+        if attribute.name in deps:
+            del deps[attribute.name]
+            return resource_args, deps
+
+        if attribute.name in model.internalObjects:
+            resource_args = CDK._handle_internal_object(
+                self,
+                model=model,
+                attribute=attribute,
+                resource_args=resource_args,
+            )
+            return resource_args, deps
+
+        if attribute.name not in model.attributes:
+            raise CDKInvalidAttribute(attribute.name, model.type)
+
+        resource_args[model.attributes[attribute.name].cdk_name] = attribute.value
+        return resource_args, deps
+
+    def _handle_internal_object(
+        self,
+        model: rm.ResourceModel,
+        attribute: pf.ParsedAttribute,
+        resource_args: dict,
+    ):
+        res = CDK._create_resource_from_args(
+            self,
+            model.internalObjects[attribute.name]['resource'],
+            attribute.value,
+        )
+
+        if model.internalObjects[attribute.name]['is_list']:
+            if attribute.name not in resource_args:
+                resource_args[attribute.name] = []
+            resource_args[attribute.name] += [res]
+        else:
+            resource_args[attribute.name] = res
+
+        return resource_args
 
     def generate(self, file: pf.ParsedFile, models: dict[str, rm.ResourceModel]):
 
