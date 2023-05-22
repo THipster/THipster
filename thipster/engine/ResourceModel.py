@@ -19,8 +19,10 @@ class Model_Attribute():
     """
 
     def __init__(
-            self, cdk_name: str, default: I_Model_Value | None = None,
+            self, cdk_name: str,
+            default: I_Model_Value | None = None,
             optional: bool = True,
+            is_list: bool = False,
     ):
         """
         Parameters
@@ -31,10 +33,13 @@ class Model_Attribute():
             Default Attribute value if there is one, by default None
         optional : bool, optional
             Is attribute optional ?, by default True
+        is_list : bool, optional
+            Is attribute a list ?, by default False
         """
         self.__cdk_name = cdk_name
         self.__default = default
         self.__optional = optional
+        self.__is_list = is_list
 
     @property
     def default(self):
@@ -47,6 +52,10 @@ class Model_Attribute():
     @property
     def optional(self):
         return self.__optional
+
+    @property
+    def is_list(self):
+        return self.__is_list
 
 
 class Model_List(I_Model_Value):

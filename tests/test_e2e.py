@@ -171,3 +171,20 @@ firewall testParent:
         """,
     )
     assert 'cdktf.out/stacks/firewall--testParent' in out
+
+
+def test_bucket_cors():
+    out = __test_file(
+        file="""
+bucket corsBucket:
+    cors:
+        origin:
+            - http://image-store.com
+        method:
+            - "*"
+        responseHeader:
+            - "*"
+        maxAge: 400
+        """,
+    )
+    assert 'cdktf.out/stacks/bucket--corsBucket' in out

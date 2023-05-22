@@ -88,12 +88,16 @@ class JSONRepo(I_Repository, ABC):
             value = attr['default'] if 'default' in attr.keys(
             ) else None
 
+            is_list = attr['is_list'] if 'is_list' in attr.keys(
+            ) else False
+
             default = self.__create_value(value)
 
             attributes[name] = rm.Model_Attribute(
                 attr['cdk_key'],
                 default=default,
                 optional=optional,
+                is_list=is_list,
             )
 
         return attributes

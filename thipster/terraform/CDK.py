@@ -194,7 +194,16 @@ class CDK(I_Terraform):
         if attribute.name not in model.attributes:
             raise CDKInvalidAttribute(attribute.name, model.type)
 
-        resource_args[model.attributes[attribute.name].cdk_name] = attribute.value
+        attribute_value = attribute.value
+
+        if model.attributes[attribute.name].is_list:
+            if type(attribute.value) is list:
+                attribute_value = [i.value for i in attribute.value]
+            else:
+                attribute_value = [attribute.value]
+
+        resource_args[model.attributes[attribute.name].cdk_name] = attribute_value
+
         return resource_args, deps
 
     def _handle_internal_object(
