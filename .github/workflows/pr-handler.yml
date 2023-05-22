@@ -1,54 +1,57 @@
 name: "Pull Request Handler"
 on:
-    pull_request:
-        types: [opened, edited, reopened, synchronize]
+  pull_request:
+    types: [opened, edited, reopened, synchronize]
 
 jobs:
-    triage:
-        permissions:
-            contents: read
-            pull-requests: write
-        runs-on: ubuntu-latest
-        steps:
-            - uses: actions/labeler@v4
+  triage:
+    permissions:
+      contents: read
+      pull-requests: write
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/labeler@v4
 
-    check_pr_name:
-        if: ${{ github.actor != 'dependabot[bot]'  && github.actor != 'allcontributors[bot]' }}
-        runs-on: ubuntu-latest
-        steps:
-          - uses: actions/checkout@v3
-          - name: Install deps
-            run: |
-              npm install commitlint-config-gitmoji commitlint
-              echo "module.exports = {extends: ['gitmoji']};" > ./commitlint.config.js
-          - name: Run PR name linter
-            uses: JulienKode/pull-request-name-linter-action@v0.5.0
+  check_pr_name:
+    if: ${{ github.actor != 'dependabot[bot]'  && github.actor != 'allcontributors[bot]' }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Install deps
+        run: |
+          npm install commitlint-config-gitmoji commitlint
+          echo "module.exports = {extends: ['gitmoji']};" > ./commitlint.config.js
+      - name: Run PR name linter
+        uses: JulienKode/pull-request-name-linter-action@v0.5.0
 
-    tests:
-        if: ${{ !contains(github.event.pull_request.title, ':memo:') }}
-        runs-on: ubuntu-latest
-        steps:
-            - uses: actions/setup-python@v4
-              with:
-                python-version: '3.11'
-            - uses: actions/checkout@v3
-            - name: Install deps
-              run: |
-                python -m pip install --upgrade pip
-                pip install dagger-io
-            - name: Run Dagger_test.py pipeline
-              run: python pipelines/test.py
+  prhandler:
+    name: "Dagger.io Pre-commit + Tests"
+    if: ${{ !contains(github.event.pull_request.title, ':memo:') }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+      - uses: actions/checkout@v3
+      - name: Install deps
+        run: |
+          python -m pip install --upgrade pip
+          pip install dagger-io
+      - name: Run Dagger_test.py pipeline
+        run: python pipelines/prhandler.py
 
-    run_pre-commit:
-        runs-on: ubuntu-latest
-        steps:
-            - uses: actions/setup-python@v4
-              with:
-                python-version: '3.11'
-            - uses: actions/checkout@v3
-            - name: Install deps
-              run: |
-                python -m pip install --upgrade pip
-                pip install dagger-io
-            - name: Run Dagger_pre-commit.py pipeline
-              run: python pipelines/pre-commit.py
+  run_pre-commit:
+    name: "Dagger.io Pre-commit only on doc"
+    if: ${{ contains(github.event.pull_request.title, ':memo:') }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+      - uses: actions/checkout@v3
+      - name: Install deps
+        run: |
+          python -m pip install --upgrade pip
+          pip install dagger-io
+      - name: Run Dagger_pre-commit.py pipeline
+        run: python pipelines/precommit.py

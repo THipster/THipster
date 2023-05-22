@@ -21,9 +21,6 @@ setup(
             'dagger.io',
             'pre-commit',
         ],
-        'google': [
-            'cdktf-cdktf-provider-google==7.0.4',
-        ],
         'doc': [
             'sphinx',
         ],
