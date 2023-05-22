@@ -5,6 +5,10 @@
         "protocol": {
             "optional": false,
             "cdk_key": "protocol"
+        },
+        "ports": {
+            "optional": true,
+            "cdk_key": "ports"
         }
     },
 

@@ -128,7 +128,7 @@ class ResourceModel():
             attributes: dict[str, Model_Attribute] | None,
             dependencies: dict[str, dict[str, object]] | None,
             internalObjects: dict[str, dict[str, object]] | None,
-            name_key: str,
+            name_key: str | None,
             cdk_provider: str,
             cdk_module: str,
             cdk_name: str,

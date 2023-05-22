@@ -11,6 +11,7 @@ import engine.ResourceModel as rm
 import engine.ParsedFile as pf
 from cdktf_cdktf_provider_google.provider import GoogleProvider
 from engine.I_Terraform import I_Terraform
+from helpers import createLogger as Logger
 
 
 class CDKException(Exception):
@@ -49,11 +50,15 @@ class CDKCyclicDependencies(CDKException):
 class CDK(I_Terraform):
     _models = []
     _parentStack = []
+    _importedPackages = []
+    _logger = Logger(__name__)
 
     def _pip_install(package: str):
-        subprocess.check_call(
-            [sys.executable, '-m', 'pip', 'install', package],
-        )
+        if package not in CDK._importedPackages:
+            subprocess.check_call(
+                [sys.executable, '-m', 'pip', 'install', '-qqq', package],
+            )
+            CDK._importedPackages.append(package)
 
     def _import(packageName: str, moduleName: str, className: str) -> type:
 
@@ -63,7 +68,7 @@ class CDK(I_Terraform):
         return clazz
 
     def _create_default_resource(
-        self, typ: str, parentName: str = None,
+        self, typ: str, parentName: str | None = None,
         noModif: bool = True,
     ):
         if typ in CDK._parentStack:
@@ -85,9 +90,10 @@ class CDK(I_Terraform):
 
         deps = copy.deepcopy(model.dependencies)
 
-        resource_args = {
-            model.name_key: name,
-        }
+        resource_args = {}
+
+        if model.name_key:
+            resource_args[model.name_key] = name
 
         for _, v in model.attributes.items():
             resource_args[v.cdk_name] = v.default
@@ -104,8 +110,7 @@ class CDK(I_Terraform):
         return (resourceClass, name, resource_args)
 
     def _create_resource_from_args(
-        self, typ: str, args: dict[str, object], parentName: str = None,
-        noModif: bool = True,
+        self, typ: str, args: list[pf.ParsedAttribute] | None,
     ):
         resourceClass, resourceName, resource_args = CDK._create_default_resource(
             self,
@@ -117,37 +122,34 @@ class CDK(I_Terraform):
         # 3 - vérifie les paramètres de la ressource correspondent à ceux du modèle
         deps = copy.deepcopy(model.dependencies)
 
-        if 'name' in args:
-            resourceName = args['name']
-            resource_args[model.name_key] = args['name']
+        for attribute in args:
 
-        for _, v in model.attributes.items():
-            resource_args[v.cdk_name] = v.default
+            if attribute.name and model.name_key:
+                resource_args[model.name_key] = attribute.name
 
-        for ak, av in args.items():
             # Checks if attribute is an already declared dependency
-            if ak in deps:
-                del deps[ak]
+            if attribute.name in deps:
+                del deps[attribute.name]
                 continue
 
             # Checks if attribute is an internal object
-            if ak in model.internalObjects:
+            if attribute.name in model.internalObjects:
                 CDK._create_resource_from_args(
                     self,
-                    model.internalObjects[ak]['resource'],
-                    av,
-                    parentName=resourceName,
-                    noModif=False,
+                    model.internalObjects[attribute.name]['resource'],
+                    attribute.value,
                 )
 
             # Checks if attribute is required
-            if ak not in model.attributes:
-                raise CDKInvalidAttribute(ak, model.type)
+            if attribute.name not in model.attributes:
+                raise CDKInvalidAttribute(attribute.name, model.type)
 
-            resource_args[model.attributes[ak].cdk_name] = av
+            resource_args[model.attributes[attribute.name].cdk_name] = attribute.value
 
         # Create resource
         CDK._parentStack.remove(typ)
+        if not model.name_key:
+            return resourceClass(**resource_args)
         return resourceClass(self, resourceName, **resource_args)
 
     def _create_resource_from_resource(self, resource: pf.ParsedResource):
@@ -161,31 +163,39 @@ class CDK(I_Terraform):
         # 3 - vérifie les paramètres de la ressource correspondent à ceux du modèle
         deps = copy.deepcopy(model.dependencies)
 
-        resource_args[model.name_key] = resource.name
+        if model.name_key:
+            resource_args[model.name_key] = resource.name
         for _, v in model.attributes.items():
             resource_args[v.cdk_name] = v.default
 
-        for a in resource.attributes:
+        for attribute in resource.attributes:
             # Checks if attribute is an already declared dependency
-            if a.name in deps:
-                del deps[a.name]
+            if attribute.name in deps:
+                del deps[attribute.name]
                 continue
 
             # Checks if attribute is an internal object
-            if a.name in model.internalObjects:
-                CDK._create_resource_from_args(
+            if attribute.name in model.internalObjects:
+                res = CDK._create_resource_from_args(
                     self,
-                    model.internalObjects[a.name]['resource'],
-                    a.value,
-                    parentName=resource.name,
-                    noModif=False,
+                    model.internalObjects[attribute.name]['resource'],
+                    attribute.value,
                 )
 
-            # Checks if attribute is required
-            if a.name not in model.attributes:
-                raise CDKInvalidAttribute(a.name, model.type)
+                if model.internalObjects[attribute.name]['is_list']:
+                    if attribute.name not in resource_args:
+                        resource_args[attribute.name] = []
+                    resource_args[attribute.name] += [res]
+                    continue
 
-            resource_args[model.attributes[a.name].cdk_name] = a.value
+                resource_args[attribute.name] = res
+                continue
+
+            # Checks if attribute is required
+            if attribute.name not in model.attributes:
+                raise CDKInvalidAttribute(attribute.name, model.type)
+
+            resource_args[model.attributes[attribute.name].cdk_name] = attribute.value
 
         # Create resource
         CDK._parentStack.remove(resource.type)

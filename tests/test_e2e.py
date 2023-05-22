@@ -155,19 +155,19 @@ loadbalancer my-lb:
 def test_internal_object():
     out = __test_file(
         file="""
-internal_obj_test_parent testParent:
-\tauto_create_subnetworks: true
+firewall testParent:
+\tdirection: EGRESS
         """,
     )
-    assert 'cdktf.out/stacks/internal_obj_test_parent--testParent' in out
+    assert 'cdktf.out/stacks/firewall--testParent' in out
 
     out = __test_file(
         file="""
-internal_obj_test_parent testParent:
-\tauto_create_subnetworks: true
+firewall testParent:
+\tdirection: EGRESS
 
-\tchild:
-\t\tregion: na
+\tallow:
+\t\tprotocol: http
         """,
     )
-    assert 'cdktf.out/stacks/internal_obj_test_parent--testParent' in out
+    assert 'cdktf.out/stacks/firewall--testParent' in out
