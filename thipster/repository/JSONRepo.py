@@ -42,7 +42,7 @@ class JSONRepo(I_Repository, ABC):
 
         return self.model_list
 
-    def __create_value(self, val: object) -> rm.I_Model_Value | None:
+    def __create_value(self, val: object | None) -> rm.I_Model_Value | None:
         """Creates the right Model value implementation from the raw JSON
 
         Parameters
