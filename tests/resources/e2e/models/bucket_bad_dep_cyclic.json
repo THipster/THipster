@@ -1,5 +1,9 @@
 {
-    "dependencies": {"bucketBadChild":"bucket_bad_dep_cyclic"},
+    "dependencies": {
+        "bucketBadChild": {
+            "resource": "bucket_bad_dep_cyclic"
+        }
+    },
     "internalObjects": {},
     "attributes":{
         "region": {

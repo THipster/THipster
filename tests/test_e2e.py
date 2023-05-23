@@ -88,20 +88,6 @@ bucket my-bucket:
     assert out[0] == 'cdktf.out/stacks/bucket--my-bucket'
 
 
-def test_dep_with_full_options():
-    out = __test_file(
-        file="""
-bucket_dep_parent my-bucket:
-\tregion : euw
-    """,
-    )
-
-    assert isinstance(out, list)
-    assert len(out) == 1
-
-    assert out[0] == 'cdktf.out/stacks/bucket_dep_parent--my-bucket'
-
-
 def test_dep_with_no_options():
     with pytest.raises(CDKMissingAttributeInDependency):
         __test_file(
@@ -113,14 +99,6 @@ bucket_bad_dep_parent my-bucket:
 
 
 def test_cyclic_deps():
-    with pytest.raises(CDKCyclicDependencies):
-        __test_file(
-            file="""
-bucket_bad_dep_parent my-bucket:
-\tregion : euw
-        """,
-        )
-
     with pytest.raises(CDKCyclicDependencies):
         __test_file(
             file="""

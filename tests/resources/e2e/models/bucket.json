@@ -10,7 +10,7 @@
     "attributes":{
         "region": {
             "optional": true,
-            "default": "euw",
+            "default": "europe-west1",
             "cdk_key": "location"
         }
     },

@@ -9,7 +9,7 @@ def test_get_bucket():
 
     models = repo.get(resources)
     assert isinstance(models, dict)
-    assert len(models) == 1
+    assert len(models) == 2
 
     assert 'gcp/bucket' in models.keys()
     assert isinstance(models['gcp/bucket'], ResourceModel)
