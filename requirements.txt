@@ -1,5 +1,5 @@
 cdktf==0.16.1
 PyYAML==6.0
 requests==2.30.0
-cdktf-cdktf-provider-google==7.0.4
+cdktf-cdktf-provider-google==7.0.6
 Jinja2==3.1.2
