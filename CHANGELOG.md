@@ -2,6 +2,14 @@
 
 <!--next-version-placeholder-->
 
+## v0.10.4 (2023-05-23)
+### :arrow_up:
+* :arrow_up: chore(deps): Bump cdktf-cdktf-provider-google ([#97](https://github.com/THipster/THipster/issues/97)) ([`b6194d7`](https://github.com/THipster/THipster/commit/b6194d7d798ec981057a38908dc97cc3accbe85f))
+
+### Other
+* :green_heart: feat(ci): use cache in pr handler ([#96](https://github.com/THipster/THipster/issues/96)) ([`06123b8`](https://github.com/THipster/THipster/commit/06123b8ce7b9fec1b482d6d331546c25ed8d8429))
+* 📝 feat(doc): Add auto doc gen & readme ([#90](https://github.com/THipster/THipster/issues/90)) ([`2f92ba6`](https://github.com/THipster/THipster/commit/2f92ba69b1a37765b5b97a76727a031cf8b7755f))
+
 ## v0.10.3 (2023-05-15)
 ### Other
 * :fire: feat: improve parser factory + doc ([#86](https://github.com/THipster/THipster/issues/86)) ([`59fdfb1`](https://github.com/THipster/THipster/commit/59fdfb16ded4d5e4be7bf6b6a48fa18d72b11183))
