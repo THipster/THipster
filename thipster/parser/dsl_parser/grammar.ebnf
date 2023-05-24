@@ -1,0 +1,38 @@
+[x] resource    = type, string, COLON, [nb_ctrl], [if_ctrl] ,NEWLINE
+                                {parameter, NEWLINE}
+
+[x] parameter   = name, COLON, 
+                        (" ", value, [if_else_ctrl]
+                        | [if_ctrl], NEWLINE (list | dict))
+
+[x] list        = { MINUS, value, [nb_ctrl], [if_else_ctrl], NEWLINE}
+                | inline_list
+
+[x] inline_list = ( BRACKETS_START [ value { COMMA, value } ] BRACKETS_END )
+
+[x] dict        = { MINUS, name, COLON, ( value, [nb_ctrl], [if_else_ctrl] | [nb_ctrl], [if_ctrl], NEWLINE, list), NEWLINE }
+
+[x] nb_ctrl     = AMOUNT, COLON, arith-expr, ["#", name]
+[x] if_else_ctrl= if_ctrl, [ELSE , value]
+[x] if_ctrl     = IF, comp-expr
+
+[ ] value       = comp-expr|arith-expr|string|VAR|inline_list
+
+[x] comp-expr   = NOT comp-expr
+                | PARENTHESES_START comp-expr (AND|OR) comp-expr PARENTHESES_END
+                | arith-expr ((EE|LT|GT|LTE|GTE) arith-expr)
+                | BOOL
+
+[x] arith-expr  = term {(PLUS|MINUS) term}
+
+[x] term        = factor {(MUL|DIV) factor}
+
+[x] factor      = (PLUS|MINUS) factor
+                | atom {POW factor}
+
+[x] atom        = INT|FLOAT
+                | PARENTHESES_START arith-expr PARENTHESES_END
+
+[x] string      = STRING|VAR {INT|STRING|VAR|MINUS|DIV}
+
+[x] type        = STRING {STRING|MINUS|DIV}

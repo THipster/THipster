@@ -1,6 +1,8 @@
 import engine.ParsedFile as pf
 import parser.dsl_parser.AST as ast
+from parser.dsl_parser.Token import TOKENTYPES as TT
 from parser.dsl_parser.DSLExceptions import DSLParserBaseException
+from parser.dsl_parser.TokenParser import DSLSyntaxException
 
 
 class DSLParserVariableAlreadyUsed(DSLParserBaseException):
@@ -39,7 +41,7 @@ class Interpreter():
         """
         return tree.accept(self)
 
-    def visitString(self, element: ast.StringNode) -> str:
+    def visitCompExpr(self, element: ast.CompExprNode) -> bool:
         """Visitor for a StringNode
 
         Parameters
@@ -49,10 +51,177 @@ class Interpreter():
 
         Returns
         -------
+        bool
+            The boolean value of the node
+        """
+        match element.operation.tokenType:
+            case TT.NOT:
+                return pf.ParsedLiteral(not element.leftValue.accept(self).value)
+
+            case TT.OR:
+                return pf.ParsedLiteral(
+                    element.leftValue.accept(self).value or
+                    element.rightValue.accept(self).value,
+                )
+
+            case TT.AND:
+                return pf.ParsedLiteral(
+                    element.leftValue.accept(self).value and
+                    element.rightValue.accept(self).value,
+                )
+
+            case TT.EE:
+                return pf.ParsedLiteral(
+                    element.leftValue.accept(self).value ==
+                    element.rightValue.accept(self).value,
+                )
+
+            case TT.NE:
+                return pf.ParsedLiteral(
+                    element.leftValue.accept(self).value !=
+                    element.rightValue.accept(self).value,
+                )
+
+            case TT.LT:
+                return pf.ParsedLiteral(
+                    element.leftValue.accept(self).value <
+                    element.rightValue.accept(self).value,
+                )
+
+            case TT.LTE:
+                return pf.ParsedLiteral(
+                    element.leftValue.accept(self).value <=
+                    element.rightValue.accept(self).value,
+                )
+
+            case TT.GT:
+                return pf.ParsedLiteral(
+                    element.leftValue.accept(self).value >
+                    element.rightValue.accept(self).value,
+                )
+
+            case TT.GTE:
+                return pf.ParsedLiteral(
+                    element.leftValue.accept(self).value >=
+                    element.rightValue.accept(self).value,
+                )
+
+    def visitArithExpr(self, element: ast.ArithExprNode) -> int | float:
+        """Visitor for a StringNode
+
+        Parameters
+        ----------
+        element: StringNode
+            The visited node
+
+        Returns
+        -------
+        int | float
+            The arithmetic value of the node
+        """
+        total = element.terms[0].accept(self)
+        if isinstance(total, pf.ParsedLiteral):
+            total = total.value
+
+        for i in range(len(element.operation)):
+            match element.operation[i]:
+                case TT.PLUS:
+                    add = element.terms[i+1].accept(self)
+                    if isinstance(add, pf.ParsedLiteral):
+                        add = add.value
+                    total += add
+
+                case TT.MINUS:
+                    rm = element.terms[i+1].accept(self)
+                    if isinstance(rm, pf.ParsedLiteral):
+                        rm = rm.value
+                    total -= rm
+
+        return pf.ParsedLiteral(total)
+
+    def visitTerm(self, element: ast.TermNode) -> int | float:
+        """Visitor for a StringNode
+
+        Parameters
+        ----------
+        element: StringNode
+            The visited node
+
+        Returns
+        -------
+        int | float
+            The arithmetic value of the node
+        """
+        total = element.factors[0].accept(self)
+        if isinstance(total, pf.ParsedLiteral):
+            total = total.value
+
+        for i in range(len(element.operation)):
+            match element.operation[i]:
+                case TT.MUL:
+                    mul = element.factors[i+1].accept(self)
+                    if isinstance(mul, pf.ParsedLiteral):
+                        mul = mul.value
+                    total *= mul
+
+                case TT.DIV:
+                    div = element.factors[i+1].accept(self)
+                    if isinstance(div, pf.ParsedLiteral):
+                        div = div.value
+                    total /= div
+
+        return total
+
+    def visitFactor(self, element: ast.FactorNode) -> int | float:
+        """Visitor for a StringNode
+
+        Parameters
+        ----------
+        element: StringNode
+            The visited node
+
+        Returns
+        -------
+        int | float
+            The arithmetic value of the node
+        """
+        total = element.factors[0].accept(self)
+        if isinstance(total, pf.ParsedLiteral):
+            total = total.value
+
+        match element.operation:
+            case TT.PLUS:
+                return pf.ParsedLiteral(total)
+
+            case TT.MINUS:
+                return pf.ParsedLiteral(-total)
+
+            case TT.POW:
+                for f in element.factors[1:]:
+                    pow = f.accept(self)
+                    if isinstance(pow, pf.ParsedLiteral):
+                        pow = pow.value
+                    total = total**pow
+                return pf.ParsedLiteral(total)
+
+    def visitStringExpr(self, element: ast.StringExprNode) -> str:
+        """Visitor for a StringExprNode
+
+        Parameters
+        ----------
+        element: StringExprNode
+            The visited node
+
+        Returns
+        -------
         str
             The string value of the node
         """
-        return ''.join(element.values)
+        ret = ""
+        for value in element.values:
+            ret += str(value.accept(self))
+
+        return pf.ParsedLiteral(ret)
 
     def visitVariableDefinition(self, element: ast.VariableDefinitionNode) -> str:
         """Visitor for a VariableDefinitionNode
@@ -147,6 +316,21 @@ class Interpreter():
         """
         return bool(element.value)
 
+    def visitString(self, element: ast.StringNode) -> str:
+        """Visitor for a BoolNode
+
+        Parameters
+        ----------
+        element: BoolNode
+            The visited node
+
+        Returns
+        -------
+        bool
+            The value of the node
+        """
+        return str(element.value.value)
+
     def visitIf(self, element: ast.IfNode) -> object | None:
         """Visitor for an IfNode
 
@@ -160,7 +344,7 @@ class Interpreter():
         object | None
             The value of the child node if the condition is true, else None
         """
-        return element.ifCase.accept(self) if eval(element.condition.accept(self)) \
+        return element.ifCase.accept(self) if element.condition.accept(self).value\
             else None
 
     def visitIfElse(self, element: ast.IfElseNode):
@@ -177,7 +361,7 @@ class Interpreter():
             The value of the "if" child node if the condition is true, else the value\
                   of the "else" child node
         """
-        return element.ifCase.accept(self) if eval(element.condition.accept(self))\
+        return element.ifCase.accept(self) if element.condition.accept(self).value\
             else element.elseCase.accept(self)
 
     def visitAmount(self, element: ast.AmountNode) -> list[object]:
@@ -195,8 +379,11 @@ class Interpreter():
         """
         var = element.variable.accept(self) if element.variable else None
         res = []
+        amount = element.amount.accept(self).value
+        if not isinstance(amount, int):
+            raise DSLSyntaxException(amount.value.position)
 
-        for _ in range(element.amount.accept(self)):
+        for _ in range(amount):
             res += element.node.accept(self)
             if var:
                 self.__variables[var] += 1
@@ -282,8 +469,8 @@ class Interpreter():
         """
         return [
             pf.ParsedResource(
-                type=element.type.accept(self),
-                name=element.name.accept(self),
+                type=element.type.accept(self).value,
+                name=element.name.accept(self).value,
                 position=element.position,
                 attributes=[v.accept(self) for v in element.parameters.value],
             ),

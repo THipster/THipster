@@ -2,6 +2,7 @@ from parser.dsl_parser.Token import Token, TOKENTYPES as TT
 from engine.ParsedFile import Position
 from helpers import createLogger
 from parser.dsl_parser.DSLExceptions import DSLParserBaseException
+from parser.dsl_parser.LexerPosition import LexerPosition
 
 
 class DSLParserNoEndingQuotes(DSLParserBaseException):
@@ -25,7 +26,7 @@ class Lexer():
         self.__logger = createLogger(__name__)
         self.__files = files
         self.__tokenList = []
-        self.__lexerPosition = LexerPosition('')
+        self.__lexerPosition = LexerPosition()
         self.__currentChar = ''
 
     @property
@@ -86,15 +87,18 @@ class Lexer():
         for char in codeString:
             self.__logger.debug('char %s', char)
             self.__currentChar = char
-            if not self.__lexerPosition.isCurrentTokenAString:
+            if not self.__lexerPosition.isQuotedString:
                 self.__handleSyntaxTokens()
                 continue
 
-            if char == '"':
-                self.__handleDoubleQuotes()
+            if char in ['"', "'"]:
+                self.__handleDoubleQuotes(char)()
                 continue
 
             if char == '\n':
+                if self.__lexerPosition.isCurrentTokenMultiLine:
+                    self.__lexerPosition.newLine()
+                    continue
                 position = str(
                     Position(
                         self.__lexerPosition.currentFile,
@@ -132,11 +136,28 @@ class Lexer():
         """
         singleCharTokens = {
             ':': self.__handleColonToken,
-            '"': self.__handleDoubleQuotes,
+            ',': self.__handleCommaToken,
+            '[': self.__handleBracketsStartToken,
+            ']': self.__handleBracketsEndToken,
+            '(': self.__handleParenthesesStartToken,
+            ')': self.__handleParenthesesEndToken,
+            '"': self.__handleDoubleQuotes('"'),
+            "'": self.__handleDoubleQuotes("'"),
             '#': self.__handleHashToken,
             '\n': self.__handleNewlineToken,
+            '\\': self.__handleBackSlashToken,
             '\t': self.__handleTabToken,
             ' ': self.__handleWhitespace,
+
+            '=': self._handleEQToken,
+            '/': self._handleDivToken,
+            '-': self._handleMinusToken,
+            '+': self._handlePlusToken,
+            '*': self._handleMulToken,
+            '^': self._handlePowToken,
+            '<': self._handleLTToken,
+            '>': self._handleGTToken,
+            '!': self._handleExclamationToken,
         }
 
         singleCharTokens.get(self.__currentChar, self.__iterateNextChar)()
@@ -151,13 +172,15 @@ class Lexer():
 
         keyWordsAndTokens = {
             '': self.__handleEmptyToken,
-            '-': self.__handleDashToken,
             'amount': self.__handleAmountToken,
+            'and': self.__handleAndToken,
             'if': self.__handleIfToken,
             'elif': self.__handleElifToken,
             'else': self.__handleElseToken,
+            'or': self.__handleOrToken,
             'true': self.__handleBooleanToken,
             'false': self.__handleBooleanToken,
+            'not': self.__handleNotToken,
         }
 
         keyWordsAndTokens.get(
@@ -171,17 +194,17 @@ class Lexer():
         """
         currentToken = self.__lexerPosition.currentToken
         if self.__lexerPosition.isCurrentTokenAVariable:
-            self.__addLiteralTokenToList(TT.VAR.value, currentToken)
+            self.__addLiteralTokenToList(TT.VAR, currentToken)
             self.__lexerPosition.setIsVariable(False)
 
         elif currentToken.isdigit():
-            self.__addLiteralTokenToList(TT.INT.value, currentToken)
+            self.__addLiteralTokenToList(TT.INT, currentToken)
 
         elif self.__isfloat(currentToken):
-            self.__addLiteralTokenToList(TT.FLOAT.value, currentToken)
+            self.__addLiteralTokenToList(TT.FLOAT, currentToken)
 
         else:
-            self.__addLiteralTokenToList(TT.STRING.value, currentToken)
+            self.__addLiteralTokenToList(TT.STRING, currentToken)
 
     def __addLiteralTokenToList(self, tokenType: str, value: str):
         """Add a literal token to the token list
@@ -284,7 +307,77 @@ class Lexer():
     def __handleColonToken(self):
         """Handle a COLON token ':'
         """
-        self.__handleBaseToken(TT.COLON.value)
+        self.__handleBaseToken(TT.COLON)
+
+    def __handleCommaToken(self):
+        """Handle a COMMA token ','
+        """
+        self.__handleBaseToken(TT.COMMA)
+
+    def __handleBracketsStartToken(self):
+        """Handle a BRACKETS_START token '['
+        """
+        self.__handleBaseToken(TT.BRACKETS_START)
+
+    def __handleBracketsEndToken(self):
+        """Handle a BRACKETS_END token ']'
+        """
+        self.__handleBaseToken(TT.BRACKETS_END)
+
+    def __handleParenthesesStartToken(self):
+        """Handle a PARENTESES_START token '('
+        """
+        self.__handleBaseToken(TT.PARENTHESES_START)
+
+    def __handleParenthesesEndToken(self):
+        """Handle a PARENTHESES_END token ')'
+        """
+        self.__handleBaseToken(TT.PARENTHESES_END)
+
+    def _handlePlusToken(self):
+        """Handle a PLUS token '+'
+        """
+        self.__handleBaseToken(TT.PLUS)
+
+    def _handleMinusToken(self):
+        """Handle a MINUS token '-'
+        """
+        self.__handleBaseToken(TT.MINUS)
+
+    def _handleMulToken(self):
+        """Handle a MUL token '*'
+        """
+        self.__handleBaseToken(TT.MUL)
+
+    def _handleDivToken(self):
+        """Handle a DIV token '/'
+        """
+        self.__handleBaseToken(TT.DIV)
+
+    def _handleEQToken(self):
+        """Handle a EQ token '='
+        """
+        self.__handleBaseToken(TT.EQ)
+
+    def _handleExclamationToken(self):
+        """Handle a NE token '!='
+        """
+        self.__handleBaseToken(TT.EXCLAMATION)
+
+    def _handleLTToken(self):
+        """Handle a LT token '<'
+        """
+        self.__handleBaseToken(TT.LT)
+
+    def _handleGTToken(self):
+        """Handle a GT token '>'
+        """
+        self.__handleBaseToken(TT.GT)
+
+    def _handlePowToken(self):
+        """Handle a POW token '^'
+        """
+        self.__handleBaseToken(TT.POW)
 
     def __handleHashToken(self) -> None:
         """Handle a HASH token '#'
@@ -301,88 +394,123 @@ class Lexer():
         Replaces 4 following whitespaces by a TAB token
         """
         self.__handleCurrentToken()
+        self.__addBaseToken(TT.WHITESPACE)
         self.__lexerPosition.nextColumn()
         self.__lexerPosition.resetCurrentToken()
         self.__lexerPosition.setIsVariable(False)
         self.__lexerPosition.addConsecutiveWhitespace()
         if self.__lexerPosition.consecutiveWhitespaces == 4:
             self.__lexerPosition.nextColumn(-4)
-            self.__addBaseToken(TT.TAB.value)
+            self.__rmLastTokens(4)
+            self.__addBaseToken(TT.TAB)
+            self.__lexerPosition.nextColumn(4)
             self.__lexerPosition.resetConsecutiveWhitespaces()
-            self.__lexerPosition.nextColumn()
             self.__lexerPosition.setCurrentTokenIndex()
 
     def __handleNewlineToken(self) -> None:
         """Handle a NEWLINE token '\\n'
         """
-        self.__handleBaseToken(TT.NEWLINE.value)
+        if not self.__lexerPosition.isCurrentTokenMultiLine:
+            self.__handleBaseToken(TT.NEWLINE)
+
         self.__lexerPosition.newLine()
-        self.__lexerPosition.setCurrentTokenIndex(1)
+        if not self.__lexerPosition.isCurrentTokenMultiLine:
+            self.__lexerPosition.setCurrentTokenIndex()
+
+        self.__lexerPosition.setIsMultiLine(value=False)
+
+    def __handleBackSlashToken(self) -> None:
+        """Handle a BACKSLASH token '\\'
+
+        Sets a variable to indicate that the following line is part of the same token.
+        """
+        self.__lexerPosition.setIsMultiLine(value=True)
+        self.__lexerPosition.nextColumn()
 
     def __handleTabToken(self) -> None:
         """Handle a TAB token '\\t'
         """
-        self.__handleBaseToken(TT.TAB.value)
+        self.__handleBaseToken(TT.TAB)
 
-    def __handleDoubleQuotes(self) -> None:
+    def __handleDoubleQuotes(self, char) -> None:
         """Handle a DOUBLEQUOTES token '"'
 
         Sets a variable to indicate that the following characters are a STRING token.
         """
-        if self.__lexerPosition.isCurrentTokenAString:
-            self.__addLiteralTokenToList(
-                TT.STRING.value, self.__lexerPosition.currentToken,
-            )
-            self.__lexerPosition.setIsString()
-            self.__basePositionUpdate()
-        else:
-            self.__handleCurrentToken()
-            self.__lexerPosition.nextColumn()
-            self.__lexerPosition.setIsString(True)
-        self.__lexerPosition.resetCurrentToken()
 
-    def __handleDashToken(self):
-        """Handle a DASH token '-'
-        """
-        self.__lexerPosition.resetConsecutiveWhitespaces()
-        self.__addBaseToken(TT.DASH.value, isCurrentToken=True)
+        def quoteHandler(self=self):
+
+            if self.__lexerPosition.isQuotedString:
+                if char == self.__lexerPosition.isQuotedString:
+                    self.__addLiteralTokenToList(
+                        TT.STRING, self.__lexerPosition.currentToken,
+                    )
+                    self.__lexerPosition.isQuotedString = False
+                    self.__basePositionUpdate()
+                else:
+                    self.__iterateNextChar()
+            else:
+                self.__handleCurrentToken()
+                self.__lexerPosition.nextColumn()
+                self.__lexerPosition.isQuotedString = char
+                self.__lexerPosition.resetCurrentToken()
+
+        return quoteHandler
 
     def __handleAmountToken(self):
         """Handle an AMOUNT token 'amount'
         """
         self.__lexerPosition.resetConsecutiveWhitespaces()
-        self.__addBaseToken(TT.AMOUNT.value, isCurrentToken=True)
+        self.__addBaseToken(TT.AMOUNT, isCurrentToken=True)
+
+    def __handleAndToken(self):
+        """Handle an AND token 'and'
+        """
+        self.__lexerPosition.resetConsecutiveWhitespaces()
+        self.__addBaseToken(TT.AND, isCurrentToken=True)
 
     def __handleIfToken(self):
         """Handle an IF token 'if'
         """
         self.__lexerPosition.resetConsecutiveWhitespaces()
-        self.__addBaseToken(TT.IF.value, isCurrentToken=True)
+        self.__addBaseToken(TT.IF, isCurrentToken=True)
 
     def __handleElifToken(self):
         """Handle an ELIF token 'elif'
         """
         self.__lexerPosition.resetConsecutiveWhitespaces()
-        self.__addBaseToken(TT.ELIF.value, isCurrentToken=True)
+        self.__addBaseToken(TT.ELIF, isCurrentToken=True)
 
     def __handleElseToken(self):
         """Handle an ELSE token 'else'
         """
         self.__lexerPosition.resetConsecutiveWhitespaces()
-        self.__addBaseToken(TT.ELSE.value, isCurrentToken=True)
+        self.__addBaseToken(TT.ELSE, isCurrentToken=True)
+
+    def __handleNotToken(self):
+        """Handle an OR token 'or'
+        """
+        self.__lexerPosition.resetConsecutiveWhitespaces()
+        self.__addBaseToken(TT.NOT, isCurrentToken=True)
+
+    def __handleOrToken(self):
+        """Handle an OR token 'or'
+        """
+        self.__lexerPosition.resetConsecutiveWhitespaces()
+        self.__addBaseToken(TT.OR, isCurrentToken=True)
 
     def __handleBooleanToken(self):
         """Handle a BOOLEAN token 'true' or 'false'
         """
         self.__lexerPosition.resetConsecutiveWhitespaces()
         self.__addBaseToken(
-            TT.BOOLEAN.value, self.__lexerPosition.currentToken, True,
+            TT.BOOLEAN, self.__lexerPosition.currentToken, True,
         )
 
     def __handleEofToken(self) -> None:
         """Add an EOF token at the end of each file
         """
-        self.__addBaseToken(TT.EOF.value)
+        self.__addBaseToken(TT.EOF)
 
     def __addTokenToList(self, token: Token | None) -> None:
         """Add a new token to the parser's token list
@@ -395,6 +523,9 @@ class Lexer():
         if not token:
             pass
         self.__tokenList.append(token)
+
+    def __rmLastTokens(self, amount: int = 1):
+        self.__tokenList = self.__tokenList[:-amount]
 
     def __addFileEnd(self) -> None:
         """Add a NEWLINE and an EOF token at the end of each file
@@ -423,162 +554,3 @@ class Lexer():
             return True
         except ValueError:
             return False
-
-
-class LexerPosition():
-    def __init__(
-        self,
-        fileName: str,
-        startLine: int = 1,
-        startColumn: int = 1,
-    ) -> None:
-        """Class to represent the state and position of the lexer
-
-        Parameters
-        ----------
-        fileName : str
-            Name of the current file
-        startLine : int, optional
-            Starting line in the current file, by default 1
-        startColumn : int, optional
-            Starting column in the current file, by default 1
-        """
-        self.__currentFile = fileName
-        self.__currentLine = startLine
-        self.__currentColumn = startColumn
-        self.__currentToken = ''
-        self.__currentTokenIndex = startColumn
-        self.__isVariable = False
-        self.__inQuotedString = False
-        self.__consecutiveWhitespaces = 0
-
-    @property
-    def currentFile(self):
-        return self.__currentFile
-
-    @property
-    def currentLine(self):
-        return self.__currentLine
-
-    @property
-    def currentColumn(self):
-        return self.__currentColumn
-
-    @property
-    def currentToken(self):
-        return self.__currentToken
-
-    @property
-    def currentTokenIndex(self):
-        return self.__currentTokenIndex
-
-    @property
-    def isCurrentTokenAVariable(self):
-        return self.__isVariable
-
-    @property
-    def isCurrentTokenAString(self):
-        return self.__inQuotedString
-
-    @property
-    def consecutiveWhitespaces(self):
-        return self.__consecutiveWhitespaces
-
-    @property
-    def currentCharPosition(self) -> Position:
-        return Position(
-            self.__currentFile,
-            self.__currentLine,
-            self.__currentColumn,
-        )
-
-    @property
-    def currentTokenPosition(self) -> Position:
-        return Position(
-            self.__currentFile,
-            self.__currentLine,
-            self.__currentTokenIndex,
-        )
-
-    def newLine(self) -> None:
-        """Get the position to the next line
-        """
-        self.__currentLine += 1
-        self.__currentColumn = 1
-
-    def nextColumn(self, step: int = 1) -> None:
-        """Get the position to a new column
-
-        Parameters
-        ----------
-        step : int
-            Step to modify the current column, by default 1
-        """
-        if (self.__currentColumn + step) > 0:
-            self.__currentColumn += step
-        else:
-            self.__currentColumn = 0  # Raise exception ?
-
-    def addCharToCurrentToken(self, char) -> None:
-        """Add a char to the current stored token
-
-        Parameters
-        ----------
-        char : _type_
-            Char to add to the token
-        """
-        self.__currentToken += char
-
-    def setCurrentTokenIndex(self, newIndex: int | None = None) -> None:
-        """Modify the stored token index
-
-        Parameters
-        ----------
-        newIndex : int, optional
-            New index of the stored token, by default None
-        """
-        if newIndex:
-            self.__currentTokenIndex = newIndex
-        else:
-            self.__currentTokenIndex = self.__currentColumn
-
-    def resetCurrentToken(self, newIndex: int | None = None) -> None:
-        """Reset the current stored token and its index
-
-        Parameters
-        ----------
-        newIndex : int, optional
-            New index of the stored token, by default None
-        """
-        self.__currentToken = ''
-        self.setCurrentTokenIndex(newIndex)
-
-    def addConsecutiveWhitespace(self) -> None:
-        """Add a consecutive whitespace to the lexer state
-        """
-        self.__consecutiveWhitespaces += 1
-
-    def resetConsecutiveWhitespaces(self) -> None:
-        """Reset consecutive whitespaces of the lexer state to 0
-        """
-        self.__consecutiveWhitespaces = 0
-
-    def setIsVariable(self, value: bool = False) -> None:
-        """Set the current stored token as a variable
-
-        Parameters
-        ----------
-        value : bool, optional
-            Is the stored token a variable True or False, by default False
-        """
-        self.__isVariable = value
-
-    def setIsString(self, value: bool = False) -> None:
-        """Set the current stored token as a string
-
-        Parameters
-        ----------
-        value : bool, optional
-            Is the stored token a string True or False, by default False
-        """
-        self.__inQuotedString = value

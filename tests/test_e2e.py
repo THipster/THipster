@@ -178,7 +178,7 @@ def test_bucket_cors():
 bucket corsBucket:
     cors:
         origin:
-            - http://image-store.com
+            - "http://image-store.com"
         method:
             - "*"
         responseHeader:
