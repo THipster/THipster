@@ -134,9 +134,9 @@ class TokenParser():
             for _ in range(indent):
                 self.__next(TT.TAB)
 
-            resType = self.__next(TT.STRING)
+            resType = self.__get_type()
             self.__get_whitespaces()
-            name = self.__get_string()
+            name = self.__get_string_expr()
             self.__get_whitespaces()
             self.__next(TT.COLON)
             self.__get_whitespaces()
@@ -154,7 +154,7 @@ class TokenParser():
             raise e
 
         resource = ast.ResourceNode(
-            resourceType=ast.StringNode(resType),
+            resourceType=resType,
             name=name,
             parameters=properties,
         )
@@ -414,7 +414,7 @@ class TokenParser():
         nextType = self.__get_next_type()
         match nextType:
             case TT.STRING:
-                return self.__get_string()
+                return self.__get_string_expr()
 
             case TT.VAR:
                 return ast.LiteralNode(ast.VariableNode(self.__next(TT.VAR)))
@@ -560,7 +560,7 @@ class TokenParser():
                     self.__tokens[0], [TT.INT, TT.FLOAT, TT.PARENTHESES_START],
                 )
 
-    def __get_string(self):
+    def __get_string_expr(self):
         values = []
         token = self.__next([TT.STRING, TT.VAR])
         match token.tokenType:
@@ -571,7 +571,7 @@ class TokenParser():
                 values.append(ast.VariableNode(token))
 
         nextType = self.__get_next_type()
-        while nextType in [TT.STRING, TT.VAR, TT.INT]:
+        while nextType in [TT.STRING, TT.VAR, TT.INT, TT.MINUS, TT.DIV]:
             match nextType:
                 case TT.STRING:
                     values.append(ast.StringNode(self.__next(TT.STRING)))
@@ -581,6 +581,43 @@ class TokenParser():
 
                 case TT.INT:
                     values.append(ast.IntNode(self.__next(TT.INT)))
+
+                case TT.DIV:
+                    token = Token(self.__next(TT.DIV).position, TT.STRING, "/")
+                    values.append(ast.StringNode(token))
+
+                case TT.MINUS:
+                    token = Token(
+                        self.__next(
+                            TT.MINUS,
+                        ).position, TT.STRING, "-",
+                    )
+                    values.append(ast.StringNode(token))
+            nextType = self.__get_next_type()
+
+        return ast.StringExprNode(values)
+
+    def __get_type(self):
+        values = []
+        values.append(ast.StringNode(self.__next(TT.STRING)))
+
+        nextType = self.__get_next_type()
+        while nextType in [TT.STRING, TT.MINUS, TT.DIV]:
+            match nextType:
+                case TT.STRING:
+                    values.append(ast.StringNode(self.__next(TT.STRING)))
+
+                case TT.DIV:
+                    token = Token(self.__next(TT.DIV).position, TT.STRING, "/")
+                    values.append(ast.StringNode(token))
+
+                case TT.MINUS:
+                    token = Token(
+                        self.__next(
+                            TT.MINUS,
+                        ).position, TT.STRING, "-",
+                    )
+                    values.append(ast.StringNode(token))
             nextType = self.__get_next_type()
 
         return ast.StringExprNode(values)

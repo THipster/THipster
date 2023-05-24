@@ -166,14 +166,14 @@ def test_lex_quoted_string_error():
 
 def test_lex_multiline_input():
     input = {
-        'file': 'bucket nom-\\\n8:',
+        'file': 'bucket nom\\\ntest:',
     }
     expectedOutput = [
         __getTokenString('file', 1, 1, TT.STRING, 'bucket'),
         __getTokenString('file', 1, 7, TT.WHITESPACE),
-        __getTokenString('file', 1, 8, TT.STRING, 'nom-8'),
-        __getTokenString('file', 2, 2, TT.COLON),
-        __getTokenString('file', 2, 3, TT.NEWLINE),
+        __getTokenString('file', 1, 8, TT.STRING, 'nomtest'),
+        __getTokenString('file', 2, 5, TT.COLON),
+        __getTokenString('file', 2, 6, TT.NEWLINE),
         __getTokenString('file', 3, 1, TT.EOF),
     ]
     lexer = Lexer(input)
@@ -332,7 +332,9 @@ def test_lex_string():
     expectedOutput = [
         __getTokenString('file', 1, 1, TT.STRING, 'bucket'),
         __getTokenString('file', 1, 7, TT.WHITESPACE),
-        __getTokenString('file', 1, 8, TT.STRING, 'nom-8'),
+        __getTokenString('file', 1, 8, TT.STRING, 'nom'),
+        __getTokenString('file', 1, 11, TT.MINUS),
+        __getTokenString('file', 1, 12, TT.INT, 8),
         __getTokenString('file', 1, 13, TT.NEWLINE),
         __getTokenString('file', 2, 1, TT.EOF),
     ]
@@ -353,7 +355,9 @@ def test_run_lexer():
     expectedOutput = [
         __getTokenString('file', 1, 1, TT.STRING, 'bucket'),
         __getTokenString('file', 1, 7, TT.WHITESPACE),
-        __getTokenString('file', 1, 8, TT.STRING, 'nom-8'),
+        __getTokenString('file', 1, 8, TT.STRING, 'nom'),
+        __getTokenString('file', 1, 11, TT.MINUS),
+        __getTokenString('file', 1, 12, TT.INT, 8),
         __getTokenString('file', 1, 13, TT.COLON),
         __getTokenString('file', 1, 14, TT.WHITESPACE),
         __getTokenString('file', 1, 15, TT.AMOUNT),
@@ -368,7 +372,8 @@ def test_run_lexer():
 
         __getTokenString('file2', 1, 1, TT.STRING, 'network'),
         __getTokenString('file2', 1, 8, TT.WHITESPACE),
-        __getTokenString('file2', 1, 9, TT.STRING, 'aaaa-'),
+        __getTokenString('file2', 1, 9, TT.STRING, 'aaaa'),
+        __getTokenString('file2', 1, 13, TT.MINUS),
         __getTokenString('file2', 1, 15, TT.VAR, 'i'),
         __getTokenString('file2', 1, 16, TT.COLON),
         __getTokenString('file2', 1, 17, TT.WHITESPACE),
@@ -401,7 +406,8 @@ def test_run_lexer_var_in_name():
     expectedOutput = [
         __getTokenString('file', 1, 1, TT.STRING, 'bucket'),
         __getTokenString('file', 1, 7, TT.WHITESPACE),
-        __getTokenString('file', 1, 8, TT.STRING, 'nom-'),
+        __getTokenString('file', 1, 8, TT.STRING, 'nom'),
+        __getTokenString('file', 1, 11, TT.MINUS),
         __getTokenString('file', 1, 13, TT.VAR, 'test'),
         __getTokenString('file', 1, 17, TT.WHITESPACE),
         __getTokenString('file', 1, 18, TT.NEWLINE),

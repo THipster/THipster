@@ -6,8 +6,11 @@ from parser.dsl_parser.Token import Token, TOKENTYPES as TT
 def test_simple_file():
     input = [
         Token(Position('file', 1, 1), TT.STRING, 'bucket'),
-        Token(Position('file', 1, 8), TT.STRING, 'nom-8'),
-        Token(Position('file', 1, 8), TT.COLON),
+        Token(Position('file', 1, 7), TT.WHITESPACE),
+        Token(Position('file', 1, 8), TT.STRING, 'nom'),
+        Token(Position('file', 1, 11), TT.MINUS),
+        Token(Position('file', 1, 12), TT.INT, 8),
+        Token(Position('file', 1, 13), TT.COLON),
         Token(Position('file', 1, 14), TT.NEWLINE),
         Token(Position('file', 2, 1), TT.TAB),
         Token(Position('file', 2, 2), TT.STRING, 'region'),
@@ -21,8 +24,8 @@ def test_simple_file():
     output = parser.run()
 
     assert str(output) == '<RESOURCE \
-type = <STRING (STRING bucket)>, \
-name = <STRING-EXPR <STRING (STRING nom-8)>>, \
+type = <STRING-EXPR <STRING (STRING bucket)>>, \
+name = <STRING-EXPR <STRING (STRING nom)> <STRING (STRING -)> <INT (INT 8)>>, \
 parameters = <DICT <PARAMETER name = <STRING (STRING region)>, \
 value = <STRING-EXPR <STRING (STRING euw)>>>>>'
 
@@ -33,7 +36,9 @@ def test_newline_remover():
         Token(Position('file', 1, 14), TT.NEWLINE),
         Token(Position('file', 1, 1), TT.STRING, 'bucket'),
         Token(Position('file', 1, 1), TT.WHITESPACE),
-        Token(Position('file', 1, 8), TT.STRING, 'nom-8'),
+        Token(Position('file', 1, 8), TT.STRING, 'nom'),
+        Token(Position('file', 1, 8), TT.MINUS),
+        Token(Position('file', 1, 8), TT.INT, 8),
         Token(Position('file', 1, 8), TT.COLON),
         Token(Position('file', 1, 14), TT.NEWLINE),
         Token(Position('file', 1, 14), TT.NEWLINE),
@@ -46,7 +51,9 @@ def test_newline_remover():
         Token(Position('file', 1, 14), TT.NEWLINE),
         Token(Position('file', 1, 1), TT.STRING, 'bucket'),
         Token(Position('file', 1, 1), TT.WHITESPACE),
-        Token(Position('file', 1, 8), TT.STRING, 'nom-8'),
+        Token(Position('file', 1, 8), TT.STRING, 'nom'),
+        Token(Position('file', 1, 8), TT.MINUS),
+        Token(Position('file', 1, 8), TT.INT, 8),
         Token(Position('file', 1, 8), TT.COLON),
         Token(Position('file', 1, 14), TT.NEWLINE),
         Token(Position('file', 2, 1), TT.TAB),
@@ -60,12 +67,12 @@ def test_newline_remover():
     output = parser.run()
 
     assert str(output) == '<RESOURCE \
-type = <STRING (STRING bucket)>, \
-name = <STRING-EXPR <STRING (STRING nom-8)>>, \
+type = <STRING-EXPR <STRING (STRING bucket)>>, \
+name = <STRING-EXPR <STRING (STRING nom)> <STRING (STRING -)> <INT (INT 8)>>, \
 parameters = <DICT <PARAMETER name = <STRING (STRING region)>, \
 value = <STRING-EXPR <STRING (STRING euw)>>>>>\n\
 <RESOURCE \
-type = <STRING (STRING bucket)>, \
-name = <STRING-EXPR <STRING (STRING nom-8)>>, \
+type = <STRING-EXPR <STRING (STRING bucket)>>, \
+name = <STRING-EXPR <STRING (STRING nom)> <STRING (STRING -)> <INT (INT 8)>>, \
 parameters = <DICT <PARAMETER name = <STRING (STRING region)>, \
 value = <STRING-EXPR <STRING (STRING euw)>>>>>'

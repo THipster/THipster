@@ -1,4 +1,4 @@
-[x] resource    = STRING, string, COLON, [nb_ctrl], [if_ctrl] ,NEWLINE
+[x] resource    = type, string, COLON, [nb_ctrl], [if_ctrl] ,NEWLINE
                                 {parameter, NEWLINE}
 
 [x] parameter   = name, COLON, 
@@ -33,4 +33,6 @@
 [x] atom        = INT|FLOAT
                 | PARENTHESES_START arith-expr PARENTHESES_END
 
-[x] string      = STRING|VAR {INT|STRING|VAR}
+[x] string      = STRING|VAR {INT|STRING|VAR|MINUS|DIV}
+
+[x] type        = STRING {STRING|MINUS|DIV}

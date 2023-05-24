@@ -149,6 +149,8 @@ class Lexer():
             '\t': self.__handleTabToken,
             ' ': self.__handleWhitespace,
 
+            '/': self._handleDivToken,
+            '-': self._handleMinusToken,
             '+': self._handlePlusToken,
             '*': self._handleMulToken,
             '^': self._handlePowToken,
@@ -166,8 +168,6 @@ class Lexer():
 
         keyWordsAndTokens = {
             '': self.__handleEmptyToken,
-            '-': self._handleMinusToken,
-            '/': self._handleDivToken,
             '=': self._handleEQToken,
             '==': self._handleEEToken,
             '!=': self._handleNEToken,
@@ -345,8 +345,7 @@ class Lexer():
     def _handleMinusToken(self):
         """Handle a MINUS token '-'
         """
-        self.__lexerPosition.resetConsecutiveWhitespaces()
-        self.__addBaseToken(TT.MINUS, isCurrentToken=True)
+        self.__handleBaseToken(TT.MINUS)
 
     def _handleMulToken(self):
         """Handle a MUL token '*'
@@ -356,8 +355,7 @@ class Lexer():
     def _handleDivToken(self):
         """Handle a DIV token '/'
         """
-        self.__lexerPosition.resetConsecutiveWhitespaces()
-        self.__addBaseToken(TT.DIV, isCurrentToken=True)
+        self.__handleBaseToken(TT.DIV)
 
     def _handleEQToken(self):
         """Handle a EQ token '='

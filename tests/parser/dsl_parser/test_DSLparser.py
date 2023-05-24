@@ -473,7 +473,7 @@ def test_arithmetic():
     # PLUS
     out = __test_file(
         file="""bucket my-bucket:
-\tvalue: - 1 + 1 - 3
+\tvalue: -1+1-3
 """,
     )
 
@@ -491,7 +491,7 @@ def test_arithmetic():
     # OPERATION ORDER
     out = __test_file(
         file="""bucket my-bucket:
-\tvalue2: 10 / 2 + 3 * 3
+\tvalue2: 10/2+3*3
 """,
     )
 
@@ -508,7 +508,7 @@ def test_arithmetic():
 
     out = __test_file(
         file="""bucket my-bucket:
-\tvalue: 10 / (2 + 3) * 3
+\tvalue: 10/(2+3)*3
 """,
     )
 
@@ -526,7 +526,7 @@ def test_arithmetic():
     # POW
     out = __test_file(
         file="""bucket my-bucket:
-\tvalue: ( - 2 ) ^ 4
+\tvalue: (-2)^4
 """,
     )
 

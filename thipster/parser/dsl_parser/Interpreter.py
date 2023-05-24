@@ -463,7 +463,7 @@ class Interpreter():
         """
         return [
             pf.ParsedResource(
-                type=element.type.accept(self),
+                type=element.type.accept(self).value,
                 name=element.name.accept(self).value,
                 position=element.position,
                 attributes=[v.accept(self) for v in element.parameters.value],
