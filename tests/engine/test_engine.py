@@ -49,6 +49,10 @@ class MockTerraform(eng.I_Terraform):
     def generate(self, a, b):
         pass
 
+    @logger('- Terraform:init')
+    def init(self):
+        pass
+
     @logger('- Terraform:plan')
     def plan(self):
         pass

@@ -5,26 +5,22 @@
         "origin": {
             "optional": true,
             "cdk_key": "origin",
-            "var_type": "list[str]",
-            "is_list": true
+            "var_type": "list[str]"
         },
         "method": {
             "optional": true,
             "cdk_key": "method",
-            "var_type": "list[str]",
-            "is_list": true
+            "var_type": "list[str]"
         },
         "responseHeader": {
             "optional": true,
             "cdk_key": "response_header",
-            "var_type": "list[str]",
-            "is_list": true
+            "var_type": "list[str]"
         },
         "maxAge": {
             "optional": true,
             "cdk_key": "max_age_seconds",
-            "var_type": "int",
-            "is_list": false
+            "var_type": "int"
         }
     },
 

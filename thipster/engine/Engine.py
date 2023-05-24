@@ -49,7 +49,7 @@ class Engine():
         self.__terraform = terraform
 
     def run(self, path: str):
-        """Returns an AST from the input file name
+        """Returns json Terraform files from the input file name
 
         Calls the different run methods of the parser, repository,
         auth and terraform modules.
@@ -62,8 +62,8 @@ class Engine():
 
         Returns
         -------
-        list[ResourceModel]
-            List of resource models
+        list[str]
+            List of directories containing the terraform json files
         """
         start = time.time()
         # Parse files

@@ -75,35 +75,40 @@ class CDK(I_Terraform):
         # Init CDK
         app = App()
 
-        for resource in file.resources:
-            # 7 - déclare un nouvel objet stack dans le CDK Terraform
-            class _ResourceStack(TerraformStack):
-                def __init__(self, scope: Construct, ns: str):
-                    super().__init__(scope, ns)
+        f_position = file.resources[0].position
+        file_name = f_position.fileName if f_position else 'thipster_infrastructure'
 
-                    GoogleProvider(
-                        self, f"{resource.name}_google",
-                        project="rcattin-sandbox",
-                        credentials=os.path.join(
-                            os.getcwd(),
-                            "rcattin-sandbox-credentials.json",
-                        ),
+        CDK._logger.debug('Creating tf code for file %s', file_name)
 
-                        region="europe-west1",
-                        zone="europe-west1-b",
-                    )
+        # 7 - déclare un nouvel objet stack dans le CDK Terraform
+        class _ResourceStack(TerraformStack):
+            def __init__(self, scope: Construct, ns: str):
+                super().__init__(scope, ns)
 
+                GoogleProvider(
+                    self, f"{file_name}_google",
+                    project="rcattin-sandbox",
+                    credentials=os.path.join(
+                        os.getcwd(),
+                        "rcattin-sandbox-credentials.json",
+                    ),
+
+                    region="europe-west1",
+                    zone="europe-west1-b",
+                )
+
+                for resource in file.resources:
                     res = CDK._create_resource_from_resource(
                         self,
                         resource=resource,
                     )
 
                     TerraformOutput(
-                        self, 'id',
+                        self, f"{resource.name}_id",
                         value=res.id,
                     )
 
-            _ResourceStack(app, f'{resource.type}/{resource.name}')
+        _ResourceStack(app, file_name)
 
         # 10 - L’engine synthétise les fichiers
         app.synth()
@@ -111,6 +116,8 @@ class CDK(I_Terraform):
         self.__dirs = [
             f'{app.outdir}/stacks/{c.node.path}' for c in app.node.children
         ]
+
+        CDK._logger.info('Created %s terraform file(s)', len(self.__dirs))
 
         # Move files
         for dirname in self.__dirs:
@@ -162,15 +169,16 @@ class CDK(I_Terraform):
     def _import(packageName: str, moduleName: str, className: str) -> type:
 
         module = importlib.import_module(f'{packageName}.{moduleName}')
-        clazz = getattr(module, className)
+        class_ = getattr(module, className)
 
-        return clazz
+        return class_
 
     def _create_default_resource(
         self, typ: str, parentName: str | None = None,
         noModif: bool = True,
     ):
         if typ in CDK._parentStack:
+            CDK._logger.error('%s already present in parent Stack', typ)
             raise CDKCyclicDependencies(CDK._parentStack)
 
         CDK._parentStack.append(typ)
@@ -206,6 +214,8 @@ class CDK(I_Terraform):
 
             CDK._parentStack.remove(d['resource'])
 
+        CDK._logger.debug('Created default %s named %s', resourceClass, name)
+
         return (resourceClass, name, resource_args)
 
     def _create_resource_from_args(
@@ -238,6 +248,11 @@ class CDK(I_Terraform):
         CDK._parentStack.remove(typ)
         if not model.name_key:
             return resourceClass(**resource_args)
+
+        CDK._logger.debug(
+            'Created default %s named %s',
+            resourceClass, resourceName,
+        )
         return resourceClass(self, resourceName, **resource_args)
 
     def _create_resource_from_resource(self, resource: pf.ParsedResource):
@@ -268,6 +283,12 @@ class CDK(I_Terraform):
 
         # Create resource
         CDK._parentStack.remove(resource.type)
+
+        CDK._logger.debug(
+            'Created resource %s named %s',
+            resourceClass, resource.name,
+        )
+
         return resourceClass(self, resource.name, **resource_args)
 
     def _process_attribute(
@@ -317,7 +338,10 @@ class CDK(I_Terraform):
             attribute.value,
         )
 
-        if model.internalObjects[attribute.name]['is_list']:
+        int_obj = model.internalObjects[attribute.name]
+        var_type = int_obj['var_type'] if 'var_type' in int_obj else 'Unknown'
+
+        if 'list' in var_type:
             if attribute.name not in resource_args:
                 resource_args[attribute.name] = []
             resource_args[attribute.name] += [res]

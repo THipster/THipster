@@ -8,7 +8,7 @@
     "internalObjects": {
         "allow": {
             "resource" : "firewall_allow",
-            "is_list": true,
+            "var_type": "list[ComputeFirewallAllow]",
             "defaults" : [
                 {
                     "protocol" : "tcp"

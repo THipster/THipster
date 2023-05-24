@@ -9,6 +9,9 @@ import pytest
 from repository.LocalRepo import LocalRepo
 from terraform.CDK import CDK, CDKCyclicDependencies, CDKMissingAttributeInDependency
 
+LOCAL_REPO = 'tests/resources/e2e/models'
+REMOTE_REPO = 'THipster/models'
+
 
 class MockAuth(I_Auth):
     def run(self):
@@ -44,7 +47,7 @@ def create_file(filename: str, content: str, dirname: str = 'test'):
     file.close()
 
 
-def __test_file(file: str):
+def __test_file(file: str, local_repo: str = LOCAL_REPO):
 
     path_input = 'test'
     __destroy_dir = create_dir(
@@ -57,7 +60,7 @@ def __test_file(file: str):
 
     engine = Engine(
         ParserFactory(),
-        LocalRepo('tests/resources/e2e/models'),
+        LocalRepo(local_repo),
         MockAuth(),
         CDK(),
     )
@@ -85,7 +88,7 @@ bucket my-bucket:
     assert isinstance(out, list)
     assert len(out) == 1
 
-    assert out[0] == 'cdktf.out/stacks/bucket--my-bucket'
+    assert out[0] == 'cdktf.out/stacks/thipster_infrastructure'
 
 
 def test_dep_with_no_options():
@@ -123,11 +126,29 @@ loadbalancer my-lb:
     )
 
     assert isinstance(out, list)
-    assert len(out) == 3
+    assert len(out) == 1
 
-    assert 'cdktf.out/stacks/network--lb-net' in out
-    assert 'cdktf.out/stacks/subnetwork--lb-subnet' in out
-    assert 'cdktf.out/stacks/loadbalancer--my-lb' in out
+    assert 'cdktf.out/stacks/thipster_infrastructure' in out
+
+
+def test_lb_single_file():
+    out = __test_file(
+        file="""
+network lb-net:
+
+subnetwork lb-subnet:
+\tregion: europe-west1b
+\tip_range: 10.0.1.0/24
+
+loadbalancer my-lb:
+\tload_balancing_scheme: EXTERNAL
+    """,
+    )
+
+    assert isinstance(out, list)
+    assert len(out) == 1
+
+    assert 'cdktf.out/stacks/thipster_infrastructure' in out
 
 
 def test_internal_object():
@@ -137,7 +158,7 @@ firewall testParent:
 \tdirection: EGRESS
         """,
     )
-    assert 'cdktf.out/stacks/firewall--testParent' in out
+    assert 'cdktf.out/stacks/thipster_infrastructure' in out
 
     out = __test_file(
         file="""
@@ -148,7 +169,7 @@ firewall testParent:
 \t\tprotocol: http
         """,
     )
-    assert 'cdktf.out/stacks/firewall--testParent' in out
+    assert 'cdktf.out/stacks/thipster_infrastructure' in out
 
 
 def test_bucket_cors():
@@ -165,4 +186,4 @@ bucket corsBucket:
         maxAge: 400
         """,
     )
-    assert 'cdktf.out/stacks/bucket--corsBucket' in out
+    assert 'cdktf.out/stacks/thipster_infrastructure' in out
