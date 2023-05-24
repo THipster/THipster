@@ -9,6 +9,7 @@ import engine.ResourceModel as rm
 
 
 class JSONRepo(I_Repository, ABC):
+    _parentStack = []
     """Class representing a JSON resources Repository
 
     JSON Models of resources and services offered by supported cloud providers are
@@ -41,7 +42,7 @@ class JSONRepo(I_Repository, ABC):
 
         return self.model_list
 
-    def __create_value(self, val: object) -> rm.I_Model_Value | None:
+    def __create_value(self, val: object | None) -> rm.I_Model_Value | None:
         """Creates the right Model value implementation from the raw JSON
 
         Parameters
@@ -87,12 +88,16 @@ class JSONRepo(I_Repository, ABC):
             value = attr['default'] if 'default' in attr.keys(
             ) else None
 
+            is_list = 'list' in attr['var_type'] if 'var_type' in attr.keys(
+            ) else False
+
             default = self.__create_value(value)
 
             attributes[name] = rm.Model_Attribute(
                 attr['cdk_key'],
                 default=default,
                 optional=optional,
+                is_list=is_list,
             )
 
         return attributes
@@ -116,13 +121,20 @@ class JSONRepo(I_Repository, ABC):
         json_model = json.loads(model)
 
         for _, dep in json_model['dependencies'].items():
-            self.__add_model(dep)
+            if dep['resource'] not in self.model_list.keys():
+                self.__add_model(dep['resource'])
+
+        for _, intObj in json_model['internalObjects'].items():
+            if intObj['resource'] not in self.model_list.keys():
+                self.__add_model(intObj['resource'])
 
         res = rm.ResourceModel(
             name,
             attributes=self.__create_attribute(json_model['attributes']),
             dependencies=json_model['dependencies'],
-            name_key=json_model['cdk_name_key'],
+            internalObjects=json_model['internalObjects'],
+            name_key=json_model['cdk_name_key']
+            if 'cdk_name_key' in json_model else None,
             cdk_provider=json_model['cdk_provider'],
             cdk_module=json_model['cdk_module'],
             cdk_name=json_model['cdk_class'],
@@ -145,6 +157,7 @@ class JSONRepo(I_Repository, ABC):
         """
 
         if model not in self.model_list.keys():
+            self.model_list[model] = None
             self.model_list[model] = self.__create_model(model)
 
         return self.model_list[model]

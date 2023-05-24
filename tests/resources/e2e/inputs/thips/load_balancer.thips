@@ -1,0 +1,8 @@
+network lb-net:
+
+subnetwork lb-subnet:
+    region: europe-west1b
+    ip_range: 10.0.1.0/24
+
+loadbalancer my-lb:
+    load_balancing_scheme: EXTERNAL

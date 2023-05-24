@@ -1,0 +1,15 @@
+{
+    "dependencies": {},
+    "internalObjects": {},
+    "attributes": {
+        "region": {
+            "optional": false,
+            "cdk_key": "location"
+        }
+    },
+    "cdk_name_key": "name",
+
+    "cdk_provider":"cdktf_cdktf_provider_google",
+    "cdk_module":"storage_bucket",
+    "cdk_class":"StorageBucket"
+}

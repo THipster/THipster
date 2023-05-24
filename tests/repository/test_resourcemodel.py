@@ -6,6 +6,7 @@ def test_create_empty_resource():
         'test_type',
         attributes=None,
         dependencies=None,
+        internalObjects=None,
         name_key='test_key',
         cdk_provider='test_provider',
         cdk_module='test_module',
@@ -16,6 +17,7 @@ def test_create_empty_resource():
     assert model.type == 'test_type'
     assert model.attributes is None
     assert model.dependencies is None
+    assert model.internalObjects is None
 
 
 def test_create_resource_with_dependencies():
@@ -24,6 +26,7 @@ def test_create_resource_with_dependencies():
             'dependency_'+str(i),
             attributes=None,
             dependencies=None,
+            internalObjects=None,
             name_key='test_key',
             cdk_provider='test_provider',
             cdk_module='test_module',
@@ -35,6 +38,7 @@ def test_create_resource_with_dependencies():
         'test_type',
         attributes=None,
         dependencies=dependencies,
+        internalObjects=None,
         name_key='test_key',
         cdk_provider='test_provider',
         cdk_module='test_module',
@@ -155,6 +159,7 @@ def test_create_resource_with_attributes():
         'test_type',
         attributes=attr,
         dependencies=None,
+        internalObjects=None,
         name_key='test_key',
         cdk_provider='test_provider',
         cdk_module='test_provider',
@@ -178,3 +183,19 @@ def test_create_resource_with_attributes():
                 assert isinstance(val, rm.I_Model_Value)
 
     assert model.dependencies is None
+
+
+def test_create_internal_object():
+    model = rm.ResourceModel(
+        'test_type',
+        attributes=None,
+        dependencies=None,
+        internalObjects=None,
+        name_key=None,
+        cdk_provider='test_provider',
+        cdk_module='test_module',
+        cdk_name='test_name',
+    )
+
+    assert isinstance(model, rm.ResourceModel)
+    assert model.name_key is None

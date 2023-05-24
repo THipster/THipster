@@ -1,0 +1,2 @@
+bucket_dep_parent my-bucket:
+    region : euw

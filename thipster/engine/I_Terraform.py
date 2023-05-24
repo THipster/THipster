@@ -1,4 +1,6 @@
 from abc import ABC, abstractmethod
+import engine.ResourceModel as rm
+import engine.ParsedFile as pf
 
 
 class I_Terraform(ABC):
@@ -6,13 +8,17 @@ class I_Terraform(ABC):
 
     Methods
     -------
-    run()
-        Abstract run method
+    generate()
+        Generates Terraform code from parsed file and models
+    plan()
+        Get plan from generated terraform code
+    apply()
+        Apply generated terraform code
 
     """
     @abstractmethod
-    def run(self):
-        """Abstract run method
+    def apply(self):
+        """Apply generated terraform code
 
         Raises
         ------
@@ -20,4 +26,40 @@ class I_Terraform(ABC):
             If method is not implemented in inheriting classes
 
         """
-        raise NotImplementedError('Should implement run()')
+        raise NotImplementedError('Should implement apply()')
+
+    @abstractmethod
+    def generate(self, file: pf.ParsedFile, models: dict[str, rm.ResourceModel]):
+        """Generates Terraform code from parsed file and models
+
+        Raises
+        ------
+        NotImplementedError
+            If method is not implemented in inheriting classes
+
+        """
+        raise NotImplementedError('Should implement generate()')
+
+    @abstractmethod
+    def init(self):
+        """Init Terraform for generated terraform code
+
+        Raises
+        ------
+        NotImplementedError
+            If method is not implemented in inheriting classes
+
+        """
+        raise NotImplementedError('Should implement generate()')
+
+    @abstractmethod
+    def plan(self):
+        """Get plan from generated terraform code
+
+        Raises
+        ------
+        NotImplementedError
+            If method is not implemented in inheriting classes
+
+        """
+        raise NotImplementedError('Should implement plan()')

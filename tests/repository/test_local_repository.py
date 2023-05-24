@@ -29,20 +29,27 @@ def create_file(filename: str, content: str, dirname: str = 'test'):
     file.close()
 
 
-def __setup_local():
+def __setup_local(models: dict[str, str]):
     path_input = 'test'
     return create_dir(
         path_input,
-        {
-            'bucket.json':
+        models,
+    )
+
+
+def test_get_bucket():
+    _destroy_dir = __setup_local({
+        'bucket.json':
             """
 {
     "dependencies": {},
+    "internalObjects": {},
     "attributes":{
         "region": {
             "optional": true,
             "default": "euw",
-            "cdk_key": "region"
+            "cdk_key": "region",
+            "var_type": "str"
         }
     },
     "cdk_name_key": "name",
@@ -52,54 +59,7 @@ def __setup_local():
     "cdk_class":"StorageBucket"
 }
 """,
-            'network.json':
-            """
-{
-    "dependencies": {},
-    "attributes":{
-        "region": {
-            "optional": true,
-            "default": "euw",
-            "cdk_key": "region"
-        }
-    },
-    "cdk_name_key": "name",
-
-    "cdk_provider":"test_provider",
-    "cdk_module":"test_module",
-    "cdk_class":"bucket_class"
-}
-""",
-            'vm.json':
-            """
-{
-    "dependencies": {
-        "network": "test/network"
-    },
-    "attributes":{
-        "region": {
-            "optional": true,
-            "default": "euw",
-            "cdk_key": "region"
-        },
-        "type": {
-            "optional": false,
-            "cdk_key": "type"
-        }
-    },
-    "cdk_name_key": "name",
-    
-    "cdk_provider":"test_provider",
-    "cdk_module":"test_module",
-    "cdk_class":"vm_class"
-}
-""",
-        },
-    )
-
-
-def test_get_bucket():
-    _destroy_dir = __setup_local()
+    })
     resources = ['test/bucket']
     repo = LocalRepo(os.getcwd())
 
@@ -119,8 +79,140 @@ def test_get_bucket():
     assert bucket.type == 'test/bucket'
 
 
+def test_get_bucket_with_cors():
+    _destroy_dir = __setup_local({
+        'bucket.json':
+            """
+{
+    "dependencies": {},
+    "internalObjects": {
+        "cors": {
+            "resource" : "test/bucket_cors",
+            "var_type": "list[StorageBucketCors]",
+            "default": {}
+        }
+    },
+    "attributes":{
+        "region": {
+            "optional": true,
+            "default": "euw",
+            "cdk_key": "region",
+            "var_type": "str"
+        }
+    },
+    "cdk_name_key": "name",
+
+    "cdk_provider":"cdktf_cdktf_provider_google",
+    "cdk_module":"storage_bucket",
+    "cdk_class":"StorageBucket"
+}
+""",
+        'bucket_cors.json':
+            """
+{
+    "dependencies": {},
+    "internalObjects": {},
+    "attributes":{
+        "origin": {
+            "optional": true,
+            "cdk_key": "origin",
+            "var_type": "list[str]"
+        },
+        "method": {
+            "optional": true,
+            "cdk_key": "method",
+            "var_type": "list[str]"
+        },
+        "responseHeader": {
+            "optional": true,
+            "cdk_key": "response_header",
+            "var_type": "list[str]"
+        },
+        "maxAge": {
+            "optional": true,
+            "cdk_key": "max_age_seconds",
+            "var_type": "int"
+        }
+    },
+
+    "cdk_provider":"cdktf_cdktf_provider_google",
+    "cdk_module":"storage_bucket",
+    "cdk_class":"StorageBucketCors"
+}
+""",
+    })
+    resources = ['test/bucket']
+    repo = LocalRepo(os.getcwd())
+
+    models = repo.get(resources)
+    _destroy_dir()
+
+    assert isinstance(models, dict)
+    assert len(models) == 2
+
+    assert 'test/bucket' in models.keys()
+    assert isinstance(models['test/bucket'], ResourceModel)
+
+    bucket = models['test/bucket']
+
+    assert len(bucket.attributes) == 1
+    assert len(bucket.dependencies) == 0
+    assert len(bucket.internalObjects) == 1
+    assert bucket.type == 'test/bucket'
+
+
 def test_get_vm():
-    _destroy_dir = __setup_local()
+    _destroy_dir = __setup_local({
+        'network.json':
+            """
+{
+    "dependencies": {},
+    "internalObjects": {},
+    "attributes":{
+        "region": {
+            "optional": true,
+            "default": "euw",
+            "cdk_key": "region",
+            "var_type": "str"
+        }
+    },
+    "cdk_name_key": "name",
+
+    "cdk_provider":"test_provider",
+    "cdk_module":"test_module",
+    "cdk_class":"bucket_class"
+}
+""",
+            'vm.json':
+            """
+{
+    "dependencies": {
+        "network": {
+            "resource": "test/network",
+            "default": {}
+        }
+    },
+    "internalObjects": {},
+    "attributes":{
+        "region": {
+            "optional": true,
+            "default": "euw",
+            "cdk_key": "region",
+            "var_type": "str"
+        },
+        "type": {
+            "optional": false,
+            "cdk_key": "type"
+        }
+    },
+    "cdk_name_key": "name",
+    
+    "cdk_provider":"test_provider",
+    "cdk_module":"test_module",
+    "cdk_class":"vm_class"
+}
+""",
+    })
     resources = ['test/vm']
 
     repo = LocalRepo(os.getcwd())
@@ -148,3 +240,43 @@ def test_get_vm():
     assert network.type == 'test/network'
     assert len(network.attributes) == 1
     assert len(network.dependencies) == 0
+
+
+def test_cyclic_import():
+    _destroy_dir = __setup_local({
+        'cyclic.json':
+            """
+{
+    "dependencies": {
+        "network": {
+            "resource": "test/cyclic",
+            "default": {}
+        }
+    },
+    "internalObjects": {},
+    "attributes":{
+        "region": {
+            "optional": true,
+            "default": "euw",
+            "cdk_key": "region"
+        }
+    },
+    "cdk_name_key": "name",
+    
+    "cdk_provider":"test_provider",
+    "cdk_module":"test_module",
+    "cdk_class":"vm_class"
+}
+""",
+    })
+    resources = ['test/cyclic']
+    repo = LocalRepo(os.getcwd())
+
+    models = repo.get(resources)
+    _destroy_dir()
+
+    assert isinstance(models, dict)
+    assert len(models) == 1
+
+    assert 'test/cyclic' in models.keys()
+    assert isinstance(models['test/cyclic'], ResourceModel)

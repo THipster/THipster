@@ -1,0 +1,16 @@
+{
+    "dependencies": {},
+    "internalObjects": {},
+    "attributes":{
+        "machine_type": {
+            "optional": true,
+            "default": "e2-small",
+            "cdk_key": "machine_type"
+        }
+    },
+    "cdk_name_key": "name",
+
+    "cdk_provider":"cdktf_cdktf_provider_google",
+    "cdk_module":"storage_bucket",
+    "cdk_class":"StorageBucket"
+}

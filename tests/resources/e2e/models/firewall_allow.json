@@ -1,0 +1,18 @@
+{
+    "dependencies": {},
+    "internalObjects": {},
+    "attributes":{
+        "protocol": {
+            "optional": false,
+            "cdk_key": "protocol"
+        },
+        "ports": {
+            "optional": true,
+            "cdk_key": "ports"
+        }
+    },
+
+    "cdk_provider":"cdktf_cdktf_provider_google",
+    "cdk_module":"compute_firewall",
+    "cdk_class":"ComputeFirewallAllow"
+}

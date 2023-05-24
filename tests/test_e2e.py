@@ -1,10 +1,16 @@
 import os
+import shutil
 
 from engine.Engine import Engine
 from engine.I_Auth import I_Auth
 from engine.I_Terraform import I_Terraform
 from parser.ParserFactory import ParserFactory
+import pytest
 from repository.LocalRepo import LocalRepo
+from terraform.CDK import CDK, CDKCyclicDependencies, CDKMissingAttributeInDependency
+
+LOCAL_REPO = 'tests/resources/e2e/models'
+REMOTE_REPO = 'THipster/models'
 
 
 class MockAuth(I_Auth):
@@ -26,9 +32,7 @@ def create_dir(dirname: str, files: dict[str, str]):
         create_file(name, content, dirname)
 
     def destroy_files():
-        for content in os.listdir(dirname):
-            os.remove(f'{dirname}/{content}')
-        os.rmdir(dirname)
+        shutil.rmtree(dirname)
 
     return destroy_files
 
@@ -43,11 +47,10 @@ def create_file(filename: str, content: str, dirname: str = 'test'):
     file.close()
 
 
-def __test_file(file: str):
-    __destroy_models = __setup_local()
+def __test_file(file: str, local_repo: str = LOCAL_REPO):
 
     path_input = 'test'
-    _destroy_dir = create_dir(
+    __destroy_dir = create_dir(
         path_input,
         {
             'test_file.thips':
@@ -57,99 +60,27 @@ def __test_file(file: str):
 
     engine = Engine(
         ParserFactory(),
-        LocalRepo(os.getcwd()),
+        LocalRepo(local_repo),
         MockAuth(),
-        MockTerraform(),
+        CDK(),
     )
     try:
         output = engine.run(path_input)
     except Exception as e:
         raise e
     finally:
-        _destroy_dir()
-        __destroy_models()
+        __destroy_dir()
+
+        if os.path.exists('cdktf.out'):
+            shutil.rmtree('cdktf.out')
 
     return output
 
 
-def __setup_local():
-    path_input = 'test_models'
-    return create_dir(
-        path_input,
-        {
-            'bucket.json':
-            """
-{
-    "dependencies": {},
-    "attributes":{
-        "region": {
-            "optional": true,
-            "default": "euw",
-            "cdk_key": "location"
-        },
-        "name": {
-            "optional": false,
-            "cdk_key": "name",
-            "cdk_key": "location"
-        }
-    },
-    "cdk_name_key": "name",
-
-    "cdk_provider":"cdktf_cdktf_provider_google",
-    "cdk_module":"storage_bucket",
-    "cdk_class":"StorageBucket"
-}
-""",
-            'network.json':
-            """
-{
-    "dependencies": {},
-    "attributes":{
-        "region": {
-            "optional": true,
-            "default": "euw",
-            "cdk_key": "location"
-        }
-    },
-    "cdk_name_key": "name",
-
-    "cdk_provider":"test_provider",
-    "cdk_module":"test_module",
-    "cdk_class":"bucket_class"
-}
-""",
-            'vm.json':
-            """
-{
-    "dependencies": {
-        "network": "test/network"
-    },
-    "attributes":{
-        "region": {
-            "optional": true,
-            "default": "euw",
-            "cdk_key": "location"
-        },
-        "type": {
-            "optional": false,
-            "cdk_key": "location"
-        }
-    },
-    "cdk_name_key": "name",
-
-    "cdk_provider":"test_provider",
-    "cdk_module":"test_module",
-    "cdk_class":"vm_class"
-}
-""",
-        },
-    )
-
-
 def test_bucket():
     out = __test_file(
-        """
-test_models/bucket my-bucket:
+        file="""
+bucket my-bucket:
 \tregion : euw
     """,
     )
@@ -157,4 +88,102 @@ test_models/bucket my-bucket:
     assert isinstance(out, list)
     assert len(out) == 1
 
-    assert out[0] == 'cdktf.out/stacks/test_models--bucket--my-bucket'
+    assert out[0] == 'cdktf.out/stacks/thipster_infrastructure'
+
+
+def test_dep_with_no_options():
+    with pytest.raises(CDKMissingAttributeInDependency):
+        __test_file(
+            file="""
+bucket_bad_dep_parent my-bucket:
+\tregion : euw
+        """,
+        )
+
+
+def test_cyclic_deps():
+    with pytest.raises(CDKCyclicDependencies):
+        __test_file(
+            file="""
+bucket_bad_dep_cyclic my-bucket:
+\tregion : euw
+        """,
+        )
+
+
+def test_lb():
+    out = __test_file(
+        file="""
+network lb-net:
+
+subnetwork lb-subnet:
+\tregion: europe-west1b
+\tip_range: 10.0.1.0/24
+
+loadbalancer my-lb:
+\tload_balancing_scheme: EXTERNAL
+    """,
+    )
+
+    assert isinstance(out, list)
+    assert len(out) == 1
+
+    assert 'cdktf.out/stacks/thipster_infrastructure' in out
+
+
+def test_lb_single_file():
+    out = __test_file(
+        file="""
+network lb-net:
+
+subnetwork lb-subnet:
+\tregion: europe-west1b
+\tip_range: 10.0.1.0/24
+
+loadbalancer my-lb:
+\tload_balancing_scheme: EXTERNAL
+    """,
+    )
+
+    assert isinstance(out, list)
+    assert len(out) == 1
+
+    assert 'cdktf.out/stacks/thipster_infrastructure' in out
+
+
+def test_internal_object():
+    out = __test_file(
+        file="""
+firewall testParent:
+\tdirection: EGRESS
+        """,
+    )
+    assert 'cdktf.out/stacks/thipster_infrastructure' in out
+
+    out = __test_file(
+        file="""
+firewall testParent:
+\tdirection: EGRESS
+
+\tallow:
+\t\tprotocol: http
+        """,
+    )
+    assert 'cdktf.out/stacks/thipster_infrastructure' in out
+
+
+def test_bucket_cors():
+    out = __test_file(
+        file="""
+bucket corsBucket:
+    cors:
+        origin:
+            - http://image-store.com
+        method:
+            - "*"
+        responseHeader:
+            - "*"
+        maxAge: 400
+        """,
+    )
+    assert 'cdktf.out/stacks/thipster_infrastructure' in out
