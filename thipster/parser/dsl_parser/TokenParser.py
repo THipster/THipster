@@ -472,7 +472,27 @@ class TokenParser():
                 case _:
                     expr1 = self.__get_arith_expr()
                     self.__get_whitespaces()
-                    op = self.__next([TT.EE, TT.LT, TT.GT, TT.LTE, TT.GTE])
+                    op = self.__next([TT.EQ, TT.LT, TT.GT, TT.EXCLAMATION])
+
+                    # ==
+                    if op.tokenType is TT.EQ:
+                        self.__next(TT.EQ)
+                        op = Token(op.position, TT.EE)
+
+                    # !=
+                    if op.tokenType is TT.EXCLAMATION:
+                        self.__next(TT.EQ)
+                        op = Token(op.position, TT.NE)
+
+                    nextType = self.__get_next_type()
+                    if nextType is TT.EQ:
+                        self.__next(TT.EQ)
+                        match op.tokenType:
+                            case TT.LT:
+                                op = Token(op.position, TT.LTE)
+                            case TT.GT:
+                                op = Token(op.position, TT.GTE)
+
                     self.__get_whitespaces()
                     expr2 = self.__get_arith_expr()
                     self.__get_whitespaces()

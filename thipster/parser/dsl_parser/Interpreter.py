@@ -76,6 +76,12 @@ class Interpreter():
                     element.rightValue.accept(self).value,
                 )
 
+            case TT.NE:
+                return pf.ParsedLiteral(
+                    element.leftValue.accept(self).value !=
+                    element.rightValue.accept(self).value,
+                )
+
             case TT.LT:
                 return pf.ParsedLiteral(
                     element.leftValue.accept(self).value <

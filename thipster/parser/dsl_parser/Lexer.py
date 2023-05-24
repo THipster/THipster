@@ -149,11 +149,15 @@ class Lexer():
             '\t': self.__handleTabToken,
             ' ': self.__handleWhitespace,
 
+            '=': self._handleEQToken,
             '/': self._handleDivToken,
             '-': self._handleMinusToken,
             '+': self._handlePlusToken,
             '*': self._handleMulToken,
             '^': self._handlePowToken,
+            '<': self._handleLTToken,
+            '>': self._handleGTToken,
+            '!': self._handleExclamationToken,
         }
 
         singleCharTokens.get(self.__currentChar, self.__iterateNextChar)()
@@ -168,13 +172,6 @@ class Lexer():
 
         keyWordsAndTokens = {
             '': self.__handleEmptyToken,
-            '=': self._handleEQToken,
-            '==': self._handleEEToken,
-            '!=': self._handleNEToken,
-            '<': self._handleLTToken,
-            '>': self._handleGTToken,
-            '<=': self._handleLTEToken,
-            '>=': self._handleGTEToken,
             'amount': self.__handleAmountToken,
             'and': self.__handleAndToken,
             'if': self.__handleIfToken,
@@ -360,44 +357,22 @@ class Lexer():
     def _handleEQToken(self):
         """Handle a EQ token '='
         """
-        self.__lexerPosition.resetConsecutiveWhitespaces()
-        self.__addBaseToken(TT.EQ, isCurrentToken=True)
+        self.__handleBaseToken(TT.EQ)
 
-    def _handleEEToken(self):
-        """Handle a EE token '=='
-        """
-        self.__lexerPosition.resetConsecutiveWhitespaces()
-        self.__addBaseToken(TT.EE, isCurrentToken=True)
-
-    def _handleNEToken(self):
+    def _handleExclamationToken(self):
         """Handle a NE token '!='
         """
-        self.__lexerPosition.resetConsecutiveWhitespaces()
-        self.__addBaseToken(TT.NE, isCurrentToken=True)
+        self.__handleBaseToken(TT.EXCLAMATION)
 
     def _handleLTToken(self):
         """Handle a LT token '<'
         """
-        self.__lexerPosition.resetConsecutiveWhitespaces()
-        self.__addBaseToken(TT.LT, isCurrentToken=True)
-
-    def _handleLTEToken(self):
-        """Handle a LTE token '<='
-        """
-        self.__lexerPosition.resetConsecutiveWhitespaces()
-        self.__addBaseToken(TT.LTE, isCurrentToken=True)
+        self.__handleBaseToken(TT.LT)
 
     def _handleGTToken(self):
         """Handle a GT token '>'
         """
-        self.__lexerPosition.resetConsecutiveWhitespaces()
-        self.__addBaseToken(TT.GT, isCurrentToken=True)
-
-    def _handleGTEToken(self):
-        """Handle a GTE token '>='
-        """
-        self.__lexerPosition.resetConsecutiveWhitespaces()
-        self.__addBaseToken(TT.GTE, isCurrentToken=True)
+        self.__handleBaseToken(TT.GT)
 
     def _handlePowToken(self):
         """Handle a POW token '^'

@@ -432,41 +432,49 @@ def test_var_in_name():
 
 
 def test_comparisons():
-    # OR
-    out = __test_file(
-        file="""bucket my-bucket:
-\tregion: euw if (1 == 1 OR 1 == 2) else us
+    def test_cmp(cmpExpr: str, result: str):
+        out = __test_file(
+            file=f"""bucket my-bucket:
+\tregion: truCase if {cmpExpr} else falsCase
 """,
-    )
+        )
 
-    assert len(out.resources) == 1
+        assert len(out.resources) == 1
 
-    bucket = out.resources[0]
-    assert bucket.type == 'bucket'
-    assert bucket.name == 'my-bucket'
-    assert len(bucket.attributes) == 1
+        bucket = out.resources[0]
+        assert bucket.type == 'bucket'
+        assert bucket.name == 'my-bucket'
+        assert len(bucket.attributes) == 1
 
-    region = bucket.attributes[0]
-    assert region.name == 'region'
-    assert region.value == 'euw'
+        region = bucket.attributes[0]
+        assert region.name == 'region'
+        assert region.value == result
+
+    # OR
+    test_cmp('(1==1 OR 1==2)', 'truCase')
 
     # AND
-    out = __test_file(
-        file="""bucket my-bucket:
-\tregion: euw if (not 1 == 1 AND false) else us
-""",
-    )
+    test_cmp('(not 1==1 AND false)', 'falsCase')
 
-    assert len(out.resources) == 1
+    # LTE
+    test_cmp('2<=2', 'truCase')
+    test_cmp('3<=2', 'falsCase')
 
-    bucket = out.resources[0]
-    assert bucket.type == 'bucket'
-    assert bucket.name == 'my-bucket'
-    assert len(bucket.attributes) == 1
+    # GTE
+    test_cmp('2>=2', 'truCase')
+    test_cmp('1>=2', 'falsCase')
 
-    region = bucket.attributes[0]
-    assert region.name == 'region'
-    assert region.value == 'us'
+    # LT
+    test_cmp('1<2', 'truCase')
+    test_cmp('2<2', 'falsCase')
+
+    # GT
+    test_cmp('3>2', 'truCase')
+    test_cmp('2>2', 'falsCase')
+
+    # NE
+    test_cmp('3!=2', 'truCase')
+    test_cmp('2!=2', 'falsCase')
 
 
 def test_arithmetic():

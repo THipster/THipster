@@ -13,6 +13,7 @@ class TOKENTYPES(Enum):
     ELIF = 'ELIF'
     ELSE = 'ELSE'
     EOF = 'EOF'
+    EXCLAMATION = 'EXCLAMATION'
     FLOAT = 'FLOAT'
     IF = 'IF'
     INT = 'INT'

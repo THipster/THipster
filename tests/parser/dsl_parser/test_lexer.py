@@ -66,12 +66,9 @@ def test_lex_single_tokens():
         '=': TT.EQ,
         '*': TT.MUL,
         '/': TT.DIV,
-        '==': TT.EE,
-        '!=': TT.NE,
+        '!': TT.EXCLAMATION,
         '<': TT.LT,
         '>': TT.GT,
-        '<=': TT.LTE,
-        '>=': TT.GTE,
         '^': TT.POW,
     }.items():
         __single_token_test(input, output)
