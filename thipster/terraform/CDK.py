@@ -156,7 +156,7 @@ class CDK(I_Terraform):
 
         """
         t = Terraform()
-        _, stdout, stderr = t.plan()
+        _, stdout, stderr = t.plan(out="thipster.tfplan")
         return stdout + stderr
 
     def _pip_install(package: str):
