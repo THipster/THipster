@@ -41,6 +41,18 @@ class I_Terraform(ABC):
         raise NotImplementedError('Should implement generate()')
 
     @abstractmethod
+    def init(self):
+        """Init Terraform for generated terraform code
+
+        Raises
+        ------
+        NotImplementedError
+            If method is not implemented in inheriting classes
+
+        """
+        raise NotImplementedError('Should implement generate()')
+
+    @abstractmethod
     def plan(self):
         """Get plan from generated terraform code
 

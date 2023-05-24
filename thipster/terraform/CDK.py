@@ -1,9 +1,12 @@
 import copy
+import shutil
 import subprocess
 import sys
 import os
 import importlib
 import uuid
+
+from python_terraform import Terraform
 from constructs import Construct
 from cdktf import App, TerraformStack, TerraformOutput
 
@@ -52,6 +55,102 @@ class CDK(I_Terraform):
     _parentStack = []
     _importedPackages = []
     _logger = Logger(__name__)
+
+    def apply(self):
+        """Apply generated terraform code
+
+        Raises
+        ------
+        NotImplementedError
+            If method is not implemented in inheriting classes
+
+        """
+        t = Terraform()
+        _, stdout, stderr = t.apply()
+        return stdout + stderr
+
+    def generate(self, file: pf.ParsedFile, models: dict[str, rm.ResourceModel]):
+
+        CDK._models = models
+        # Init CDK
+        app = App()
+
+        for resource in file.resources:
+            # 7 - déclare un nouvel objet stack dans le CDK Terraform
+            class _ResourceStack(TerraformStack):
+                def __init__(self, scope: Construct, ns: str):
+                    super().__init__(scope, ns)
+
+                    GoogleProvider(
+                        self, f"{resource.name}_google",
+                        project="rcattin-sandbox",
+                        credentials=os.path.join(
+                            os.getcwd(),
+                            "rcattin-sandbox-credentials.json",
+                        ),
+
+                        region="europe-west1",
+                        zone="europe-west1-b",
+                    )
+
+                    res = CDK._create_resource_from_resource(
+                        self,
+                        resource=resource,
+                    )
+
+                    TerraformOutput(
+                        self, 'id',
+                        value=res.id,
+                    )
+
+            _ResourceStack(app, f'{resource.type}/{resource.name}')
+
+        # 10 - L’engine synthétise les fichiers
+        app.synth()
+
+        self.__dirs = [
+            f'{app.outdir}/stacks/{c.node.path}' for c in app.node.children
+        ]
+
+        # Move files
+        for dirname in self.__dirs:
+            shutil.move(
+                os.path.join(os.getcwd(), dirname, "cdk.tf.json"),
+                os.path.join(os.getcwd(), "thipster.tf.json"),
+            )
+
+            # Delete cdktf.out directory
+            for content in os.listdir(os.path.join(os.getcwd(), dirname)):
+                os.remove(f'{dirname}/{content}')
+            os.rmdir(dirname)
+
+        return self.__dirs
+
+    def init(self):
+        """Get plan from generated terraform code
+
+        Raises
+        ------
+        NotImplementedError
+            If method is not implemented in inheriting classes
+
+        """
+        t = Terraform()
+        _, stdout, stderr = t.init()
+        return stdout + stderr
+
+    def plan(self):
+        """Get plan from generated terraform code
+
+        Raises
+        ------
+        NotImplementedError
+            If method is not implemented in inheriting classes
+
+        """
+        t = Terraform()
+        _, stdout, stderr = t.plan()
+        return stdout + stderr
 
     def _pip_install(package: str):
         if package not in CDK._importedPackages:
@@ -226,70 +325,3 @@ class CDK(I_Terraform):
             resource_args[attribute.name] = res
 
         return resource_args
-
-    def generate(self, file: pf.ParsedFile, models: dict[str, rm.ResourceModel]):
-
-        CDK._models = models
-        # Init CDK
-        app = App()
-
-        for resource in file.resources:
-            # 7 - déclare un nouvel objet stack dans le CDK Terraform
-            class _ResourceStack(TerraformStack):
-                def __init__(self, scope: Construct, ns: str):
-                    super().__init__(scope, ns)
-
-                    GoogleProvider(
-                        self, f"{resource.name}_google",
-                        project="rcattin-sandbox",
-                        credentials=os.path.join(
-                            os.getcwd(),
-                            "rcattin-sandbox-credentials.json",
-                        ),
-
-                        region="europe-west1",
-                        zone="europe-west1-b",
-                    )
-
-                    res = CDK._create_resource_from_resource(
-                        self,
-                        resource=resource,
-                    )
-
-                    TerraformOutput(
-                        self, 'id',
-                        value=res.id,
-                    )
-
-            _ResourceStack(app, f'{resource.type}/{resource.name}')
-
-        # 10 - L’engine synthétise les fichiers
-        app.synth()
-
-        self.__dirs = [
-            f'{app.outdir}/stacks/{c.node.path}' for c in app.node.children
-        ]
-
-        return self.__dirs
-
-    def apply(self):
-        """Apply generated terraform code
-
-        Raises
-        ------
-        NotImplementedError
-            If method is not implemented in inheriting classes
-
-        """
-        raise NotImplementedError('Should implement apply()')
-
-    def plan(self):
-        """Get plan from generated terraform code
-
-        Raises
-        ------
-        NotImplementedError
-            If method is not implemented in inheriting classes
-
-        """
-        raise NotImplementedError('Should implement plan()')
