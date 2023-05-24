@@ -93,7 +93,7 @@ class CDK(I_Terraform):
 
         CDK._logger.debug('Creating tf code for file %s', file_name)
 
-        # 7 - déclare un nouvel objet stack dans le CDK Terraform
+        # Declare new stack in CDK
         class _ResourceStack(TerraformStack):
             def __init__(self, scope: Construct, ns: str):
                 super().__init__(scope, ns)
@@ -125,7 +125,7 @@ class CDK(I_Terraform):
 
         _ResourceStack(app, file_name)
 
-        # 10 - L’engine synthétise les fichiers
+        # Synth files
         app.synth()
 
         self.__dirs = [
@@ -141,10 +141,14 @@ class CDK(I_Terraform):
                 os.path.join(os.getcwd(), "thipster.tf.json"),
             )
 
-            # Delete cdktf.out directory
+        # Delete cdktf.out directory
             for content in os.listdir(os.path.join(os.getcwd(), dirname)):
                 os.remove(f'{dirname}/{content}')
             os.rmdir(dirname)
+        for content in os.listdir(os.path.join(os.getcwd(), 'cdktf.out')):
+            d = f'cdktf.out/{content}'
+            os.rmdir(d) if os.path.isdir(d) else os.remove(d)
+        os.rmdir('cdktf.out')
 
         return self.__dirs
 
@@ -192,6 +196,7 @@ class CDK(I_Terraform):
         self, typ: str, parentName: str | None = None,
         noModif: bool = True, noDependencies: bool = False,
     ):
+        # Checks for cyclic dependency
         if typ in CDK._parentStack:
             CDK._logger.error('%s already present in parent Stack', typ)
             raise CDKCyclicDependencies(CDK._parentStack)
@@ -199,10 +204,10 @@ class CDK(I_Terraform):
         CDK._parentStack.append(typ)
 
         model = CDK._models[typ]
+
+        # Checks that all attributes are optional
         if noModif and not all(map(lambda x: x.optional, model.attributes.values())):
             raise CDKMissingAttributeInDependency(typ)
-
-        name = f"{parentName}-{uuid.uuid4()}"
 
         # Import package and class
         CDK._pip_install(model.cdk_provider)
@@ -210,16 +215,18 @@ class CDK(I_Terraform):
             model.cdk_provider, model.cdk_module, model.cdk_name,
         )
 
+        # Process name + default values
         deps = copy.deepcopy(model.dependencies)
-
         resource_args = {}
 
+        name = f"{parentName}-{uuid.uuid4()}"
         if model.name_key:
             resource_args[model.name_key] = name
 
         for _, v in model.attributes.items():
             resource_args[v.cdk_name] = v.default
 
+        # Create default defendencies if needed
         if not noDependencies:
             CDK._create_dependencies(self, deps, resource_args, name)
 
@@ -238,11 +245,9 @@ class CDK(I_Terraform):
         )
         model = CDK._models[typ]
 
-        # 3 - vérifie les paramètres de la ressource correspondent à ceux du modèle
+        # Process attributes
         deps = copy.deepcopy(model.dependencies)
-
         for attribute in args:
-
             if attribute.name and model.name_key:
                 resource_args[model.name_key] = attribute.name
 
@@ -269,6 +274,7 @@ class CDK(I_Terraform):
         return resourceClass(self, resourceName, **resource_args)
 
     def _create_resource_from_resource(self, resource: pf.ParsedResource):
+        # Create resource with default values
         resourceClass, _, resource_args = CDK._create_default_resource(
             self,
             resource.type,
@@ -277,16 +283,12 @@ class CDK(I_Terraform):
         )
         model = CDK._models[resource.type]
 
-        # 3 - vérifie les paramètres de la ressource correspondent à ceux du modèle
-        deps = copy.deepcopy(model.dependencies)
-
         if model.name_key:
             resource_args[model.name_key] = resource.name
-        for _, v in model.attributes.items():
-            resource_args[v.cdk_name] = v.default
 
+        # Process attributes
+        deps = copy.deepcopy(model.dependencies)
         for attribute in resource.attributes:
-
             resource_args, deps = CDK._process_attribute(
                 self,
                 model=model,
@@ -315,6 +317,7 @@ class CDK(I_Terraform):
         resource_args: dict[str, object],
         deps: dict[str, dict[str, object]] | None,
     ):
+        # Checks if attribute is an explicit dependency
         if attribute.name in deps:
             created_name = f"{deps[attribute.name]['resource']}/{attribute.value}"
 
@@ -325,6 +328,7 @@ class CDK(I_Terraform):
             del deps[attribute.name]
             return resource_args, deps
 
+        # Checks if attribute is an internal object
         if attribute.name in model.internalObjects:
             resource_args = CDK._handle_internal_object(
                 self,
@@ -334,17 +338,19 @@ class CDK(I_Terraform):
             )
             return resource_args, deps
 
+        # Checks if attribute is expected as an attibute
         if attribute.name not in model.attributes:
             raise CDKInvalidAttribute(attribute.name, model.type)
 
+        # Processes list attribute
         attribute_value = attribute.value
-
         if model.attributes[attribute.name].is_list:
             if type(attribute.value) is list:
                 attribute_value = [i.value for i in attribute.value]
             else:
                 attribute_value = [attribute.value]
 
+        # Sets attribute value
         resource_args[model.attributes[attribute.name].cdk_name] = attribute_value
 
         return resource_args, deps
