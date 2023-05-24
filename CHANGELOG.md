@@ -2,6 +2,13 @@
 
 <!--next-version-placeholder-->
 
+## v0.11.0 (2023-05-24)
+### :sparkles:
+* :sparkles: feat: upgrade DSL ([#98](https://github.com/THipster/THipster/issues/98)) ([`08c58da`](https://github.com/THipster/THipster/commit/08c58da6729e61b1a073e76db833a69d4ac33b60))
+
+### Other
+* ✨ feat(cdk): Add internal objects and dependencies ([#99](https://github.com/THipster/THipster/issues/99)) ([`6b96040`](https://github.com/THipster/THipster/commit/6b960403e1780319cf1adc42b6fe4e854fea073f))
+
 ## v0.10.3 (2023-05-15)
 ### Other
 * :fire: feat: improve parser factory + doc ([#86](https://github.com/THipster/THipster/issues/86)) ([`59fdfb1`](https://github.com/THipster/THipster/commit/59fdfb16ded4d5e4be7bf6b6a48fa18d72b11183))
