@@ -41,6 +41,17 @@ class CDKMissingAttributeInDependency(CDKMissingAttribute):
     pass
 
 
+class CDKDependencyNotDeclared(CDKException):
+    def __init__(self, depType: str, depName: str, **args: object) -> None:
+        super().__init__(*args)
+        self.__name = depName
+        self.__type = depType
+
+    def __str__(self) -> str:
+        return f'{self.__type} {self.__name} not declared \
+(be sure to declare it before using it)'
+
+
 class CDKCyclicDependencies(CDKException):
     def __init__(self, stack: list[str], **args: object) -> None:
         super().__init__(*args)
@@ -54,6 +65,8 @@ class CDK(I_Terraform):
     _models = []
     _parentStack = []
     _importedPackages = []
+
+    _created_resources = {}
     _logger = Logger(__name__)
 
     def apply(self):
@@ -102,6 +115,8 @@ class CDK(I_Terraform):
                         self,
                         resource=resource,
                     )
+
+                    CDK._created_resources[f'{resource.type}/{resource.name}'] = res.id
 
                     TerraformOutput(
                         self, f"{resource.name}_id",
@@ -175,7 +190,7 @@ class CDK(I_Terraform):
 
     def _create_default_resource(
         self, typ: str, parentName: str | None = None,
-        noModif: bool = True,
+        noModif: bool = True, noDependencies: bool = False,
     ):
         if typ in CDK._parentStack:
             CDK._logger.error('%s already present in parent Stack', typ)
@@ -205,14 +220,8 @@ class CDK(I_Terraform):
         for _, v in model.attributes.items():
             resource_args[v.cdk_name] = v.default
 
-        # Create dependencies
-        for k, d in deps.items():
-            c, n, a = CDK._create_default_resource(self, d['resource'], name)
-            id = c(self, n, **a).id
-            if k:
-                resource_args[k] = id
-
-            CDK._parentStack.remove(d['resource'])
+        if not noDependencies:
+            CDK._create_dependencies(self, deps, resource_args, name)
 
         CDK._logger.debug('Created default %s named %s', resourceClass, name)
 
@@ -225,6 +234,7 @@ class CDK(I_Terraform):
             self,
             typ,
             noModif=False,
+            noDependencies=True,
         )
         model = CDK._models[typ]
 
@@ -244,6 +254,9 @@ class CDK(I_Terraform):
                 deps=deps,
             )
 
+        # Create missing dependencies
+        CDK._create_dependencies(self, deps, resource_args, resourceName)
+
         # Create resource
         CDK._parentStack.remove(typ)
         if not model.name_key:
@@ -260,6 +273,7 @@ class CDK(I_Terraform):
             self,
             resource.type,
             noModif=False,
+            noDependencies=True,
         )
         model = CDK._models[resource.type]
 
@@ -281,6 +295,9 @@ class CDK(I_Terraform):
                 deps=deps,
             )
 
+        # Create missing dependencies
+        CDK._create_dependencies(self, deps, resource_args, resource.name)
+
         # Create resource
         CDK._parentStack.remove(resource.type)
 
@@ -299,6 +316,12 @@ class CDK(I_Terraform):
         deps: dict[str, dict[str, object]] | None,
     ):
         if attribute.name in deps:
+            created_name = f"{deps[attribute.name]['resource']}/{attribute.value}"
+
+            if created_name not in CDK._created_resources:
+                raise CDKDependencyNotDeclared(attribute.name, attribute.value)
+
+            resource_args[attribute.name] = CDK._created_resources[created_name]
             del deps[attribute.name]
             return resource_args, deps
 
@@ -349,3 +372,12 @@ class CDK(I_Terraform):
             resource_args[attribute.name] = res
 
         return resource_args
+
+    def _create_dependencies(self, deps, resource_args, name):
+        for k, d in deps.items():
+            c, n, a = CDK._create_default_resource(self, d['resource'], name)
+            id = c(self, n, **a).id
+            if k:
+                resource_args[k] = id
+
+            CDK._parentStack.remove(d['resource'])

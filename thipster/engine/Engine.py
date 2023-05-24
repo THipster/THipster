@@ -83,7 +83,7 @@ class Engine():
         # Generate Terraform files
         dirs = self.__terraform.generate(file, models)
 
-        print(self.__terraform.init())
+        self.__terraform.init()
         print(self.__terraform.plan())
 
         return dirs
