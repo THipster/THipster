@@ -40,6 +40,8 @@ def demo():
         print(repr(e))
     except CDKException as e:
         print(e)
+    except Exception as e:
+        print(e)
 
 
 if __name__ == '__main__':
