@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v0.11.1 (2023-05-25)
+### :bug:
+* :bug: fix(demo): handle all errors in demo script (#87) ([#104](https://github.com/THipster/THipster/issues/104)) ([`592a237`](https://github.com/THipster/THipster/commit/592a237e2b93135c4417fb44ccb2ee5e7e2d32bc))
+
 ## v0.11.0 (2023-05-24)
 ### :sparkles:
 * :sparkles: feat: upgrade DSL ([#98](https://github.com/THipster/THipster/issues/98)) ([`08c58da`](https://github.com/THipster/THipster/commit/08c58da6729e61b1a073e76db833a69d4ac33b60))
