@@ -1,6 +1,6 @@
 cdktf==0.16.1
 PyYAML==6.0
 requests==2.31.0
-cdktf-cdktf-provider-google==7.0.6
+cdktf-cdktf-provider-google==7.0.7
 Jinja2==3.1.2
 python-terraform==0.10.1
