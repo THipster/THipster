@@ -2,6 +2,11 @@
 
 <!--next-version-placeholder-->
 
+## v0.11.2 (2023-05-29)
+### :arrow_up:
+
+* :arrow_up: chore(deps): Bump requests from 2.30.0 to 2.31.0 ([#106](https://github.com/THipster/THipster/issues/106)) ([`831feb7`](https://github.com/THipster/THipster/commit/831feb7e113db82a117a34205591f4ca1666bc7a))
+
 ## v0.11.1 (2023-05-25)
 ### :bug:
 * :bug: fix(demo): handle all errors in demo script (#87) ([#104](https://github.com/THipster/THipster/issues/104)) ([`592a237`](https://github.com/THipster/THipster/commit/592a237e2b93135c4417fb44ccb2ee5e7e2d32bc))
