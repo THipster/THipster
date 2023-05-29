@@ -2,6 +2,11 @@
 
 <!--next-version-placeholder-->
 
+## v0.11.3 (2023-05-29)
+### :arrow_up:
+
+* :arrow_up: chore(deps): Bump cdktf-cdktf-provider-google from 7.0.6 to 7.0.7 ([#105](https://github.com/THipster/THipster/issues/105)) ([`55ec8ad`](https://github.com/THipster/THipster/commit/55ec8ad403cbfc09465cd6b2610f2b4ed89993fa))
+
 ## v0.11.2 (2023-05-29)
 ### :arrow_up:
 
