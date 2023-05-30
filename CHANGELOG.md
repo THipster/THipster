@@ -2,6 +2,11 @@
 
 <!--next-version-placeholder-->
 
+## v0.13.1 (2023-05-30)
+### :bug:
+
+* :bug: fix: build system ([#109](https://github.com/THipster/THipster/issues/109)) ([`f2e08bc`](https://github.com/THipster/THipster/commit/f2e08bcee315e0a28b311ce09921b67c29f1e317))
+
 ## v0.13.0 (2023-05-30)
 ### :sparkles:
 
