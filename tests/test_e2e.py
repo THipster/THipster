@@ -1,12 +1,12 @@
 import os
 import shutil
-from auth.Google import GoogleAuth
+from thipster.auth.Google import GoogleAuth
 
-from engine.Engine import Engine
-from parser.ParserFactory import ParserFactory
+from thipster.engine.Engine import Engine
+from thipster.parser.ParserFactory import ParserFactory
 import pytest
-from repository.LocalRepo import LocalRepo
-from terraform.CDK import CDK, CDKCyclicDependencies, CDKMissingAttributeInDependency
+from thipster.repository.LocalRepo import LocalRepo
+import thipster.terraform.CDK as cdk
 
 LOCAL_REPO = 'tests/resources/e2e/models'
 REMOTE_REPO = 'THipster/models'
@@ -51,7 +51,7 @@ def __test_file(file: str, local_repo: str = LOCAL_REPO):
         ParserFactory(),
         LocalRepo(local_repo),
         GoogleAuth,
-        CDK(),
+        cdk.CDK(),
     )
     try:
         output = engine.run(path_input)
@@ -102,7 +102,7 @@ bucket my-bucket:
 
 @e2e_test
 def test_dep_with_no_options():
-    with pytest.raises(CDKMissingAttributeInDependency):
+    with pytest.raises(cdk.CDKMissingAttributeInDependency):
         __test_file(
             file="""
 bucket_bad_dep_parent my-bucket:
@@ -113,7 +113,7 @@ bucket_bad_dep_parent my-bucket:
 
 @e2e_test
 def test_cyclic_deps():
-    with pytest.raises(CDKCyclicDependencies):
+    with pytest.raises(cdk.CDKCyclicDependencies):
         __test_file(
             file="""
 bucket_bad_dep_cyclic my-bucket:

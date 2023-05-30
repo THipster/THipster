@@ -1,4 +1,4 @@
-from setuptools import setup
+from setuptools import setup, find_packages
 
 __version__ = '0.13.0'
 
@@ -8,8 +8,10 @@ with open('requirements.txt') as f:
 setup(
     name='thipster',
     version=__version__,
-    package_dir={'': 'thipster'},
     install_requires=required,
+    packages=find_packages(
+        exclude=['pipelines'],
+    ),
     extras_require={
         'test': [
             'pytest',
@@ -23,11 +25,6 @@ setup(
         ],
         'doc': [
             'sphinx',
-        ],
-    },
-    entry_points={
-        'console_scripts': [
-            'thipster-demo = demo:demo',
         ],
     },
 )

@@ -1,5 +1,5 @@
-from parser.dsl_parser.Lexer import Lexer, DSLParserNoEndingQuotes
-from parser.dsl_parser.Token import TOKENTYPES as TT
+from thipster.parser.dsl_parser.Lexer import Lexer, DSLParserNoEndingQuotes
+from thipster.parser.dsl_parser.Token import TOKENTYPES as TT
 import pytest
 
 

@@ -1,4 +1,4 @@
-import engine.ResourceModel as rm
+import thipster.engine.ResourceModel as rm
 
 
 def test_create_empty_resource():

@@ -1,7 +1,7 @@
 """GithubRepo.py module
 """
 
-from repository.JSONRepo import JSONRepo
+from thipster.repository.JSONRepo import JSONRepo
 import requests
 
 

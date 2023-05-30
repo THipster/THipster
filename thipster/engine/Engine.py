@@ -2,11 +2,11 @@
 """
 import time
 
-from engine.I_Parser import I_Parser
-from engine.I_Repository import I_Repository
-from engine.I_Auth import I_Auth
-from engine.I_Terraform import I_Terraform
-import engine.ParsedFile as pf
+from thipster.engine.I_Parser import I_Parser
+from thipster.engine.I_Repository import I_Repository
+from thipster.engine.I_Auth import I_Auth
+from thipster.engine.I_Terraform import I_Terraform
+import thipster.engine.ParsedFile as pf
 
 
 class Engine():

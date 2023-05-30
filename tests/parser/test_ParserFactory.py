@@ -1,7 +1,7 @@
 import os
-from engine.ParsedFile import ParsedFile
+from thipster.engine.ParsedFile import ParsedFile
 
-from parser.ParserFactory import ParserFactory
+from thipster.parser.ParserFactory import ParserFactory
 
 
 def create_dir(dirname: str, files: dict[str, str]):

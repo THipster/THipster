@@ -3,9 +3,9 @@
 
 from abc import ABC, abstractmethod
 import json
-from engine.I_Repository import I_Repository
+from thipster.engine.I_Repository import I_Repository
 
-import engine.ResourceModel as rm
+import thipster.engine.ResourceModel as rm
 
 
 class JSONRepo(I_Repository, ABC):

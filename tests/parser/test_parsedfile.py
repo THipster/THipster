@@ -1,4 +1,4 @@
-import engine.ParsedFile as pf
+import thipster.engine.ParsedFile as pf
 
 
 def test_create_parsed_file():

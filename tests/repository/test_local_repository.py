@@ -1,5 +1,5 @@
-from repository.LocalRepo import LocalRepo
-from engine.ResourceModel import ResourceModel
+from thipster.repository.LocalRepo import LocalRepo
+from thipster.engine.ResourceModel import ResourceModel
 import os
 
 
