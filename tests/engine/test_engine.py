@@ -24,8 +24,8 @@ class MockException(Exception):
 
 class MockAuth(eng.I_Auth):
     @logger('- Authentifier')
-    def run(self):
-        pass
+    def authenticate(self):
+        return (None, None)
 
 
 class MockParser(eng.I_Parser):
@@ -46,7 +46,7 @@ class MockTerraform(eng.I_Terraform):
         pass
 
     @logger('- Terraform:generate')
-    def generate(self, a, b):
+    def generate(self, a, b, auth):
         pass
 
     @logger('- Terraform:init')

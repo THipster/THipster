@@ -5,6 +5,7 @@ import sys
 import os
 import importlib
 import uuid
+from engine.I_Auth import I_Auth
 
 from python_terraform import Terraform
 from constructs import Construct
@@ -12,7 +13,6 @@ from cdktf import App, TerraformStack, TerraformOutput
 
 import engine.ResourceModel as rm
 import engine.ParsedFile as pf
-from cdktf_cdktf_provider_google.provider import GoogleProvider
 from engine.I_Terraform import I_Terraform
 from helpers import createLogger as Logger
 
@@ -82,7 +82,10 @@ class CDK(I_Terraform):
         _, stdout, stderr = t.apply()
         return stdout + stderr
 
-    def generate(self, file: pf.ParsedFile, models: dict[str, rm.ResourceModel]):
+    def generate(
+        self, file: pf.ParsedFile, models: dict[str, rm.ResourceModel],
+        _auth: I_Auth,
+    ):
 
         CDK._models = models
         # Init CDK
@@ -98,17 +101,7 @@ class CDK(I_Terraform):
             def __init__(self, scope: Construct, ns: str):
                 super().__init__(scope, ns)
 
-                GoogleProvider(
-                    self, f"{file_name}_google",
-                    project="rcattin-sandbox",
-                    credentials=os.path.join(
-                        os.getcwd(),
-                        "rcattin-sandbox-credentials.json",
-                    ),
-
-                    region="europe-west1",
-                    zone="europe-west1-b",
-                )
+                _auth.authenticate(self)
 
                 for resource in file.resources:
                     res = CDK._create_resource_from_resource(
