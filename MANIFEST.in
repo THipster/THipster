@@ -1,0 +1,3 @@
+include *.txt
+recursive-include thipster *.txt *.py
+prune thipster/sample?/build
