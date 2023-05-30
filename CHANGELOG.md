@@ -2,6 +2,11 @@
 
 <!--next-version-placeholder-->
 
+## v0.13.0 (2023-05-30)
+### :sparkles:
+
+* :sparkles: feat: auth to gcp via envvar ([#107](https://github.com/THipster/THipster/issues/107)) ([`dbb6021`](https://github.com/THipster/THipster/commit/dbb60212ef516e07c18f4017fa947a122ca555ac))
+
 ## v0.12.2 (2023-05-30)
 
 
