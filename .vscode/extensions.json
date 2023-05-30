@@ -1,0 +1,12 @@
+{
+    "recommendations": [
+        "ms-python.python",
+        "donjayamanne.python-environment-manager",
+        "KevinRose.vsc-python-indent",
+        "njpwerner.autodocstring",
+        "charliermarsh.ruff",
+        "SonarSource.sonarlint-vscode",
+        "seatonjiang.gitmoji-vscode",
+        "oderwat.indent-rainbow",
+    ]
+}

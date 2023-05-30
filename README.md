@@ -1,28 +1,9 @@
 # THipster
 
-THipster is a CLI tool dedicated to simplifying the ordeal associated with writing Terraform files.
+THipster is a tool dedicated to simplifying the ordeal associated with writing Terraform files.
 It allows users to write infrastructure as code in a simplified format, using either YAML (with JINJA) or the dedicated Thipster DSL.
 
 Written entirely in Python, it leverages the Python CDK for Terraform to create Terraform files and apply them to the chosen provider.
-
-### Table of contents
-[Technology Stack](#technology-stack)
-
-[Project Status](#project-status)
-
-[Dependencies](#dependencies)
-
-[Installation](#installation)
-
-[Usage](#usage)
-
-[Test the software](#how-to-test-the-software)
-
-[Known issues](#knwon-issues)
-
-[Getting help](#getting-help)
-
-[Getting involved](#getting-involved)
 
 ## Technology Stack
 Written in Python 3.11, thipster is designed as a python package, to be used either as a standalone tool, or as a module inside a running process like a CI/CD pipeline.
@@ -32,9 +13,10 @@ THipster is currently in an active development state. If you want to know more, 
 
 ## Dependencies
 
-*Describe any dependencies that must be installed for this software to work.
-This includes programming languages, databases or other storage mechanisms, build tools, frameworks, and so forth.
-If specific versions of other software are required, or known not to work, call that out.*
+In order to user THipster, you will need to have the following installed:
+- [Python](https://www.python.org/downloads/) (3.11+)
+- [Terraform CLI](https://developer.hashicorp.com/terraform/tutorials/aws-get-started/install-cli) (1.2+)
+- [Node.js](https://nodejs.org/) and npm v16+.
 
 ## Installation
 
@@ -54,11 +36,11 @@ Use appropriate formatting when showing code snippets.*
 
 ## Known issues
 
-*Document any known significant shortcomings with the software.*
+All known issues, bugs, and feature requests are tracked in the [Issue tracker](https://github.com/THipster/THipster/issues).
 
 ## Getting help
 
-If you have questions, concerns, bug reports, etc, please file an issue in this repository's Issue Tracker.
+If you have questions, concerns, bug reports, etc, please file an issue in this repository's [Issue tracker](https://github.com/THipster/THipster/issues).
 
 ## Getting involved
 
