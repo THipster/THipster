@@ -2,6 +2,11 @@
 
 <!--next-version-placeholder-->
 
+## v0.13.2 (2023-05-30)
+### :wrench:
+
+* :wrench: feat: update build config ([#110](https://github.com/THipster/THipster/issues/110)) ([`077bc2e`](https://github.com/THipster/THipster/commit/077bc2ed4c7b46bcc48d9515bc3c199d48cc05fe))
+
 ## v0.13.1 (2023-05-30)
 ### :bug:
 
