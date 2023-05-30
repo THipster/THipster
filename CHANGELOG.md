@@ -2,6 +2,9 @@
 
 <!--next-version-placeholder-->
 
+## v0.12.1 (2023-05-30)
+
+
 ## v0.12.0 (2023-05-30)
 ### :sparkles:
 * :sparkles: test ([`14f9f7d`](https://github.com/THipster/THipster/commit/14f9f7d199059d66a52c7818e84ec47c843ff23c))
