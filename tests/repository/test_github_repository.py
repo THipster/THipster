@@ -1,5 +1,5 @@
-from repository.GithubRepo import GithubRepo
-from engine.ResourceModel import ResourceModel
+from thipster.repository.GithubRepo import GithubRepo
+from thipster.engine.ResourceModel import ResourceModel
 
 
 def test_get_bucket():

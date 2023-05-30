@@ -1,4 +1,4 @@
-from repository.JSONRepo import JSONRepo
+from thipster.repository.JSONRepo import JSONRepo
 import os
 
 

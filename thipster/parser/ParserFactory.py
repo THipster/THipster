@@ -1,8 +1,8 @@
 import os
-from engine.I_Parser import I_Parser
-from engine.ParsedFile import ParsedFile
-from parser.YAMLParser import YAMLParser
-from parser.dsl_parser.DSLParser import DSLParser
+from thipster.engine.I_Parser import I_Parser
+from thipster.engine.ParsedFile import ParsedFile
+from thipster.parser.YAMLParser import YAMLParser
+from thipster.parser.dsl_parser.DSLParser import DSLParser
 
 
 class ParserPathNotFound(Exception):

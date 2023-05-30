@@ -1,4 +1,4 @@
-from engine.ParsedFile import Position
+from thipster.engine.ParsedFile import Position
 
 
 class LexerPosition():

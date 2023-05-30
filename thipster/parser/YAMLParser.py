@@ -1,6 +1,5 @@
-from engine.I_Parser import I_Parser
-from engine.ParsedFile import ParsedAttribute, ParsedDict, ParsedFile, ParsedList,\
-    ParsedLiteral, ParsedResource
+from thipster.engine.I_Parser import I_Parser
+import thipster.engine.ParsedFile as pf
 from jinja2 import Environment, FileSystemLoader
 
 import os
@@ -61,7 +60,7 @@ class YAMLParser(I_Parser):
 
         return files
 
-    def run(path: str) -> ParsedFile:
+    def run(path: str) -> pf.ParsedFile:
         """Run the YAMLParser
 
         Parameters
@@ -76,7 +75,7 @@ class YAMLParser(I_Parser):
         """
         try:
             files = YAMLParser.__getfiles(path)
-            parsedFile = ParsedFile()
+            parsedFile = pf.ParsedFile()
 
             for file in files:
                 filedir, filename = os.path.split(file)
@@ -96,7 +95,7 @@ class YAMLParser(I_Parser):
         except Exception as e:
             raise e
 
-    def __convert(file: dict) -> list[ParsedResource]:
+    def __convert(file: dict) -> list[pf.ParsedResource]:
         """Converts a dictionnary into a list of ParsedResources
 
         Parameters
@@ -141,7 +140,7 @@ class YAMLParser(I_Parser):
         return resources
 
     def __get_resource(content: dict, resourceType: str, name: str)\
-            -> ParsedResource:
+            -> pf.ParsedResource:
         """Converts a dict in a ParsedResource
 
         Parameters
@@ -163,14 +162,14 @@ class YAMLParser(I_Parser):
         for key, val in content.items():
             attr.append(YAMLParser.__get__attr(key, val))
 
-        return ParsedResource(
+        return pf.ParsedResource(
             type=resourceType,
             name=name,
             position=None,
             attributes=attr,
         )
 
-    def __get__attr(name: str, value: object) -> ParsedAttribute:
+    def __get__attr(name: str, value: object) -> pf.ParsedAttribute:
         """Converts an object in a ParsedAttribute
 
         Parameters
@@ -190,15 +189,15 @@ class YAMLParser(I_Parser):
         elif type(value) == list:
             val = YAMLParser.__get_list(value)
         else:
-            val = ParsedLiteral(str(value))
+            val = pf.ParsedLiteral(str(value))
 
-        return ParsedAttribute(
+        return pf.ParsedAttribute(
             name=name,
             value=val,
             position=None,
         )
 
-    def __get_dict(input: dict) -> ParsedDict:
+    def __get_dict(input: dict) -> pf.ParsedDict:
         """Converts a dict into a list of ParsedDict
 
         Parameters
@@ -216,9 +215,9 @@ class YAMLParser(I_Parser):
         for key, val in input.items():
             attr.append(YAMLParser.__get__attr(key, val))
 
-        return ParsedDict(attr)
+        return pf.ParsedDict(attr)
 
-    def __get_list(input: list) -> ParsedList:
+    def __get_list(input: list) -> pf.ParsedList:
         """Converts a dictionnary into a ParsedList
 
         Parameters
@@ -234,6 +233,6 @@ class YAMLParser(I_Parser):
         attr = []
 
         for val in input:
-            attr.append(ParsedList(val))
+            attr.append(pf.ParsedList(val))
 
-        return ParsedList(attr)
+        return pf.ParsedList(attr)

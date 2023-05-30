@@ -1,5 +1,5 @@
-from engine.ParsedFile import ParsedDict, ParsedFile, ParsedList, ParsedLiteral
-from parser.YAMLParser import YAMLParser, YAMLParserNoName
+from thipster.engine.ParsedFile import ParsedDict, ParsedFile, ParsedList, ParsedLiteral
+from thipster.parser.YAMLParser import YAMLParser, YAMLParserNoName
 import os
 import pytest
 

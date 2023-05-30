@@ -1,5 +1,5 @@
-from parser.dsl_parser.Token import Token
-from engine.ParsedFile import Position
+from thipster.parser.dsl_parser.Token import Token
+from thipster.engine.ParsedFile import Position
 
 
 def test_create_token():

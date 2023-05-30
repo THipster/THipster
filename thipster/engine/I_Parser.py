@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from engine.ParsedFile import ParsedFile
+from thipster.engine.ParsedFile import ParsedFile
 
 
 class I_Parser(ABC):

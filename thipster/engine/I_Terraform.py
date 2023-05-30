@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
-import engine.ResourceModel as rm
-import engine.ParsedFile as pf
+import thipster.engine.ResourceModel as rm
+import thipster.engine.ParsedFile as pf
 
 
 class I_Terraform(ABC):

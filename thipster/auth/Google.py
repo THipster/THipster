@@ -1,6 +1,6 @@
 import json
 import os
-from engine.I_Auth import I_Auth
+from thipster.engine.I_Auth import I_Auth
 from cdktf_cdktf_provider_google.provider import GoogleProvider
 
 

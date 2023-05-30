@@ -1,10 +1,10 @@
-from engine.ParsedFile import ParsedDict, ParsedFile, ParsedList, ParsedLiteral
-from parser.dsl_parser.DSLParser import DSLParser
-from parser.dsl_parser.DSLParser import DSLParserPathNotFound
-from parser.dsl_parser.Token import TOKENTYPES as TT
+from thipster.engine.ParsedFile import ParsedDict, ParsedFile, ParsedList, ParsedLiteral
+from thipster.parser.dsl_parser.DSLParser import DSLParser
+from thipster.parser.dsl_parser.DSLParser import DSLParserPathNotFound
+from thipster.parser.dsl_parser.Token import TOKENTYPES as TT
 import os
-from parser.dsl_parser.TokenParser import DSLConditionException, DSLSyntaxException,\
-    DSLUnexpectedEOF
+from thipster.parser.dsl_parser.TokenParser import DSLConditionException,\
+    DSLSyntaxException, DSLUnexpectedEOF
 import pytest
 
 
