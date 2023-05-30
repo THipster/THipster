@@ -11,8 +11,8 @@ class I_Auth(ABC):
 
     """
     @abstractmethod
-    def run(self):
-        """Abstract run method
+    def authenticate(self):
+        """Abstract method used for authentication
 
         Raises
         ------

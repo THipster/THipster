@@ -10,7 +10,7 @@ import engine.ParsedFile as pf
 
 
 class Engine():
-    """Class representing the engine of thipster
+    """The engine of thipster
 
     The core of the application, it is used to call and link all
     interfaces together.
@@ -78,10 +78,8 @@ class Engine():
         types = [r.type for r in file.resources]
         models = self.__repository.get(types)
 
-        # self.__auth.run()
-
         # Generate Terraform files
-        dirs = self.__terraform.generate(file, models)
+        dirs = self.__terraform.generate(file, models, self.__auth)
 
         self.__terraform.init()
         print(self.__terraform.plan())
