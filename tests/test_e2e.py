@@ -90,6 +90,34 @@ bucket my-bucket:
     assert out[0] == 'cdktf.out/stacks/thipster_infrastructure'
 
 
+def test_empty_bucket():
+    out = __test_file(
+        file="""
+bucket dzvhvzarbazkhr:
+
+    """,
+    )
+
+    assert isinstance(out, list)
+    assert len(out) == 1
+
+    assert out[0] == 'cdktf.out/stacks/thipster_infrastructure'
+
+    out = __test_file(
+        file="""
+bucket dzvhvzarbazkhr:
+
+bucket ezezeaz:
+    region: europe
+    """,
+    )
+
+    assert isinstance(out, list)
+    assert len(out) == 1
+
+    assert out[0] == 'cdktf.out/stacks/thipster_infrastructure'
+
+
 def test_dep_with_no_options():
     with pytest.raises(cdk.CDKMissingAttributeInDependency):
         __test_file(

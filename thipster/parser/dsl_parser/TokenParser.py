@@ -235,19 +235,29 @@ class TokenParser():
         """(list | dict)
         """
         i = indent
-        next = self.__get_next_type(indent)
-        while next == TT.WHITESPACE:
-            i += 1
-            next = self.__get_next_type(i)
+        try:
+            next = self.__get_next_type(indent)
+            while next == TT.WHITESPACE:
+                i += 1
+                next = self.__get_next_type(i)
 
-        if next == TT.STRING:
-            props = self.__get_dict(indent)
+            if next == TT.STRING:
+                props = self.__get_dict(indent)
 
-        elif next == TT.MINUS:
-            props = self.__get_list(indent)
+            elif next == TT.MINUS:
+                props = self.__get_list(indent)
 
-        else:
-            raise DSLSyntaxException(self.__next(), TT.TAB)
+            else:
+                raise DSLSyntaxException(self.__next(), TT.TAB)
+
+        except DSLUnexpectedEOF as eof:
+            if indent > 1:
+                raise DSLUnexpectedEOF from eof
+
+            if eof.__cause__:
+                raise DSLUnexpectedEOF from eof.__cause__
+
+            props = ast.DictNode([])
 
         return props
 
