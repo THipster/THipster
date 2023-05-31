@@ -2,6 +2,11 @@
 
 <!--next-version-placeholder-->
 
+## v0.13.3 (2023-05-31)
+### :lock:
+
+* :lock: feat: google adc ([#111](https://github.com/THipster/THipster/issues/111)) ([`a92ed3b`](https://github.com/THipster/THipster/commit/a92ed3b413a849fb01bc10f90dc432de4bd53d1c))
+
 ## v0.13.2 (2023-05-30)
 ### :wrench:
 
