@@ -2,6 +2,11 @@
 
 <!--next-version-placeholder-->
 
+## v0.13.5 (2023-05-31)
+### :bug:
+
+* :bug: fix(engine): Change run output ([`1927a63`](https://github.com/THipster/THipster/commit/1927a637fdfa8f71b112f6e95d91c52a9d61fba0))
+
 ## v0.13.4 (2023-05-31)
 ### :bug:
 
