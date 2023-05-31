@@ -2,6 +2,11 @@
 
 <!--next-version-placeholder-->
 
+## v0.13.4 (2023-05-31)
+### :bug:
+
+* :bug: fix: allow empty resource (#103) ([#112](https://github.com/THipster/THipster/issues/112)) ([`ce3c8e1`](https://github.com/THipster/THipster/commit/ce3c8e142a5fea44ded7543740e64216fe12f105))
+
 ## v0.13.3 (2023-05-31)
 ### :lock:
 
