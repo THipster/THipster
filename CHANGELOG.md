@@ -2,6 +2,11 @@
 
 <!--next-version-placeholder-->
 
+## v0.13.6 (2023-05-31)
+### :bug:
+
+* :bug: fix: yaml lists (#100) ([#113](https://github.com/THipster/THipster/issues/113)) ([`b99915e`](https://github.com/THipster/THipster/commit/b99915eda72c772964d383f75e9b757743ee80e5))
+
 ## v0.13.5 (2023-05-31)
 ### :bug:
 
