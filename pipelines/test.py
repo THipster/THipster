@@ -28,4 +28,4 @@ async def test(version: str):
 
 
 if __name__ == '__main__':
-    anyio.run(test)
+    anyio.run(test, "3.11.3")

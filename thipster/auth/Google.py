@@ -1,5 +1,4 @@
-import json
-import os
+import google.auth
 from thipster.engine.I_Auth import I_Auth
 from cdktf_cdktf_provider_google.provider import GoogleProvider
 
@@ -9,7 +8,7 @@ class GoogleAuth(I_Auth):
 
     Methods
     -------
-    authenticate(self: Construct)
+    authenticate(app: Construct)
         Generates the google provider in terraform
 
     """
@@ -17,28 +16,20 @@ class GoogleAuth(I_Auth):
     def __init__(self) -> None:
         return GoogleAuth
 
-    def authenticate(self):
-        credentials = os.getenv("GOOGLE_CREDENTIALS")
+    def authenticate(app):
+        """Generates the google provider block for the Terraform CDK
 
-        if not credentials:
-            print("-"*10, "Authentication", "-"*10)
-            print("No authentication found in GOOGLE_CREDENTIALS")
-            credentials = input("Relative path to credentials file : ")
+        Parameters
+        ----------
+        app: Construct
+            CDK Construct where the provider is created
 
-        if not os.path.isfile(credentials):
-            project = json.loads(credentials)["project_id"]
-        else:
-            with open(credentials) as f:
-                project = json.loads(f.read())["project_id"]
-                f.close()
+        """
+
+        credentials, project_id = google.auth.default()
 
         GoogleProvider(
-            self, "default_google",
-            project=project,
-            credentials=credentials if not os.path.isfile(credentials)
-            or os.path.isabs(credentials)
-            else os.path.join(
-                os.getcwd(),
-                credentials,
-            ),
+            app, "default_google",
+            project=project_id,
+            access_token=credentials.token,
         )
