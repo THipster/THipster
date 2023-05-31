@@ -93,7 +93,7 @@ def test_engine_calls():
     engine = eng.Engine(parser, repository, auth, terraform)
     res = engine.run('test.file')
 
-    assert res is None
+    assert res == (None, None)
 
 
 def test_parser_failure(mocker):

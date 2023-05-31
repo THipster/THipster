@@ -84,10 +84,10 @@ bucket my-bucket:
     """,
     )
 
-    assert isinstance(out, list)
-    assert len(out) == 1
+    assert isinstance(out[0], list)
+    assert len(out[0]) == 1
 
-    assert out[0] == 'cdktf.out/stacks/thipster_infrastructure'
+    assert out[0][0] == 'cdktf.out/stacks/thipster_infrastructure'
 
 
 def test_empty_bucket():
@@ -98,10 +98,10 @@ bucket dzvhvzarbazkhr:
     """,
     )
 
-    assert isinstance(out, list)
-    assert len(out) == 1
+    assert isinstance(out[0], list)
+    assert len(out[0]) == 1
 
-    assert out[0] == 'cdktf.out/stacks/thipster_infrastructure'
+    assert 'cdktf.out/stacks/thipster_infrastructure' in out[0]
 
     out = __test_file(
         file="""
@@ -112,10 +112,10 @@ bucket ezezeaz:
     """,
     )
 
-    assert isinstance(out, list)
-    assert len(out) == 1
+    assert isinstance(out[0], list)
+    assert len(out[0]) == 1
 
-    assert out[0] == 'cdktf.out/stacks/thipster_infrastructure'
+    assert 'cdktf.out/stacks/thipster_infrastructure' in out[0]
 
 
 def test_dep_with_no_options():
@@ -152,10 +152,10 @@ loadbalancer my-lb:
     """,
     )
 
-    assert isinstance(out, list)
-    assert len(out) == 1
+    assert isinstance(out[0], list)
+    assert len(out[0]) == 1
 
-    assert 'cdktf.out/stacks/thipster_infrastructure' in out
+    assert 'cdktf.out/stacks/thipster_infrastructure' in out[0]
 
 
 def test_lb_single_file():
@@ -172,10 +172,10 @@ loadbalancer my-lb:
     """,
     )
 
-    assert isinstance(out, list)
-    assert len(out) == 1
+    assert isinstance(out[0], list)
+    assert len(out[0]) == 1
 
-    assert 'cdktf.out/stacks/thipster_infrastructure' in out
+    assert 'cdktf.out/stacks/thipster_infrastructure' in out[0]
 
 
 def test_internal_object():
@@ -185,7 +185,7 @@ firewall testParent:
 \tdirection: EGRESS
         """,
     )
-    assert 'cdktf.out/stacks/thipster_infrastructure' in out
+    assert 'cdktf.out/stacks/thipster_infrastructure' in out[0]
 
     out = __test_file(
         file="""
@@ -196,7 +196,7 @@ firewall testParent:
 \t\tprotocol: http
         """,
     )
-    assert 'cdktf.out/stacks/thipster_infrastructure' in out
+    assert 'cdktf.out/stacks/thipster_infrastructure' in out[0]
 
 
 def test_bucket_cors():
@@ -213,4 +213,4 @@ bucket corsBucket:
         maxAge: 400
         """,
     )
-    assert 'cdktf.out/stacks/thipster_infrastructure' in out
+    assert 'cdktf.out/stacks/thipster_infrastructure' in out[0]
