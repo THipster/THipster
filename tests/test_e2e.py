@@ -1,8 +1,9 @@
 import os
 import shutil
-from thipster.auth.Google import GoogleAuth
+from cdktf_cdktf_provider_google.provider import GoogleProvider
 
 from thipster.engine.Engine import Engine
+from thipster.engine.I_Auth import I_Auth
 from thipster.parser.ParserFactory import ParserFactory
 import pytest
 from thipster.repository.LocalRepo import LocalRepo
@@ -10,6 +11,15 @@ import thipster.terraform.CDK as cdk
 
 LOCAL_REPO = 'tests/resources/e2e/models'
 REMOTE_REPO = 'THipster/models'
+
+
+class MockAuth(I_Auth):
+    def authenticate(app):
+        GoogleProvider(
+            app, "default_google",
+            project="project_id",
+            credentials="credentials.token",
+        )
 
 
 def create_dir(dirname: str, files: dict[str, str]):
@@ -50,7 +60,7 @@ def __test_file(file: str, local_repo: str = LOCAL_REPO):
     engine = Engine(
         ParserFactory(),
         LocalRepo(local_repo),
-        GoogleAuth,
+        MockAuth,
         cdk.CDK(),
     )
     try:
@@ -66,26 +76,6 @@ def __test_file(file: str, local_repo: str = LOCAL_REPO):
     return output
 
 
-def e2e_test(func):
-    def internal_wrapper(*args, **kwargs):
-        g = os.getenv("GOOGLE_CREDENTIALS")
-        os.environ["GOOGLE_CREDENTIALS"] = """
-{
-  "type": "service_account",
-  "project_id": "test"
-}"""
-        res = func(*args, **kwargs)
-
-        if g:
-            os.environ["GOOGLE_CREDENTIALS"] = g
-        else:
-            del os.environ["GOOGLE_CREDENTIALS"]
-
-        return res
-    return internal_wrapper
-
-
-@e2e_test
 def test_bucket():
     out = __test_file(
         file="""
@@ -100,7 +90,6 @@ bucket my-bucket:
     assert out[0] == 'cdktf.out/stacks/thipster_infrastructure'
 
 
-@e2e_test
 def test_dep_with_no_options():
     with pytest.raises(cdk.CDKMissingAttributeInDependency):
         __test_file(
@@ -111,7 +100,6 @@ bucket_bad_dep_parent my-bucket:
         )
 
 
-@e2e_test
 def test_cyclic_deps():
     with pytest.raises(cdk.CDKCyclicDependencies):
         __test_file(
@@ -122,7 +110,6 @@ bucket_bad_dep_cyclic my-bucket:
         )
 
 
-@e2e_test
 def test_lb():
     out = __test_file(
         file="""
@@ -143,7 +130,6 @@ loadbalancer my-lb:
     assert 'cdktf.out/stacks/thipster_infrastructure' in out
 
 
-@e2e_test
 def test_lb_single_file():
     out = __test_file(
         file="""
@@ -164,7 +150,6 @@ loadbalancer my-lb:
     assert 'cdktf.out/stacks/thipster_infrastructure' in out
 
 
-@e2e_test
 def test_internal_object():
     out = __test_file(
         file="""
@@ -186,7 +171,6 @@ firewall testParent:
     assert 'cdktf.out/stacks/thipster_infrastructure' in out
 
 
-@e2e_test
 def test_bucket_cors():
     out = __test_file(
         file="""
