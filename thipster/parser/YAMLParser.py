@@ -233,6 +233,9 @@ class YAMLParser(I_Parser):
         attr = []
 
         for val in input:
-            attr.append(pf.ParsedList(val))
+            if isinstance(val, dict):
+                attr.append(YAMLParser.__get_dict(val))
+            else:
+                attr.append(pf.ParsedLiteral(val))
 
         return pf.ParsedList(attr)

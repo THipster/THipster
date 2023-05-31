@@ -1,4 +1,4 @@
-from thipster.engine.ParsedFile import ParsedDict, ParsedFile, ParsedList, ParsedLiteral
+import thipster.engine.ParsedFile as pf
 from thipster.parser.YAMLParser import YAMLParser, YAMLParserNoName
 import os
 import pytest
@@ -54,7 +54,7 @@ def __test_file(file: str):
     try:
         output = parser.run(path_input)
 
-        assert type(output) == ParsedFile
+        assert isinstance(output, pf.ParsedFile)
     except Exception as e:
         raise e
     finally:
@@ -79,7 +79,7 @@ def test_parse_simple_file():
 
     region = bucket.attributes[0]
     assert region.name == 'region'
-    assert type(region._ParsedAttribute__value) == ParsedLiteral
+    assert isinstance(region._ParsedAttribute__value, pf.ParsedLiteral)
     assert region.value == 'euw'
 
 
@@ -102,7 +102,7 @@ bucket:
 
     region = bucket.attributes[0]
     assert region.name == 'region'
-    assert type(region._ParsedAttribute__value) == ParsedLiteral
+    assert isinstance(region._ParsedAttribute__value, pf.ParsedLiteral)
     assert region.value == 'europe-west1'
 
 
@@ -149,7 +149,7 @@ def test_parse_dict_in_dict():
 
     toto = bucket.attributes[1]
     assert toto.name == 'toto'
-    assert type(toto._ParsedAttribute__value) == ParsedDict
+    assert isinstance(toto._ParsedAttribute__value, pf.ParsedDict)
 
 
 def test_parse_list():
@@ -170,8 +170,41 @@ def test_parse_list():
 
     toto = bucket.attributes[0]
     assert toto.name == 'toto'
-    assert type(toto._ParsedAttribute__value) == ParsedList
+    assert isinstance(toto._ParsedAttribute__value, pf.ParsedList)
     assert len(toto.value) == 2
+
+    for val in toto.value:
+        assert isinstance(val, pf.ParsedLiteral)
+
+
+def test_parse_dict_in_list():
+    out = __test_file(
+        file="""bucket:
+  name: my-bucket
+  toto:
+    - aaa : 12
+      bbb : OK
+    - ccc : 10
+      ddd : OK
+""",
+    )
+    assert len(out.resources) == 1
+
+    bucket = out.resources[0]
+    assert bucket.type == 'bucket'
+    assert bucket.name == 'my-bucket'
+    assert len(bucket.attributes) == 1
+
+    toto = bucket.attributes[0]
+    assert toto.name == 'toto'
+    assert isinstance(toto._ParsedAttribute__value, pf.ParsedList)
+    assert len(toto.value) == 2
+
+    for val in toto.value:
+        assert isinstance(val, pf.ParsedDict)
+        assert len(val.value) == 2
+        for v in val.value:
+            assert isinstance(v, pf.ParsedAttribute)
 
 
 def test_syntax_error_no_name(mocker):
