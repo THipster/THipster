@@ -112,7 +112,7 @@ class CDK(I_Terraform):
                     CDK._created_resources[f'{resource.type}/{resource.name}'] = res.id
 
                     TerraformOutput(
-                        self, f"{resource.name}_id",
+                        self, f'{resource.name}_id',
                         value=res.id,
                     )
 
@@ -130,8 +130,8 @@ class CDK(I_Terraform):
         # Move files
         for dirname in self.__dirs:
             shutil.move(
-                os.path.join(os.getcwd(), dirname, "cdk.tf.json"),
-                os.path.join(os.getcwd(), "thipster.tf.json"),
+                os.path.join(os.getcwd(), dirname, 'cdk.tf.json'),
+                os.path.join(os.getcwd(), 'thipster.tf.json'),
             )
 
         # Delete cdktf.out directory
@@ -168,7 +168,7 @@ class CDK(I_Terraform):
 
         """
         t = Terraform()
-        _, stdout, stderr = t.plan(out="thipster.tfplan")
+        _, stdout, stderr = t.plan(out='thipster.tfplan')
         return stdout + stderr
 
     def _pip_install(package: str):
@@ -212,7 +212,7 @@ class CDK(I_Terraform):
         deps = copy.deepcopy(model.dependencies)
         resource_args = {}
 
-        name = f"{parentName}-{uuid.uuid4()}"
+        name = f'{parentName}-{uuid.uuid4()}'
         if model.name_key:
             resource_args[model.name_key] = name
 
@@ -221,7 +221,7 @@ class CDK(I_Terraform):
 
         # Create default defendencies if needed
         if not noDependencies:
-            CDK._create_dependencies(self, deps, resource_args, name)
+            CDK._create_dependencies(self, deps, resource_args, parentName)
 
         CDK._logger.debug('Created default %s named %s', resourceClass, name)
 

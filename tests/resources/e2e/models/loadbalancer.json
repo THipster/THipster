@@ -26,7 +26,7 @@
             "default": "EXTERNAL",
             "cdk_key": "load_balancing_scheme"
         }
-        
+
     },
     "cdk_name_key": "name",
 

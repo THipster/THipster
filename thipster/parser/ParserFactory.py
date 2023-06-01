@@ -31,7 +31,7 @@ class ParserFactory(I_Parser):
         Returns
         -------
         list[str]
-            A list of all the filenames 
+            A list of all the filenames
         """
 
         path = os.path.abspath(path)

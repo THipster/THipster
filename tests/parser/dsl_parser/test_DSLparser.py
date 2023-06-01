@@ -165,7 +165,7 @@ bucket my-bucket2:
 def test_parse_list():
     out = __test_file(
         file="""bucket my-bucket:
-\tregion: 
+\tregion:
 \t\t- toto
 \t\t- titi
 \t\t- tata

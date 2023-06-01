@@ -5,7 +5,7 @@
             "resource" : "bucket_cors",
             "var_type": "list[StorageBucketCors]",
             "defaults": [{
-                
+
             }]
         }
     },

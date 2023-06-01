@@ -5,24 +5,24 @@ __version__ = '0.13.6'
 with open('requirements.txt') as f:
     required = f.read().splitlines()
 
-with open("README.md") as rm:
+with open('README.md') as rm:
     readme = rm.read()
 
 setup(
-    name="thipster",
+    name='thipster',
     authors=[
-        {"name": "rcattin", "email": "rafa.cattin+thipster@gmail.com"},
-        {"name": "gsuquet", "email": "gsuquet@ippon.fr"},
+        {'name': 'rcattin', 'email': 'rafa.cattin+thipster@gmail.com'},
+        {'name': 'gsuquet', 'email': 'gsuquet@ippon.fr'},
     ],
-    description="",
+    description='',
     long_description=readme,
     classifiers=[
-        "Development Status :: 1 - Planning",
-        "Programming Language :: Python",
+        'Development Status :: 1 - Planning',
+        'Programming Language :: Python',
     ],
 
-    download_url="https://github.com/THipster/THipster.git",
-    url="https://github.com/THipster/THipster",
+    download_url='https://github.com/THipster/THipster.git',
+    url='https://github.com/THipster/THipster',
 
     version=__version__,
     install_requires=required,

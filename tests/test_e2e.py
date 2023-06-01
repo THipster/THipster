@@ -16,9 +16,9 @@ REMOTE_REPO = 'THipster/models'
 class MockAuth(I_Auth):
     def authenticate(app):
         GoogleProvider(
-            app, "default_google",
-            project="project_id",
-            credentials="credentials.token",
+            app, 'default_google',
+            project='project_id',
+            credentials='credentials.token',
         )
 
 

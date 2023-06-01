@@ -613,14 +613,14 @@ class TokenParser():
                     values.append(ast.IntNode(self.__next(TT.INT)))
 
                 case TT.DIV:
-                    token = Token(self.__next(TT.DIV).position, TT.STRING, "/")
+                    token = Token(self.__next(TT.DIV).position, TT.STRING, '/')
                     values.append(ast.StringNode(token))
 
                 case TT.MINUS:
                     token = Token(
                         self.__next(
                             TT.MINUS,
-                        ).position, TT.STRING, "-",
+                        ).position, TT.STRING, '-',
                     )
                     values.append(ast.StringNode(token))
             nextType = self.__get_next_type()
@@ -638,14 +638,14 @@ class TokenParser():
                     values.append(ast.StringNode(self.__next(TT.STRING)))
 
                 case TT.DIV:
-                    token = Token(self.__next(TT.DIV).position, TT.STRING, "/")
+                    token = Token(self.__next(TT.DIV).position, TT.STRING, '/')
                     values.append(ast.StringNode(token))
 
                 case TT.MINUS:
                     token = Token(
                         self.__next(
                             TT.MINUS,
-                        ).position, TT.STRING, "-",
+                        ).position, TT.STRING, '-',
                     )
                     values.append(ast.StringNode(token))
             nextType = self.__get_next_type()

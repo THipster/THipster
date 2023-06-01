@@ -41,7 +41,7 @@
             "default": true,
             "cdk_key": "enable_cdn"
         }
-    
+
     },
     "cdk_name_key": "name",
 
