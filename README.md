@@ -15,6 +15,7 @@ THipster is currently in an active development state. If you want to know more, 
 
 In order to user THipster, you will need to have the following installed:
 - [Python](https://www.python.org/downloads/) (3.11+)
+- [pipenv](https://pipenv.pypa.io/en/latest/) v2021.5+
 - [Terraform CLI](https://developer.hashicorp.com/terraform/tutorials/aws-get-started/install-cli) (1.2+)
 - [Node.js](https://nodejs.org/) and npm v16+.
 
@@ -39,29 +40,17 @@ Main feature:
 ```python
 from thipster.engine.Engine import Engine as ThipsterEngine
 from thipster.repository.GithubRepo import GithubRepo
-from thipster.parser.ParserFactory import ParserFactory, ParserPathNotFound
-from thipster.parser.dsl_parser.TokenParser import DSLSyntaxException, \
-    DSLConditionException, DSLUnexpectedEOF
+from thipster.parser.ParserFactory import ParserFactory
 from thipster.auth.Google import GoogleAuth
-from thipster.terraform.CDK import CDK, CDKException
+from thipster.terraform.CDK import CDK
 
 # create new THipster engine
 engine = ThipsterEngine(ParserFactory(), GithubRepo('THipster/models'), GoogleAuth, CDK())
 
 # generate Terraform files and plan from a YAML+JINJA file
-try:
-    list_dir, tf_plan = engine.run('path/to/file/or/directory')
-    print(tf_plan)
-except ParserPathNotFound as e:
-    print(e.message)
-except DSLSyntaxException as e:
-    print(repr(e))
-except DSLConditionException as e:
-    print(repr(e))
-except DSLUnexpectedEOF as e:
-    print(repr(e))
-except CDKException as e:
-    print(e.message)
+
+list_dir, tf_plan = engine.run('path/to/file/or/directory')
+print(tf_plan)
 ```
 
 ## How to test the software
@@ -69,12 +58,7 @@ except CDKException as e:
 To run the tests, you can use the following command:
 
 ```console
-bash scripts/test.sh
-```
-
-or just run the following command in your virtual python environment:
-
-```console
+pip install -e .[test]
 pytest tests
 ```
 
@@ -91,7 +75,8 @@ If you have questions, concerns, bug reports, etc, please file an issue in this 
 To install the project for development, you can use the following command:
 
 ```console
-bash scripts/init-dev.sh
+pip install -r requirements.txt && pip install -e .[dev,test,doc]
+pre-commit install && pre-commit run --all-files
 ```
 
 For more information on how to help out, please check the [CONTRIBUTING](CONTRIBUTING.md) file.
