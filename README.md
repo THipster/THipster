@@ -20,19 +20,63 @@ In order to user THipster, you will need to have the following installed:
 
 ## Installation
 
-*Detailed instructions on how to install, configure, and get the project running.
-This should be frequently tested to ensure reliability. Alternatively, link to
-a separate [INSTALL](INSTALL.md) document.*
+To use THipster, you can simply install the package with pip:
+
+```console
+pip install thipster
+```
+
+The list of available versions can be found on [PyPI](https://pypi.org/project/thipster/).
 
 ## Usage
 
-*Show users how to use the software.
-Be specific.
-Use appropriate formatting when showing code snippets.*
+You can use THipster in two ways:
+- By leveraging the [THipster CLI](https://github.com/THipster/THipster-cli)
+- By directly using the [THipster Python package](https://pypi.org/project/thipster/) in your own code
+
+Main feature:
+- Generate Terraform files from a YAML+JINJA or THIPS file:
+```python
+from thipster.engine.Engine import Engine as ThipsterEngine
+from thipster.repository.GithubRepo import GithubRepo
+from thipster.parser.ParserFactory import ParserFactory, ParserPathNotFound
+from thipster.parser.dsl_parser.TokenParser import DSLSyntaxException, \
+    DSLConditionException, DSLUnexpectedEOF
+from thipster.auth.Google import GoogleAuth
+from thipster.terraform.CDK import CDK, CDKException
+
+# create new THipster engine
+engine = ThipsterEngine(ParserFactory(), GithubRepo('THipster/models'), GoogleAuth, CDK())
+
+# generate Terraform files and plan from a YAML+JINJA file
+try:
+    list_dir, tf_plan = engine.run('path/to/file/or/directory')
+    print(tf_plan)
+except ParserPathNotFound as e:
+    print(e.message)
+except DSLSyntaxException as e:
+    print(repr(e))
+except DSLConditionException as e:
+    print(repr(e))
+except DSLUnexpectedEOF as e:
+    print(repr(e))
+except CDKException as e:
+    print(e.message)
+```
 
 ## How to test the software
 
-*If the software includes automated tests, detail how to run those tests.*
+To run the tests, you can use the following command:
+
+```console
+bash scripts/test.sh
+```
+
+or just run the following command in your virtual python environment:
+
+```console
+pytest tests
+```
 
 ## Known issues
 
@@ -44,25 +88,22 @@ If you have questions, concerns, bug reports, etc, please file an issue in this 
 
 ## Getting involved
 
-*This section should detail why people should get involved and describe key areas you are
-currently focusing on; e.g., trying to get feedback on features, fixing certain bugs, building
-important pieces, etc.*
+To install the project for development, you can use the following command:
 
-*General instructions on _how_ to contribute should be stated with a link to [CONTRIBUTING](CONTRIBUTING.md).*
+```console
+bash scripts/init-dev.sh
+```
 
-
-----
+For more information on how to help out, please check the [CONTRIBUTING](CONTRIBUTING.md) file.
 
 ## Open source licensing info
-*1. [TERMS](TERMS.md)
+1. [TERMS](TERMS.md)
 2. [LICENSE](LICENSE)
-3. [CFPB Source Code Policy](https://github.com/cfpb/source-code-policy/)*
-
-
-----
+3. [CFPB Source Code Policy](https://github.com/cfpb/source-code-policy/)
 
 ## Credits and references
 
-*1. Projects that inspired you
+1. Projects that inspired you
+    - [AWS Application Composer](https://aws.amazon.com/application-composer/?nc1=h_ls)
 2. Related projects
-3. Books, papers, talks, or other sources that have meaningful impact or influence on this project*
+    - [Wing Programming Language](https://www.winglang.io/)
