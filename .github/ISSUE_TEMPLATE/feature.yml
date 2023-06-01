@@ -1,6 +1,6 @@
 name: New feature ✨
 description: Suggest a new feature or other improvement
-labels: ["enhancement"]
+labels: ["enhancement","to sort"]
 body:
 - type: markdown
   attributes:

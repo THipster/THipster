@@ -1,6 +1,6 @@
-name: New Bug
+name: New Bug 🐛
 description: Report a new bug
-labels: ["bug"]
+labels: ["bug","to sort"]
 body:
 - type: markdown
   attributes:
@@ -39,7 +39,7 @@ body:
   attributes:
     label: THipster version
     placeholder: |
-      run thipster -v and paste the result here!
+      Version of the Pypi thipster package you are using.
   validations:
     required: true
 - type: textarea
@@ -92,7 +92,6 @@ body:
     multiple: true
     options:
     - Engine
-    - CLI
     - Parser
     - Auth
     - Resource Library

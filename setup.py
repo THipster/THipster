@@ -14,8 +14,11 @@ setup(
         {"name": "rcattin", "email": "rafa.cattin+thipster@gmail.com"},
         {"name": "gsuquet", "email": "gsuquet@ippon.fr"},
     ],
-    description="",
+    description="THipster is a tool dedicated to simplifying the ordeal associated \
+with writing Terraform files. It allows users to write infrastructure as code in a \
+simplified format, using either YAML (with JINJA) or the dedicated Thipster DSL.",
     long_description=readme,
+    long_description_content_type="text/markdown",
     classifiers=[
         "Development Status :: 1 - Planning",
         "Programming Language :: Python",

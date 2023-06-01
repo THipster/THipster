@@ -1,28 +1,9 @@
 # THipster
 
-THipster is a CLI tool dedicated to simplifying the ordeal associated with writing Terraform files.
+THipster is a tool dedicated to simplifying the ordeal associated with writing Terraform files.
 It allows users to write infrastructure as code in a simplified format, using either YAML (with JINJA) or the dedicated Thipster DSL.
 
 Written entirely in Python, it leverages the Python CDK for Terraform to create Terraform files and apply them to the chosen provider.
-
-### Table of contents
-[Technology Stack](#technology-stack)
-
-[Project Status](#project-status)
-
-[Dependencies](#dependencies)
-
-[Installation](#installation)
-
-[Usage](#usage)
-
-[Test the software](#how-to-test-the-software)
-
-[Known issues](#knwon-issues)
-
-[Getting help](#getting-help)
-
-[Getting involved](#getting-involved)
 
 ## Technology Stack
 Written in Python 3.11, thipster is designed as a python package, to be used either as a standalone tool, or as a module inside a running process like a CI/CD pipeline.
@@ -32,55 +13,82 @@ THipster is currently in an active development state. If you want to know more, 
 
 ## Dependencies
 
-*Describe any dependencies that must be installed for this software to work.
-This includes programming languages, databases or other storage mechanisms, build tools, frameworks, and so forth.
-If specific versions of other software are required, or known not to work, call that out.*
+In order to user THipster, you will need to have the following installed:
+- [Python](https://www.python.org/downloads/) (3.11+)
+- [pipenv](https://pipenv.pypa.io/en/latest/) v2021.5+
+- [Terraform CLI](https://developer.hashicorp.com/terraform/tutorials/aws-get-started/install-cli) (1.2+)
+- [Node.js](https://nodejs.org/) and npm v16+.
 
 ## Installation
 
-*Detailed instructions on how to install, configure, and get the project running.
-This should be frequently tested to ensure reliability. Alternatively, link to
-a separate [INSTALL](INSTALL.md) document.*
+To use THipster, you can simply install the package with pip:
+
+```console
+pip install thipster
+```
+
+The list of available versions can be found on [PyPI](https://pypi.org/project/thipster/).
 
 ## Usage
 
-*Show users how to use the software.
-Be specific.
-Use appropriate formatting when showing code snippets.*
+You can use THipster in two ways:
+- By leveraging the [THipster CLI](https://github.com/THipster/THipster-cli)
+- By directly using the [THipster Python package](https://pypi.org/project/thipster/) in your own code
+
+Main feature:
+- Generate Terraform files from a YAML+JINJA or THIPS file:
+```python
+from thipster.engine.Engine import Engine as ThipsterEngine
+from thipster.repository.GithubRepo import GithubRepo
+from thipster.parser.ParserFactory import ParserFactory
+from thipster.auth.Google import GoogleAuth
+from thipster.terraform.CDK import CDK
+
+# create new THipster engine
+engine = ThipsterEngine(ParserFactory(), GithubRepo('THipster/models'), GoogleAuth, CDK())
+
+# generate Terraform files and plan from a YAML+JINJA file
+
+list_dir, tf_plan = engine.run('path/to/file/or/directory')
+print(tf_plan)
+```
 
 ## How to test the software
 
-*If the software includes automated tests, detail how to run those tests.*
+To run the tests, you can use the following command:
+
+```console
+pip install -e .[test]
+pytest tests
+```
 
 ## Known issues
 
-*Document any known significant shortcomings with the software.*
+All known issues, bugs, and feature requests are tracked in the [Issue tracker](https://github.com/THipster/THipster/issues).
 
 ## Getting help
 
-If you have questions, concerns, bug reports, etc, please file an issue in this repository's Issue Tracker.
+If you have questions, concerns, bug reports, etc, please file an issue in this repository's [Issue tracker](https://github.com/THipster/THipster/issues).
 
 ## Getting involved
 
-*This section should detail why people should get involved and describe key areas you are
-currently focusing on; e.g., trying to get feedback on features, fixing certain bugs, building
-important pieces, etc.*
+To install the project for development, you can use the following command:
 
-*General instructions on _how_ to contribute should be stated with a link to [CONTRIBUTING](CONTRIBUTING.md).*
+```console
+pip install -r requirements.txt && pip install -e .[dev,test,doc]
+pre-commit install && pre-commit run --all-files
+```
 
-
-----
+For more information on how to help out, please check the [CONTRIBUTING](CONTRIBUTING.md) file.
 
 ## Open source licensing info
-*1. [TERMS](TERMS.md)
+1. [TERMS](TERMS.md)
 2. [LICENSE](LICENSE)
-3. [CFPB Source Code Policy](https://github.com/cfpb/source-code-policy/)*
-
-
-----
+3. [CFPB Source Code Policy](https://github.com/cfpb/source-code-policy/)
 
 ## Credits and references
 
-*1. Projects that inspired you
+1. Projects that inspired you
+    - [AWS Application Composer](https://aws.amazon.com/application-composer/?nc1=h_ls)
 2. Related projects
-3. Books, papers, talks, or other sources that have meaningful impact or influence on this project*
+    - [Wing Programming Language](https://www.winglang.io/)
