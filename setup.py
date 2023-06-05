@@ -45,6 +45,7 @@ simplified format, using either YAML (with JINJA) or the dedicated Thipster DSL.
         ],
         'doc': [
             'sphinx',
+            'myst-parser',
         ],
     },
 )
