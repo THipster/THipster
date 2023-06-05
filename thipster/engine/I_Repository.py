@@ -4,13 +4,19 @@ from thipster.engine.ResourceModel import ResourceModel
 
 class I_Repository(ABC):
     """Repository module interface
-
-    Methods
-    -------
-    get()
-        Abstract get method
-
     """
     @abstractmethod
     def get(self, resourceNames: list[str]) -> dict[str, ResourceModel]:
+        """Abstract get method
+
+        Parameters
+        ----------
+        resourceNames : list[str]
+            List of resource names to be retrieved from the repository
+
+        Returns
+        -------
+        dict[str, ResourceModel]
+            Dictionary of ResourceModel objects, indexed by resource name
+        """
         pass

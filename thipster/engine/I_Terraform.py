@@ -5,16 +5,6 @@ import thipster.engine.ParsedFile as pf
 
 class I_Terraform(ABC):
     """Terraform module interface
-
-    Methods
-    -------
-    generate()
-        Generates Terraform code from parsed file and models
-    plan()
-        Get plan from generated terraform code
-    apply()
-        Apply generated terraform code
-
     """
     @abstractmethod
     def apply(self):
