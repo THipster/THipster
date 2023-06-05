@@ -354,20 +354,28 @@ class CDK(I_Terraform):
         attribute: pf.ParsedAttribute,
         resource_args: dict,
     ):
-        res = CDK._create_resource_from_args(
-            self,
-            model.internalObjects[attribute.name]['resource'],
-            attribute.value,
-        )
-
         int_obj = model.internalObjects[attribute.name]
         var_type = int_obj['var_type'] if 'var_type' in int_obj else 'Unknown'
 
         if 'list' in var_type:
             if attribute.name not in resource_args:
                 resource_args[attribute.name] = []
-            resource_args[attribute.name] += [res]
+
+            if isinstance(attribute.value[0], pf.ParsedDict):
+                for internalObject in attribute.value:
+                    res = CDK._create_resource_from_args(
+                        self,
+                        model.internalObjects[attribute.name]['resource'],
+                        internalObject.value,
+                    )
+
+                    resource_args[attribute.name] += [res]
         else:
+            res = CDK._create_resource_from_args(
+                self,
+                model.internalObjects[attribute.name]['resource'],
+                attribute.value,
+            )
             resource_args[attribute.name] = res
 
         return resource_args

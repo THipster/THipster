@@ -189,7 +189,7 @@ class YAMLParser(I_Parser):
         elif type(value) == list:
             val = YAMLParser.__get_list(value)
         else:
-            val = pf.ParsedLiteral(str(value))
+            val = pf.ParsedLiteral(value)
 
         return pf.ParsedAttribute(
             name=name,

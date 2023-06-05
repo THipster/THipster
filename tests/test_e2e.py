@@ -47,13 +47,13 @@ def create_file(filename: str, content: str, dirname: str = 'test'):
     file.close()
 
 
-def __test_file(file: str, local_repo: str = LOCAL_REPO):
+def __test_file(file: str, local_repo: str = LOCAL_REPO, file_type: str = 'thips'):
 
     path_input = 'test'
     __destroy_dir = create_dir(
         path_input,
         {
-            'test_file.thips':
+            f'test_file.{file_type}':
             file,
         },
     )
@@ -222,13 +222,41 @@ def test_bucket_cors():
 bucket corsBucket:
     cors:
         origin:
-            - "http://image-store.com"
+            - "http://example.com"
         method:
             - "*"
         responseHeader:
             - "*"
         maxAge: 400
         """,
+    )
+
+    assert_number_of_resource_type_is("google_storage_bucket", 1)
+    assert_resource_created("google_storage_bucket", "corsBucket")
+
+
+def test_bucket_two_cors():
+    __test_file(
+        file="""
+bucket:
+  name: corsBucket
+  cors:
+    - origin:
+      - "http://example.com"
+      method:
+      - "*"
+      responseHeader:
+      - "*"
+      maxAge: 400
+    - origin:
+      - "http://example.com/other"
+      method:
+      - "*"
+      responseHeader:
+      - "*"
+      maxAge: 600
+""",
+        file_type='yaml',
     )
 
     assert_number_of_resource_type_is("google_storage_bucket", 1)
