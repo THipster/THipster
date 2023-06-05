@@ -182,21 +182,6 @@ loadbalancer my-lb:
     assert_resource_created("google_compute_subnetwork", "lb-subnet")
 
 
-def test_lb_single_file():
-    __test_file(
-        file="""
-network lb-net:
-
-subnetwork lb-subnet:
-\tregion: europe-west1b
-\tip_range: 10.0.1.0/24
-
-loadbalancer my-lb:
-\tload_balancing_scheme: EXTERNAL
-    """,
-    )
-
-
 def test_internal_object():
     __test_file(
         file="""
@@ -212,6 +197,31 @@ firewall testParent:
 
 \tallow:
 \t\tprotocol: http
+        """,
+    )
+
+
+def test_missing_explicit_dependency():
+    with pytest.raises(cdk.CDKDependencyNotDeclared):
+        __test_file(
+            file="""
+subnetwork lb-subnet:
+\tnetwork: lb-net
+\tregion: europe-west1b
+\tip_range: 10.0.1.0/24
+            """,
+        )
+
+
+def test_explicit_dependency():
+    __test_file(
+        file="""
+network lb-net:
+
+subnetwork lb-subnet:
+\tnetwork: lb-net
+\tregion: europe-west1b
+\tip_range: 10.0.1.0/24
         """,
     )
 

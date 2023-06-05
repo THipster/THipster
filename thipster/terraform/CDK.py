@@ -86,8 +86,9 @@ class CDK(I_Terraform):
         self, file: pf.ParsedFile, models: dict[str, rm.ResourceModel],
         _auth: I_Auth,
     ):
-
+        CDK._created_resources = {}
         CDK._models = models
+        CDK._parentStack = []
         # Init CDK
         app = App()
 
@@ -230,7 +231,7 @@ class CDK(I_Terraform):
             for objName, internalObject in model.internalObjects.items():
                 if objName not in resource_args:
                     for defaultArg in internalObject['defaults']:
-                        CDK._handle_internal_object(
+                        CDK._create_internal_object(
                             self,
                             model.internalObjects[objName],
                             objName,
@@ -277,7 +278,7 @@ class CDK(I_Terraform):
         for objName, internalObject in model.internalObjects.items():
             if objName not in resource_args:
                 for defaultArg in internalObject['defaults']:
-                    CDK._handle_internal_object(
+                    CDK._create_internal_object(
                         self,
                         model.internalObjects[objName],
                         objName,
@@ -334,7 +335,7 @@ class CDK(I_Terraform):
         for objName, internalObject in model.internalObjects.items():
             if objName not in resource_args:
                 for defaultArg in internalObject['defaults']:
-                    CDK._handle_internal_object(
+                    CDK._create_internal_object(
                         self,
                         model.internalObjects[objName],
                         objName,
@@ -387,7 +388,7 @@ class CDK(I_Terraform):
         for objName, internalObject in model.internalObjects.items():
             if objName not in resource_args:
                 for defaultArg in internalObject['defaults']:
-                    CDK._handle_internal_object(
+                    CDK._create_internal_object(
                         self,
                         model.internalObjects[objName],
                         objName,
@@ -436,7 +437,7 @@ class CDK(I_Terraform):
 
         # Checks if attribute is an internal object
         if attribute.name in model.internalObjects:
-            resource_args = CDK._handle_internal_object(
+            resource_args = CDK._create_internal_object(
                 self,
                 model.internalObjects[attribute.name],
                 attribute.name,
@@ -462,37 +463,53 @@ class CDK(I_Terraform):
 
         return resource_args, deps
 
-    def _handle_internal_object(
+    def _create_internal_object(
         self,
         internalObjectModel,
         name: str,
         args,
         resource_args: dict,
     ):
-        if isinstance(args, dict):
-            res = CDK._create_resource_from_dict(
-                self,
-                internalObjectModel['resource'],
-                args,
-            )
-        else:
-            res = CDK._create_resource_from_args(
-                self,
-                internalObjectModel['resource'],
-                args,
-            )
-
         int_obj = internalObjectModel
         var_type = int_obj['var_type'] if 'var_type' in int_obj else 'Unknown'
 
         if var_type.startswith('list'):
             if name not in resource_args:
                 resource_args[name] = []
+
+            if isinstance(args, list) and isinstance(args[0], pf.ParsedDict):
+                for internalObject in args:
+                    res = CDK._handle_internal_object(
+                        self,
+                        internalObjectModel['resource'],
+                        internalObject.value,
+                    )
+                    resource_args[name] += [res]
+
+                return resource_args
+
+            res = CDK._handle_internal_object(
+                self,
+                internalObjectModel['resource'],
+                args,
+            )
             resource_args[name] += [res]
-        else:
-            resource_args[name] = res
+            return resource_args
+
+        res = CDK._handle_internal_object(
+            self,
+            internalObjectModel['resource'],
+            args,
+        )
+        resource_args[name] = res
 
         return resource_args
+
+    def _handle_internal_object(self, objectType: str, args: object):
+        if isinstance(args, dict):
+            return CDK._create_resource_from_dict(self, objectType, args)
+
+        return CDK._create_resource_from_args(self, objectType, args)
 
     def _create_dependency(self, depName, depValue, resource_args, parentName):
         _class, _className, _classAttributes = CDK._create_default_resource(
