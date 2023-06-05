@@ -1,3 +1,4 @@
+import json
 import os
 import shutil
 from cdktf_cdktf_provider_google.provider import GoogleProvider
@@ -76,34 +77,56 @@ def __test_file(file: str, local_repo: str = LOCAL_REPO):
     return output
 
 
+def assert_resource_created(res_type: str, name: str):
+    with open("thipster.tf.json") as f:
+        output = json.load(f)
+        f.close()
+
+    assert output.get("resource") is not None
+    resources = output.get("resource")
+
+    assert resources.get(res_type) is not None
+
+    names = [x.get("name") for _, x in resources.get(res_type).items()]
+    assert name in names
+
+
+def assert_number_of_resource_type_is(res_type: str, amount: str):
+    with open("thipster.tf.json") as f:
+        output = json.load(f)
+        f.close()
+
+    assert output.get("resource") is not None
+    resources = output.get("resource")
+
+    assert resources.get(res_type) is not None
+    assert len(resources.get(res_type)) == amount
+
+
 def test_bucket():
-    out = __test_file(
+    __test_file(
         file="""
 bucket my-bucket:
 \tregion : euw
     """,
     )
 
-    assert isinstance(out[0], list)
-    assert len(out[0]) == 1
-
-    assert out[0][0] == 'cdktf.out/stacks/thipster_infrastructure'
+    assert_number_of_resource_type_is("google_storage_bucket", 1)
+    assert_resource_created("google_storage_bucket", "my-bucket")
 
 
 def test_empty_bucket():
-    out = __test_file(
+    __test_file(
         file="""
 bucket dzvhvzarbazkhr:
 
     """,
     )
 
-    assert isinstance(out[0], list)
-    assert len(out[0]) == 1
+    assert_number_of_resource_type_is("google_storage_bucket", 1)
+    assert_resource_created("google_storage_bucket", "dzvhvzarbazkhr")
 
-    assert 'cdktf.out/stacks/thipster_infrastructure' in out[0]
-
-    out = __test_file(
+    __test_file(
         file="""
 bucket dzvhvzarbazkhr:
 
@@ -112,10 +135,9 @@ bucket ezezeaz:
     """,
     )
 
-    assert isinstance(out[0], list)
-    assert len(out[0]) == 1
-
-    assert 'cdktf.out/stacks/thipster_infrastructure' in out[0]
+    assert_number_of_resource_type_is("google_storage_bucket", 2)
+    assert_resource_created("google_storage_bucket", "dzvhvzarbazkhr")
+    assert_resource_created("google_storage_bucket", "ezezeaz")
 
 
 def test_dep_with_no_options():
@@ -139,11 +161,12 @@ bucket_bad_dep_cyclic my-bucket:
 
 
 def test_lb():
-    out = __test_file(
+    __test_file(
         file="""
 network lb-net:
 
 subnetwork lb-subnet:
+\tnetwork: lb-net
 \tregion: europe-west1b
 \tip_range: 10.0.1.0/24
 
@@ -152,14 +175,15 @@ loadbalancer my-lb:
     """,
     )
 
-    assert isinstance(out[0], list)
-    assert len(out[0]) == 1
+    assert_number_of_resource_type_is("google_compute_network", 3)
+    assert_resource_created("google_compute_network", "lb-net")
 
-    assert 'cdktf.out/stacks/thipster_infrastructure' in out[0]
+    assert_number_of_resource_type_is("google_compute_subnetwork", 1)
+    assert_resource_created("google_compute_subnetwork", "lb-subnet")
 
 
 def test_lb_single_file():
-    out = __test_file(
+    __test_file(
         file="""
 network lb-net:
 
@@ -172,22 +196,16 @@ loadbalancer my-lb:
     """,
     )
 
-    assert isinstance(out[0], list)
-    assert len(out[0]) == 1
-
-    assert 'cdktf.out/stacks/thipster_infrastructure' in out[0]
-
 
 def test_internal_object():
-    out = __test_file(
+    __test_file(
         file="""
 firewall testParent:
 \tdirection: EGRESS
         """,
     )
-    assert 'cdktf.out/stacks/thipster_infrastructure' in out[0]
 
-    out = __test_file(
+    __test_file(
         file="""
 firewall testParent:
 \tdirection: EGRESS
@@ -196,11 +214,10 @@ firewall testParent:
 \t\tprotocol: http
         """,
     )
-    assert 'cdktf.out/stacks/thipster_infrastructure' in out[0]
 
 
 def test_bucket_cors():
-    out = __test_file(
+    __test_file(
         file="""
 bucket corsBucket:
     cors:
@@ -213,4 +230,6 @@ bucket corsBucket:
         maxAge: 400
         """,
     )
-    assert 'cdktf.out/stacks/thipster_infrastructure' in out[0]
+
+    assert_number_of_resource_type_is("google_storage_bucket", 1)
+    assert_resource_created("google_storage_bucket", "corsBucket")
