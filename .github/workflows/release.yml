@@ -15,7 +15,7 @@ jobs:
       uses: benjefferies/branch-protection-bot@master
       if: always()
       with:
-        access_token: ${{ secrets.GITHUB_TOKEN }}
+        access_token: ${{ secrets.RELEASE_ACCESS_TOKEN }}
         branch: ${{ github.event.repository.default_branch }}
 
     - uses: actions/checkout@v3
@@ -25,7 +25,7 @@ jobs:
     - name: Python Semantic Release
       uses: relekang/python-semantic-release@master
       with:
-        github_token: ${{ secrets.GITHUB_TOKEN }}
+        github_token: ${{ secrets.RELEASE_ACCESS_TOKEN }}
         repository_username: __token__
         repository_password: ${{ secrets.PYPI_TOKEN }}
 
@@ -33,5 +33,5 @@ jobs:
       uses: benjefferies/branch-protection-bot@master
       if: always()
       with:
-        access_token: ${{ secrets.GITHUB_TOKEN }}
+        access_token: ${{ secrets.RELEASE_ACCESS_TOKEN }}
         branch: ${{ github.event.repository.default_branch }}
