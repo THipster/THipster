@@ -15,12 +15,6 @@ class Engine():
 
     The core of the application, it is used to call and link all
     interfaces together.
-
-    Methods
-    -------
-    run(filename: str)
-        Processes a fileName and creates the corresponding Cloud architecture plan
-
     """
 
     importedPackages = []

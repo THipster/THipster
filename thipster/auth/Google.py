@@ -5,12 +5,6 @@ from cdktf_cdktf_provider_google.provider import GoogleProvider
 
 class GoogleAuth(I_Auth):
     """Authentication to GCP Projects
-
-    Methods
-    -------
-    authenticate(app: Construct)
-        Generates the google provider in terraform
-
     """
 
     def __init__(self) -> None:

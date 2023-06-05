@@ -1,6 +1,6 @@
 # THipster
 
-THipster is a tool dedicated to simplifying the ordeal associated with writing Terraform files.
+THipster is a tool dedicated to simplifying the difficulty associated with writing Terraform files.
 It allows users to write infrastructure as code in a simplified format, using either YAML (with JINJA) or the dedicated Thipster DSL.
 
 Written entirely in Python, it leverages the Python CDK for Terraform to create Terraform files and apply them to the chosen provider.
