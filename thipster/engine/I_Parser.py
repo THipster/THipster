@@ -4,16 +4,15 @@ from thipster.engine.ParsedFile import ParsedFile
 
 class I_Parser(ABC):
     """Parser module interface
-
-    Methods
-    -------
-    run()
-        Abstract run method
-
     """
     @abstractmethod
     def run(self, path: str) -> ParsedFile:
         """Abstract run method
+
+        Parameters
+        ----------
+        path : str
+            The path of the filesor directory to be processed
 
         Returns
         -------

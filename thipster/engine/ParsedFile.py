@@ -6,10 +6,6 @@ from abc import ABC, abstractmethod
 
 class I_ParsedValue(ABC):
     """Parsed Value Interface
-
-    Attributes
-    ----------
-    value
     """
 
     @property
@@ -26,12 +22,6 @@ class Position():
 
     Indicates the initial position of a token, resource or character in the input files.
     It includes the file name, line and column numbers of the designated element.
-
-    Attributes
-    ----------
-    fileName
-    ln
-    col
     """
 
     def __init__(self, fileName: str, ln: int, col: int):
