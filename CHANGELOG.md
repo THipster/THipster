@@ -2,6 +2,17 @@
 
 <!--next-version-placeholder-->
 
+## v0.14.1 (2023-06-06)
+
+### :bug:
+
+* :bug: feat: default internal object ([#122](https://github.com/THipster/THipster/issues/122)) ([`6ac3db2`](https://github.com/THipster/THipster/commit/6ac3db25fd1f097a66d50b882949aff5974f4846))
+
+### Other
+
+* :memo: fix: Add final open source doc ([#126](https://github.com/THipster/THipster/issues/126)) ([`1df9137`](https://github.com/THipster/THipster/commit/1df91376ea3343da07c15b4d8ab15f7d67c04baa))
+* :green_heart: fix(ci): precommit ([#127](https://github.com/THipster/THipster/issues/127)) ([`42d7c3d`](https://github.com/THipster/THipster/commit/42d7c3d3e5b89bf558506e99a4ec5f3f3b62121a))
+
 ## v0.14.0 (2023-06-06)
 
 ### :sparkles:
