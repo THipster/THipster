@@ -9,7 +9,7 @@ Written entirely in Python, it leverages the Python CDK for Terraform to create 
 Written in Python 3.11, thipster is designed as a python package, to be used either as a standalone tool, or as a module inside a running process like a CI/CD pipeline.
 
 ## Project Status
-THipster is currently in an active development state. If you want to know more, please check the [CHANGELOG](CHANGELOG.md) for more details.
+THipster is currently in an active development state. If you want to know more, please check the [CHANGELOG](https://github.com/THipster/THipster/blob/main/CHANGELOG.md) for more details.
 
 ## Dependencies
 
@@ -79,12 +79,11 @@ pip install -r requirements.txt && pip install -e .[dev,test,doc]
 pre-commit install && pre-commit run --all-files
 ```
 
-For more information on how to help out, please check the [CONTRIBUTING](CONTRIBUTING.md) file.
+For more information on how to help out, please check the [CONTRIBUTING](https://github.com/THipster/THipster/blob/main/CONTRIBUTING.md) file.
 
 ## Open source licensing info
-1. [TERMS](TERMS.md)
-2. [LICENSE](LICENSE)
-3. [CFPB Source Code Policy](https://github.com/cfpb/source-code-policy/)
+1. [LICENSE](https://github.com/THipster/THipster/blob/main/LICENSE)
+2. [CFPB Source Code Policy](https://github.com/cfpb/source-code-policy/)
 
 ## Credits and references
 

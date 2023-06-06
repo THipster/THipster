@@ -24,6 +24,8 @@
 * [Issue and Pull Request Labels](#issue-and-pull-request-labels)
 
 ## Code of Conduct
+The THipster project follows the [Contributor Covenant Code of Conduct](https://www.contributor-covenant.org/version/2/0/code_of_conduct/). All contributors are expected to adhere to this code.
+The exact version of the code of conduct that is followed by the THipster project can be found [here](https://github.com/THipster/THipster/blob/main/CODE_OF_CONDUCT.md).
 
 ## GitHub Worklow
 The recommended workflow is to fork the repository and open pull requests from your fork.
