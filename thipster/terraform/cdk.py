@@ -6,7 +6,7 @@ import subprocess
 import sys
 import uuid
 
-from cdktf import App, TerraformOutput, TerraformStack
+from cdktf import App, TerraformStack
 from constructs import Construct
 from python_terraform import Terraform
 
@@ -19,8 +19,8 @@ from thipster.helpers import createLogger as Logger
 
 class CDK(I_Terraform):
     _models = []
-    _parentStack = []
-    _importedPackages = []
+    _parent_resources_stack = []
+    _imported_packages = []
 
     _created_resources = {}
     _logger = Logger(__name__)
@@ -44,7 +44,7 @@ class CDK(I_Terraform):
     ):
         CDK._created_resources = {}
         CDK._models = models
-        CDK._parentStack = []
+        CDK._parent_resources_stack = []
         # Init CDK
         app = App()
 
@@ -67,11 +67,6 @@ class CDK(I_Terraform):
                     )
 
                     CDK._created_resources[f'{resource.type}/{resource.name}'] = res.id
-
-                    TerraformOutput(
-                        self, f"{resource.name}_id",
-                        value=res.id,
-                    )
 
         _ResourceStack(app, file_name)
 
@@ -100,8 +95,6 @@ class CDK(I_Terraform):
             os.rmdir(d) if os.path.isdir(d) else os.remove(d)
         os.rmdir('cdktf.out')
 
-        return self.__dirs
-
     def init(self):
         """Get plan from generated terraform code
 
@@ -129,47 +122,51 @@ class CDK(I_Terraform):
         return stdout + stderr
 
     def _pip_install(package: str):
-        if package not in CDK._importedPackages:
+        if package not in CDK._imported_packages:
             subprocess.check_call(
                 [sys.executable, '-m', 'pip', 'install', '-qqq', package],
             )
-            CDK._importedPackages.append(package)
+            CDK._imported_packages.append(package)
 
-    def _import(packageName: str, moduleName: str, className: str) -> type:
+    def _import(package_name: str, module_name: str, class_name: str) -> type:
 
-        module = importlib.import_module(f'{packageName}.{moduleName}')
-        class_ = getattr(module, className)
+        module = importlib.import_module(f'{package_name}.{module_name}')
+        class_ = getattr(module, class_name)
 
         return class_
 
     def _create_default_resource(
-        self, typ: str, parentName: str | None = None,
-        noModif: bool = True, noDependencies: bool = False,
+        self, resource_type: str, parent_name: str | None = None,
+        no_modif: bool = True, no_dependencies: bool = False,
     ):
         # Checks for cyclic dependency
-        if typ in CDK._parentStack:
-            CDK._logger.error('%s already present in parent Stack', typ)
-            raise cdk_exceptions.CDKCyclicDependencies(CDK._parentStack)
+        if resource_type in CDK._parent_resources_stack:
+            CDK._logger.error(
+                '%s already present in parent Stack', resource_type,
+            )
+            raise cdk_exceptions.CDKCyclicDependencies(
+                CDK._parent_resources_stack,
+            )
 
-        CDK._parentStack.append(typ)
+        CDK._parent_resources_stack.append(resource_type)
 
-        model = CDK._models[typ]
+        model = CDK._models[resource_type]
 
         # Checks that all attributes are optional
-        if noModif and not all(map(lambda x: x.optional, model.attributes.values())):
-            raise cdk_exceptions.CDKMissingAttributeInDependency(typ)
+        if no_modif and not all(map(lambda x: x.optional, model.attributes.values())):
+            raise cdk_exceptions.CDKMissingAttributeInDependency(resource_type)
 
         # Import package and class
         CDK._pip_install(model.cdk_provider)
-        resourceClass = CDK._import(
+        resource_class = CDK._import(
             model.cdk_provider, model.cdk_module, model.cdk_name,
         )
 
         # Process name + default values
-        deps = copy.deepcopy(model.dependencies)
+        dependencies = copy.deepcopy(model.dependencies)
         resource_args = {}
 
-        name = f"{parentName}-{uuid.uuid4()}"
+        name = f"{parent_name}-{uuid.uuid4()}"
         if model.name_key:
             resource_args[model.name_key] = name
 
@@ -177,146 +174,111 @@ class CDK(I_Terraform):
             resource_args[v.cdk_name] = v.default
 
         # Create default defendencies if needed
-        if not noDependencies:
-            for depName, depValue in deps.items():
-                CDK._create_dependency(
-                    self, depName, depValue, resource_args, parentName,
-                )
+        if not no_dependencies:
+            CDK._generate_default_dependencies(
+                self, dependencies,
+                model, resource_args, name,
+            )
 
-            # Create default internal objects if needed
-            for objName, internalObject in model.internalObjects.items():
-                if objName not in resource_args:
-                    for defaultArg in internalObject['defaults']:
-                        CDK._create_internal_object(
-                            self,
-                            model.internalObjects[objName],
-                            objName,
-                            defaultArg,
-                            resource_args,
-                        )
+        CDK._logger.debug('Created default %s named %s', resource_class, name)
 
-        CDK._logger.debug('Created default %s named %s', resourceClass, name)
+        return (resource_class, name, resource_args)
 
-        return (resourceClass, name, resource_args)
+    def _create_resource(self, resource_args: object, resource_type: str = None):
+        if isinstance(resource_args, dict):
+            return CDK._create_resource_from_dict(self, resource_type, resource_args)
+
+        if isinstance(resource_args, pf.ParsedResource):
+            return CDK._create_resource_from_resource(self, resource_args)
+
+        return CDK._create_resource_from_args(self, resource_type, resource_args)
 
     def _create_resource_from_args(
-        self, typ: str, args: list[pf.ParsedAttribute] | None,
+        self, resource_type: str, input_args: list[pf.ParsedAttribute] | None,
     ):
-        resourceClass, resourceName, resource_args = CDK._create_default_resource(
+
+        resource_class, resource_name, resource_args = CDK._create_default_resource(
             self,
-            typ,
-            noModif=False,
-            noDependencies=True,
+            resource_type,
+            no_modif=False,
+            no_dependencies=True,
         )
-        model = CDK._models[typ]
+        model = CDK._models[resource_type]
 
         # Process attributes
-        deps = copy.deepcopy(model.dependencies)
-        for attribute in args:
+        dependencies = copy.deepcopy(model.dependencies)
+        for attribute in input_args:
             if attribute.name and model.name_key:
                 resource_args[model.name_key] = attribute.name
 
-            resource_args, deps = CDK._process_attribute(
-                self,
-                model=model,
-                attribute=attribute,
-                resource_args=resource_args,
-                deps=deps,
+            resource_args, dependencies = CDK._process_attribute(
+                self, model, attribute, resource_args, dependencies,
             )
 
-        # Create missing dependencies
-        for depName, depValue in deps.items():
-            CDK._create_dependency(
-                self, depName, depValue, resource_args, resourceName,
-            )
-
-        # Create default internal objects if needed
-        for objName, internalObject in model.internalObjects.items():
-            if objName not in resource_args:
-                for defaultArg in internalObject['defaults']:
-                    CDK._create_internal_object(
-                        self,
-                        model.internalObjects[objName],
-                        objName,
-                        defaultArg,
-                        resource_args,
-                    )
+        CDK._generate_default_dependencies(
+            self, dependencies, model, resource_args, resource_name,
+        )
 
         # Create resource
-        CDK._parentStack.remove(typ)
+        CDK._parent_resources_stack.remove(resource_type)
 
         CDK._logger.debug(
             'Created default %s named %s',
-            resourceClass, resourceName,
+            resource_class, resource_name,
         )
 
         if not model.name_key:
-            return resourceClass(**resource_args)
-        return resourceClass(self, resourceName, **resource_args)
+            return resource_class(**resource_args)
+        return resource_class(self, resource_name, **resource_args)
 
     def _create_resource_from_dict(
-        self, typ: str, args: dict | None,
+        self, resource_type: str, input_args: dict | None,
     ):
-        resourceClass, resourceName, resource_args = CDK._create_default_resource(
+        resource_class, resource_name, resource_args = CDK._create_default_resource(
             self,
-            typ,
-            noModif=False,
-            noDependencies=True,
+            resource_type,
+            no_modif=False,
+            no_dependencies=True,
         )
-        model = CDK._models[typ]
+        model = CDK._models[resource_type]
 
         # Process attributes
-        deps = copy.deepcopy(model.dependencies)
-        for name, value in args.items():
+        dependencies = copy.deepcopy(model.dependencies)
+        for name, value in input_args.items():
             if name and model.name_key:
                 resource_args[model.name_key] = name
 
-            resource_args, deps = CDK._process_attribute(
-                self,
-                model=model,
-                attribute=pf.ParsedAttribute(
+            resource_args, dependencies = CDK._process_attribute(
+                self, model,
+                pf.ParsedAttribute(
                     name, None, pf.ParsedLiteral(value),
                 ),
-                resource_args=resource_args,
-                deps=deps,
+                resource_args, dependencies,
             )
 
-        # Create missing dependencies
-        for depName, depValue in deps.items():
-            CDK._create_dependency(
-                self, depName, depValue, resource_args, resourceName,
-            )
+        CDK._generate_default_dependencies(
+            self, dependencies, model, resource_args, resource_name,
+        )
 
-        # Create default internal objects if needed
-        for objName, internalObject in model.internalObjects.items():
-            if objName not in resource_args:
-                for defaultArg in internalObject['defaults']:
-                    CDK._create_internal_object(
-                        self,
-                        model.internalObjects[objName],
-                        objName,
-                        defaultArg,
-                        resource_args,
-                    )
         # Create resource
-        CDK._parentStack.remove(typ)
+        CDK._parent_resources_stack.remove(resource_type)
 
         CDK._logger.debug(
             'Created default %s named %s',
-            resourceClass, resourceName,
+            resource_class, resource_name,
         )
 
         if not model.name_key:
-            return resourceClass(**resource_args)
-        return resourceClass(self, resourceName, **resource_args)
+            return resource_class(**resource_args)
+        return resource_class(self, resource_name, **resource_args)
 
     def _create_resource_from_resource(self, resource: pf.ParsedResource):
         # Create resource with default values
-        resourceClass, _, resource_args = CDK._create_default_resource(
+        resource_class, _, resource_args = CDK._create_default_resource(
             self,
             resource.type,
-            noModif=False,
-            noDependencies=True,
+            no_modif=False,
+            no_dependencies=True,
         )
         model = CDK._models[resource.type]
 
@@ -324,53 +286,40 @@ class CDK(I_Terraform):
             resource_args[model.name_key] = resource.name
 
         # Process attributes
-        deps = copy.deepcopy(model.dependencies)
+        dependencies = copy.deepcopy(model.dependencies)
         for attribute in resource.attributes:
-            resource_args, deps = CDK._process_attribute(
+            resource_args, dependencies = CDK._process_attribute(
                 self,
-                model=model,
-                attribute=attribute,
-                resource_args=resource_args,
-                deps=deps,
+                model,
+                attribute,
+                resource_args,
+                dependencies,
             )
 
-        # Create missing dependencies
-        for depName, depValue in deps.items():
-            CDK._create_dependency(
-                self, depName, depValue, resource_args, resource.name,
-            )
-
-        # Create default internal objects if needed
-        for objName, internalObject in model.internalObjects.items():
-            if objName not in resource_args:
-                for defaultArg in internalObject['defaults']:
-                    CDK._create_internal_object(
-                        self,
-                        model.internalObjects[objName],
-                        objName,
-                        defaultArg,
-                        resource_args,
-                    )
+        CDK._generate_default_dependencies(
+            self, dependencies, model, resource_args, resource.name,
+        )
 
         # Create resource
-        CDK._parentStack.remove(resource.type)
+        CDK._parent_resources_stack.remove(resource.type)
 
         CDK._logger.debug(
             'Created resource %s named %s',
-            resourceClass, resource.name,
+            resource_class, resource.name,
         )
 
-        return resourceClass(self, resource.name, **resource_args)
+        return resource_class(self, resource.name, **resource_args)
 
     def _process_attribute(
         self,
         model: rm.ResourceModel,
         attribute: pf.ParsedAttribute,
         resource_args: dict[str, object],
-        deps: dict[str, dict[str, object]] | None,
+        dependencies: dict[str, dict[str, object]] | None,
     ):
-        if attribute.name in deps:
-            created_name = f"{deps[attribute.name]['resource']}/{attribute.value}"
+        if attribute.name in dependencies:
+            created_name = f"{dependencies[attribute.name]['resource']}/"\
+                           f"{attribute.value}"
 
             # Checks if attribute is an explicit dependency
             if created_name not in CDK._created_resources.keys():
@@ -388,19 +337,19 @@ class CDK(I_Terraform):
 
             resource_args[attribute.name] = CDK._created_resources[created_name]
 
-            del deps[attribute.name]
-            return resource_args, deps
+            del dependencies[attribute.name]
+            return resource_args, dependencies
 
         # Checks if attribute is an internal object
-        if attribute.name in model.internalObjects:
+        if attribute.name in model.internal_objects:
             resource_args = CDK._create_internal_object(
                 self,
-                model.internalObjects[attribute.name],
+                model.internal_objects[attribute.name],
                 attribute.name,
                 attribute.value,
                 resource_args,
             )
-            return resource_args, deps
+            return resource_args, dependencies
 
         # Checks if attribute is expected as an attibute
         if attribute.name not in model.attributes:
@@ -419,62 +368,84 @@ class CDK(I_Terraform):
         # Sets attribute value
         resource_args[model.attributes[attribute.name].cdk_name] = attribute_value
 
-        return resource_args, deps
+        return resource_args, dependencies
+
+    def _generate_default_dependencies(
+            self,
+            dependencies,
+            model: rm.ResourceModel,
+            resource_args,
+            resourceName,
+    ):
+        # Create missing dependencies
+        for dependency_name, dependency_object in dependencies.items():
+            CDK._create_dependency(
+                self, dependency_name, dependency_object, resource_args, resourceName,
+            )
+
+        # Create default internal objects if needed
+        for internal_object_name, internal_object in model.internal_objects.items():
+            if internal_object_name not in resource_args:
+                for default_args in internal_object['defaults']:
+                    CDK._create_internal_object(
+                        self,
+                        model.internal_objects[internal_object_name],
+                        internal_object_name,
+                        default_args,
+                        resource_args,
+                    )
 
     def _create_internal_object(
         self,
-        internalObjectModel,
+        internal_object_model,
         name: str,
-        args,
+        internal_object_args,
         resource_args: dict,
     ):
-        int_obj = internalObjectModel
-        var_type = int_obj['var_type'] if 'var_type' in int_obj else 'Unknown'
+        internal_object_type = internal_object_model['var_type'] \
+            if 'var_type' in internal_object_model else 'Unknown'
 
-        if var_type.startswith('list'):
+        if internal_object_type.startswith('list'):
             if name not in resource_args:
                 resource_args[name] = []
 
-            if isinstance(args, list) and isinstance(args[0], pf.ParsedDict):
-                for internalObject in args:
-                    res = CDK._handle_internal_object(
+            if isinstance(internal_object_args, list) \
+                    and isinstance(internal_object_args[0], pf.ParsedDict):
+
+                for internalObject in internal_object_args:
+                    res = CDK._create_resource(
                         self,
-                        internalObjectModel['resource'],
                         internalObject.value,
+                        internal_object_model['resource'],
                     )
                     resource_args[name] += [res]
 
                 return resource_args
 
-            res = CDK._handle_internal_object(
+            res = CDK._create_resource(
                 self,
-                internalObjectModel['resource'],
-                args,
+                internal_object_args,
+                internal_object_model['resource'],
             )
             resource_args[name] += [res]
             return resource_args
 
-        res = CDK._handle_internal_object(
+        res = CDK._create_resource(
             self,
-            internalObjectModel['resource'],
-            args,
+            internal_object_args,
+            internal_object_model['resource'],
         )
         resource_args[name] = res
 
         return resource_args
 
-    def _handle_internal_object(self, objectType: str, args: object):
-        if isinstance(args, dict):
-            return CDK._create_resource_from_dict(self, objectType, args)
-
-        return CDK._create_resource_from_args(self, objectType, args)
-
-    def _create_dependency(self, depName, depValue, resource_args, parentName):
-        _class, _className, _classAttributes = CDK._create_default_resource(
-            self, depValue['resource'], parentName,
+    def _create_dependency(self, dep_name, dep_value, resource_args, parent_name):
+        class_, class_name, class_attributes = CDK._create_default_resource(
+            self, dep_value['resource'], parent_name,
         )
-        id = _class(self, _className, **_classAttributes).id
-        if depName:
-            resource_args[depName] = id
 
-        CDK._parentStack.remove(depValue['resource'])
+        id = class_(self, class_name, **class_attributes).id
+        if dep_name:
+            resource_args[dep_name] = id
+
+        CDK._parent_resources_stack.remove(dep_value['resource'])

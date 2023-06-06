@@ -17,7 +17,7 @@ def test_create_empty_resource():
     assert model.type == 'test_type'
     assert model.attributes is None
     assert model.dependencies is None
-    assert model.internalObjects is None
+    assert model.internal_objects is None
 
 
 def test_create_resource_with_dependencies():
