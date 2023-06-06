@@ -28,6 +28,12 @@ class MockAuth(eng.I_Auth):
     def authenticate(self):
         return (None, None)
 
+    def description(self) -> str:
+        return 'MockAuth description'
+
+    def help(self) -> str:
+        return 'MockAuth help'
+
 
 class MockParser(eng.I_Parser):
     @logger('- Parser')
