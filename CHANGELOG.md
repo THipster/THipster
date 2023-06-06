@@ -2,6 +2,12 @@
 
 <!--next-version-placeholder-->
 
+## v0.14.2 (2023-06-06)
+
+### :children_crossing:
+
+* :children_crossing: feat: upgrade packaging ([#128](https://github.com/THipster/THipster/issues/128)) ([`2211d10`](https://github.com/THipster/THipster/commit/2211d10a4724f9880ae7b1a17f8ea12de1e82d5d))
+
 ## v0.14.1 (2023-06-06)
 
 ### :bug:
