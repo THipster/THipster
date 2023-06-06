@@ -164,7 +164,7 @@ class ResourceModel():
         return self.__dependencies
 
     @property
-    def internalObjects(self):
+    def internal_objects(self):
         return self.__internal_objects
 
     @property

@@ -158,7 +158,7 @@ def test_get_bucket_with_cors():
 
     assert len(bucket.attributes) == 1
     assert len(bucket.dependencies) == 0
-    assert len(bucket.internalObjects) == 1
+    assert len(bucket.internal_objects) == 1
     assert bucket.type == 'test/bucket'
 
 

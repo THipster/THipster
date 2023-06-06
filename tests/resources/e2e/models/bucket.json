@@ -4,9 +4,7 @@
         "cors": {
             "resource" : "bucket_cors",
             "var_type": "list[StorageBucketCors]",
-            "defaults": [{
-                
-            }]
+            "defaults": []
         }
     },
     "attributes":{
