@@ -31,4 +31,5 @@ async def pre_commit(version: str):
 
 
 if __name__ == '__main__':
-    anyio.run(pre_commit)
+    python_version = '3.11.3'
+    anyio.run(pre_commit, python_version)
