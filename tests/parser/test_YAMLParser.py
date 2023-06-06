@@ -1,5 +1,5 @@
-import thipster.engine.ParsedFile as pf
-from thipster.parser.YAMLParser import YAMLParser, YAMLParserNoName
+import thipster.engine.parsed_file as pf
+from thipster.parser.yaml_parser import YAMLParser, YAMLParserNoName
 import os
 import pytest
 

@@ -2,12 +2,12 @@
 """
 import time
 
-from thipster.engine.I_Parser import I_Parser
-from thipster.engine.I_Repository import I_Repository
-from thipster.engine.I_Auth import I_Auth
-from thipster.engine.I_Terraform import I_Terraform
-import thipster.engine.ParsedFile as pf
-from thipster.engine.ResourceModel import ResourceModel
+from thipster.engine.i_parser import I_Parser
+from thipster.engine.i_repository import I_Repository
+from thipster.engine.i_auth import I_Auth
+from thipster.engine.i_terraform import I_Terraform
+import thipster.engine.parsed_file as pf
+from thipster.engine.resource_model import ResourceModel
 
 
 class Engine():
@@ -42,6 +42,50 @@ class Engine():
         self.__repository = repository
         self.__auth = auth
         self.__terraform = terraform
+
+    @property
+    def parser(self):
+        return self.__parser
+
+    @parser.setter
+    def parser(self, value):
+        if not isinstance(value, I_Parser):
+            raise Exception()
+
+        self.__parser = value
+
+    @property
+    def repository(self):
+        return self.__repository
+
+    @repository.setter
+    def repository(self, value):
+        if not isinstance(value, I_Repository):
+            raise Exception()
+
+        self.__repository = value
+
+    @property
+    def auth(self):
+        return self.__auth
+
+    @auth.setter
+    def auth(self, value):
+        if not isinstance(value, I_Auth):
+            raise Exception()
+
+        self.__auth = value
+
+    @property
+    def terraform(self):
+        return self.__terraform
+
+    @terraform.setter
+    def terraform(self, value):
+        if not isinstance(value, I_Terraform):
+            raise Exception()
+
+        self.__terraform = value
 
     def run(self, path: str) -> tuple[list[str], str]:
         """Returns json Terraform files from the input file name

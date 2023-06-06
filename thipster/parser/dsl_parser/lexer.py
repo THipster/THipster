@@ -1,8 +1,8 @@
-from thipster.parser.dsl_parser.Token import Token, TOKENTYPES as TT
-from thipster.engine.ParsedFile import Position
+from thipster.parser.dsl_parser.token import Token, TOKENTYPES as TT
+from thipster.engine.parsed_file import Position
 from thipster.helpers import createLogger
-from thipster.parser.dsl_parser.DSLExceptions import DSLParserBaseException
-from thipster.parser.dsl_parser.LexerPosition import LexerPosition
+from thipster.parser.dsl_parser.exceptions import DSLParserBaseException
+from thipster.parser.dsl_parser.lexer_position import LexerPosition
 
 
 class DSLParserNoEndingQuotes(DSLParserBaseException):

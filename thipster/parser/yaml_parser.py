@@ -1,5 +1,5 @@
-from thipster.engine.I_Parser import I_Parser
-import thipster.engine.ParsedFile as pf
+from thipster.engine.i_parser import I_Parser
+import thipster.engine.parsed_file as pf
 from jinja2 import Environment, FileSystemLoader
 
 import os

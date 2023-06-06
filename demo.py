@@ -1,11 +1,11 @@
-from thipster.auth.Google import GoogleAuth
-import thipster.engine.Engine as eng
-from thipster.parser.ParserFactory import ParserFactory
+from thipster.auth.google import GoogleAuth
+import thipster.engine.engine as eng
+from thipster.parser.parser_factory import ParserFactory
 
-from thipster.parser.dsl_parser.DSLParser import DSLParserPathNotFound
-from thipster.parser.dsl_parser.TokenParser import DSLSyntaxException
-from thipster.repository.LocalRepo import LocalRepo
-from thipster.terraform.CDK import CDK, CDKException
+from thipster.parser.dsl_parser.parser import DSLParserPathNotFound
+from thipster.parser.dsl_parser.token_parser import DSLSyntaxException
+from thipster.repository.local import LocalRepo
+from thipster.terraform.cdk import CDK, CDKException
 
 
 def demo():

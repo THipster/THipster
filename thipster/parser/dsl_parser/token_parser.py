@@ -1,5 +1,5 @@
-from thipster.parser.dsl_parser.Token import Token, TOKENTYPES as TT
-import thipster.parser.dsl_parser.AST as ast
+from thipster.parser.dsl_parser.token import Token, TOKENTYPES as TT
+import thipster.parser.dsl_parser.ast as ast
 
 
 class DSLSyntaxException(Exception):

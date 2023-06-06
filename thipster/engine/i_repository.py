@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from thipster.engine.ResourceModel import ResourceModel
+from thipster.engine.resource_model import ResourceModel
 
 
 class I_Repository(ABC):

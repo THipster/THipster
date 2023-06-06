@@ -3,12 +3,12 @@ import os
 import shutil
 from cdktf_cdktf_provider_google.provider import GoogleProvider
 
-from thipster.engine.Engine import Engine
-from thipster.engine.I_Auth import I_Auth
-from thipster.parser.ParserFactory import ParserFactory
+from thipster.engine.engine import Engine
+from thipster.engine.i_auth import I_Auth
+from thipster.parser.parser_factory import ParserFactory
 import pytest
-from thipster.repository.LocalRepo import LocalRepo
-import thipster.terraform.CDK as cdk
+from thipster.repository.local import LocalRepo
+import thipster.terraform.cdk as cdk
 
 LOCAL_REPO = 'tests/resources/e2e/models'
 REMOTE_REPO = 'THipster/models'

@@ -1,6 +1,6 @@
-import thipster.engine.Engine as eng
-from thipster.engine.ParsedFile import ParsedFile
-from thipster.engine.ResourceModel import ResourceModel
+import thipster.engine.engine as eng
+from thipster.engine.parsed_file import ParsedFile
+from thipster.engine.resource_model import ResourceModel
 
 import pytest
 import os

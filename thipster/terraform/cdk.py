@@ -5,15 +5,15 @@ import sys
 import os
 import importlib
 import uuid
-from thipster.engine.I_Auth import I_Auth
+from thipster.engine.i_auth import I_Auth
 
 from python_terraform import Terraform
 from constructs import Construct
 from cdktf import App, TerraformStack, TerraformOutput
 
-import thipster.engine.ResourceModel as rm
-import thipster.engine.ParsedFile as pf
-from thipster.engine.I_Terraform import I_Terraform
+import thipster.engine.resource_model as rm
+import thipster.engine.parsed_file as pf
+from thipster.engine.i_terraform import I_Terraform
 from thipster.helpers import createLogger as Logger
 
 
