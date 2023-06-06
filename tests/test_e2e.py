@@ -48,7 +48,6 @@ def create_file(filename: str, content: str, dirname: str = 'test'):
 
 
 def __test_file(file: str, local_repo: str = LOCAL_REPO, file_type: str = 'thips'):
-
     path_input = 'test'
     __destroy_dir = create_dir(
         path_input,
@@ -77,30 +76,67 @@ def __test_file(file: str, local_repo: str = LOCAL_REPO, file_type: str = 'thips
     return output
 
 
-def assert_resource_created(res_type: str, name: str):
+def get_output():
     with open("thipster.tf.json") as f:
-        output = json.load(f)
+        file_contents = json.load(f)
         f.close()
+    return file_contents
 
+
+def get_resource(resource_data: tuple):
+    output = get_output()
+
+    resources_of_type = output.get("resource").get(resource_data[0])
+    resource = None
+    for r in resources_of_type.values():
+        if r.get("name") == resource_data[1]:
+            resource = r
+
+    assert resource is not None
+
+    return resource
+
+
+def assert_resource_created(
+    resource_type: str,
+    resource_name: str,
+):
+    output = get_output()
     assert output.get("resource") is not None
     resources = output.get("resource")
 
-    assert resources.get(res_type) is not None
+    assert resources.get(resource_type) is not None
 
-    names = [x.get("name") for _, x in resources.get(res_type).items()]
-    assert name in names
+    names = [x.get("name") for _, x in resources.get(resource_type).items()]
+    assert resource_name in names
+
+    return (resource_type, resource_name)
 
 
-def assert_number_of_resource_type_is(res_type: str, amount: str):
-    with open("thipster.tf.json") as f:
-        output = json.load(f)
-        f.close()
-
+def assert_number_of_resource_type_is(
+    resource_type: str,
+    amount: str,
+):
+    output = get_output()
     assert output.get("resource") is not None
     resources = output.get("resource")
 
-    assert resources.get(res_type) is not None
-    assert len(resources.get(res_type)) == amount
+    assert resources.get(resource_type) is not None
+    assert len(resources.get(resource_type)) == amount
+
+
+def assert_resource_parameters_are(resource_data: tuple, parameters: list[str]):
+    resource = get_resource(resource_data)
+
+    for parameter in parameters:
+        assert parameter in resource.keys()
+
+
+def get_resource_parameter(resource_data: tuple, parameter: str):
+    resource = get_resource(resource_data)
+
+    assert parameter in resource.keys()
+    return resource.get(parameter)
 
 
 def test_bucket():
@@ -112,7 +148,8 @@ bucket my-bucket:
     )
 
     assert_number_of_resource_type_is("google_storage_bucket", 1)
-    assert_resource_created("google_storage_bucket", "my-bucket")
+    bucket = assert_resource_created("google_storage_bucket", "my-bucket")
+    assert_resource_parameters_are(bucket, ["location"])
 
 
 def test_empty_bucket():
@@ -182,21 +219,6 @@ loadbalancer my-lb:
     assert_resource_created("google_compute_subnetwork", "lb-subnet")
 
 
-def test_lb_single_file():
-    __test_file(
-        file="""
-network lb-net:
-
-subnetwork lb-subnet:
-\tregion: europe-west1b
-\tip_range: 10.0.1.0/24
-
-loadbalancer my-lb:
-\tload_balancing_scheme: EXTERNAL
-    """,
-    )
-
-
 def test_internal_object():
     __test_file(
         file="""
@@ -212,6 +234,31 @@ firewall testParent:
 
 \tallow:
 \t\tprotocol: http
+        """,
+    )
+
+
+def test_missing_explicit_dependency():
+    with pytest.raises(cdk.CDKDependencyNotDeclared):
+        __test_file(
+            file="""
+subnetwork lb-subnet:
+\tnetwork: lb-net
+\tregion: europe-west1b
+\tip_range: 10.0.1.0/24
+            """,
+        )
+
+
+def test_explicit_dependency():
+    __test_file(
+        file="""
+network lb-net:
+
+subnetwork lb-subnet:
+\tnetwork: lb-net
+\tregion: europe-west1b
+\tip_range: 10.0.1.0/24
         """,
     )
 
@@ -260,4 +307,7 @@ bucket:
     )
 
     assert_number_of_resource_type_is("google_storage_bucket", 1)
-    assert_resource_created("google_storage_bucket", "corsBucket")
+    bucket = assert_resource_created("google_storage_bucket", "corsBucket")
+    cors_block = get_resource_parameter(bucket, "cors")
+
+    assert len(cors_block) == 2

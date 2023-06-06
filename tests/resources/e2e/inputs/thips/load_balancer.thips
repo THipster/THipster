@@ -1,6 +1,7 @@
 network lb-net:
 
 subnetwork lb-subnet:
+    network: lb-net
     region: europe-west1b
     ip_range: 10.0.1.0/24
 
