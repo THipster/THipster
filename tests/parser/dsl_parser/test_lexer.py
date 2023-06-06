@@ -1,6 +1,8 @@
-from thipster.parser.dsl_parser.Lexer import Lexer, DSLParserNoEndingQuotes
-from thipster.parser.dsl_parser.Token import TOKENTYPES as TT
 import pytest
+
+from thipster.parser.dsl_parser.exceptions import DSLParserNoEndingQuotes
+from thipster.parser.dsl_parser.lexer import Lexer
+from thipster.parser.dsl_parser.token import TOKENTYPES as TT
 
 
 def __getTokenString(

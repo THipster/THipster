@@ -1,7 +1,8 @@
 from abc import ABC, abstractmethod
-from thipster.engine.ParsedFile import Position
 
-from thipster.parser.dsl_parser.Token import Token
+from thipster.engine.parsed_file import Position
+
+from .token import Token
 
 
 class Node(ABC):

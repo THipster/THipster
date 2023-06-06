@@ -1,6 +1,5 @@
-"""THipster is a tool dedicated to simplifying the difficulty associated with writing \
-Terraform files. 
-
-It allows users to write infrastructure as code in a simplified format, using either 
-YAML (with JINJA) or the dedicated Thipster DSL.
+"""Thipster is a tool that enhances the compute capabilities of Terraform and \
+simplifies its file writing through its dedicated language
 """
+
+from .engine import Engine

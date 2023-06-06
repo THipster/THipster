@@ -1,13 +1,12 @@
-from thipster.engine.I_Parser import I_Parser
-from thipster.engine.ParsedFile import ParsedFile
-
 import os
-from thipster.parser.dsl_parser.Interpreter import Interpreter
-from thipster.parser.dsl_parser.Lexer import Lexer
-from thipster.parser.dsl_parser.TokenParser import TokenParser
 
-from thipster.parser.dsl_parser.DSLExceptions import DSLParserPathNotFound, \
-    DSLParserBaseException
+from thipster.engine import I_Parser
+from thipster.engine.parsed_file import ParsedFile
+
+from .exceptions import DSLParserBaseException, DSLParserPathNotFound
+from .interpreter import Interpreter
+from .lexer import Lexer
+from .token_parser import TokenParser
 
 
 class DSLParser(I_Parser):

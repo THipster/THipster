@@ -1,14 +1,20 @@
 import json
 import os
 import shutil
+
+import pytest
 from cdktf_cdktf_provider_google.provider import GoogleProvider
 
-from thipster.engine.Engine import Engine
-from thipster.engine.I_Auth import I_Auth
-from thipster.parser.ParserFactory import ParserFactory
-import pytest
-from thipster.repository.LocalRepo import LocalRepo
-import thipster.terraform.CDK as cdk
+from thipster.engine.engine import Engine
+from thipster.engine.i_auth import I_Auth
+from thipster.parser.parser_factory import ParserFactory
+from thipster.repository.local import LocalRepo
+from thipster.terraform import Terraform
+from thipster.terraform.exceptions import (
+    CDKCyclicDependencies,
+    CDKDependencyNotDeclared,
+    CDKMissingAttributeInDependency,
+)
 
 LOCAL_REPO = 'tests/resources/e2e/models'
 REMOTE_REPO = 'THipster/models'
@@ -61,7 +67,7 @@ def __test_file(file: str, local_repo: str = LOCAL_REPO, file_type: str = 'thips
         ParserFactory(),
         LocalRepo(local_repo),
         MockAuth,
-        cdk.CDK(),
+        Terraform(),
     )
     try:
         output = engine.run(path_input)
@@ -178,7 +184,7 @@ bucket ezezeaz:
 
 
 def test_dep_with_no_options():
-    with pytest.raises(cdk.CDKMissingAttributeInDependency):
+    with pytest.raises(CDKMissingAttributeInDependency):
         __test_file(
             file="""
 bucket_bad_dep_parent my-bucket:
@@ -188,7 +194,7 @@ bucket_bad_dep_parent my-bucket:
 
 
 def test_cyclic_deps():
-    with pytest.raises(cdk.CDKCyclicDependencies):
+    with pytest.raises(CDKCyclicDependencies):
         __test_file(
             file="""
 bucket_bad_dep_cyclic my-bucket:
@@ -239,7 +245,7 @@ firewall testParent:
 
 
 def test_missing_explicit_dependency():
-    with pytest.raises(cdk.CDKDependencyNotDeclared):
+    with pytest.raises(CDKDependencyNotDeclared):
         __test_file(
             file="""
 subnetwork lb-subnet:

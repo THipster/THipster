@@ -1,8 +1,9 @@
 """GithubRepo.py module
 """
 
-from thipster.repository.JSONRepo import JSONRepo
 import requests
+
+from .json import JSONRepo
 
 
 class GithubRepo(JSONRepo):

@@ -1,8 +1,9 @@
 import os
-from thipster.engine.I_Parser import I_Parser
-from thipster.engine.ParsedFile import ParsedFile
-from thipster.parser.YAMLParser import YAMLParser
-from thipster.parser.dsl_parser.DSLParser import DSLParser
+
+from thipster.engine import I_Parser
+from thipster.engine.parsed_file import ParsedFile
+from .dsl_parser import DSLParser
+from .yaml_parser import YAMLParser
 
 
 class ParserPathNotFound(Exception):
@@ -17,6 +18,16 @@ class ParserPathNotFound(Exception):
 
 
 class ParserFactory(I_Parser):
+
+    __parsers = {
+        '.yaml': YAMLParser,
+        '.yml': YAMLParser,
+        '.jinja': YAMLParser,
+        '.thips': DSLParser,
+    }
+
+    def addParser(parser: I_Parser, extensions: list[str]):
+        ParserFactory.__parsers.update({e: parser for e in extensions})
 
     def __getfiles(self, path: str) -> list[str]:
         """Recursively get all files names in the requested directory and its\
@@ -50,12 +61,6 @@ class ParserFactory(I_Parser):
 
         return files
 
-    def __yamlParser(self) -> YAMLParser:
-        return YAMLParser
-
-    def __dslParser(self) -> DSLParser:
-        return DSLParser
-
     def __noParser(self):
         raise Exception()
 
@@ -82,13 +87,7 @@ class ParserFactory(I_Parser):
         return res
 
     def __getParser(self, path) -> I_Parser:
-        __parsers = {
-            '.yaml': self.__yamlParser,
-            '.yml': self.__yamlParser,
-            '.jinja': self.__yamlParser,
-            '.thips': self.__dslParser,
-        }
 
         _, pathExtension = os.path.splitext(path)
 
-        return __parsers.get(pathExtension, self.__noParser)()
+        return ParserFactory.__parsers.get(pathExtension, self.__noParser)

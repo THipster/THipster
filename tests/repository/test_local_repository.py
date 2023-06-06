@@ -1,6 +1,7 @@
-from thipster.repository.LocalRepo import LocalRepo
-from thipster.engine.ResourceModel import ResourceModel
 import os
+
+from thipster.engine.resource_model import ResourceModel
+from thipster.repository import LocalRepo
 
 
 def create_dir(dirname: str, files: dict[str, str]):

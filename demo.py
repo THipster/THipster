@@ -1,20 +1,22 @@
-from thipster.auth.Google import GoogleAuth
-import thipster.engine.Engine as eng
-from thipster.parser.ParserFactory import ParserFactory
-
-from thipster.parser.dsl_parser.DSLParser import DSLParserPathNotFound
-from thipster.parser.dsl_parser.TokenParser import DSLSyntaxException
-from thipster.repository.LocalRepo import LocalRepo
-from thipster.terraform.CDK import CDK, CDKException
+import thipster
+from thipster.auth import Google
+from thipster.parser import ParserFactory
+from thipster.parser.dsl_parser.exceptions import (
+    DSLParserPathNotFound,
+    DSLSyntaxException,
+)
+from thipster.repository import LocalRepo
+from thipster.terraform import Terraform
+from thipster.terraform.exceptions import CDKException
 
 
 def demo():
     """Script to launch the sprint demo
     """
     file = input()
-    engine = eng.Engine(
+    engine = thipster.Engine(
         ParserFactory(), LocalRepo('/home/rcattin/THipster/tests/resources/e2e/models'),
-        GoogleAuth, CDK(),
+        Google, Terraform(),
     )
 
     try:

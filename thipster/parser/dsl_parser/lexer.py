@@ -1,15 +1,10 @@
-from thipster.parser.dsl_parser.Token import Token, TOKENTYPES as TT
-from thipster.engine.ParsedFile import Position
+from thipster.engine.parsed_file import Position
 from thipster.helpers import createLogger
-from thipster.parser.dsl_parser.DSLExceptions import DSLParserBaseException
-from thipster.parser.dsl_parser.LexerPosition import LexerPosition
 
-
-class DSLParserNoEndingQuotes(DSLParserBaseException):
-    def __init__(self, position, *args: object) -> None:
-        super().__init__(
-            f'Invalid syntax, missing ending quotes at : {position}', *args,
-        )
+from .exceptions import DSLParserNoEndingQuotes
+from .lexer_position import LexerPosition
+from .token import TOKENTYPES as TT
+from .token import Token
 
 
 class Lexer():

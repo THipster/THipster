@@ -1,11 +1,16 @@
-from thipster.engine.ParsedFile import ParsedDict, ParsedFile, ParsedList, ParsedLiteral
-from thipster.parser.dsl_parser.DSLParser import DSLParser
-from thipster.parser.dsl_parser.DSLParser import DSLParserPathNotFound
-from thipster.parser.dsl_parser.Token import TOKENTYPES as TT
 import os
-from thipster.parser.dsl_parser.TokenParser import DSLConditionException,\
-    DSLSyntaxException, DSLUnexpectedEOF
+
 import pytest
+
+import thipster.engine.parsed_file as pf
+from thipster.parser import DSLParser
+from thipster.parser.dsl_parser.exceptions import DSLParserPathNotFound
+from thipster.parser.dsl_parser.token import TOKENTYPES as TT
+from thipster.parser.dsl_parser.token_parser import (
+    DSLConditionException,
+    DSLSyntaxException,
+    DSLUnexpectedEOF,
+)
 
 
 def create_dir(dirname: str, files: dict[str, str]):
@@ -76,7 +81,7 @@ def __test_file(file: str):
     try:
         output = parser.run(path_input)
 
-        assert type(output) == ParsedFile
+        assert isinstance(output, pf.ParsedFile)
     except Exception as e:
         raise e
     finally:
@@ -101,7 +106,7 @@ def test_parse_simple_file():
 
     region = bucket.attributes[0]
     assert region.name == 'region'
-    assert type(region._ParsedAttribute__value) == ParsedLiteral
+    assert isinstance(region._ParsedAttribute__value, pf.ParsedLiteral)
     assert region.value == 'euw'
 
 
@@ -181,7 +186,7 @@ def test_parse_list():
 
     region = bucket.attributes[0]
     assert region.name == 'region'
-    assert type(region._ParsedAttribute__value) == ParsedList
+    assert isinstance(region._ParsedAttribute__value, pf.ParsedList)
     assert len(region.value) == 3
 
     out = __test_file(
@@ -199,7 +204,7 @@ def test_parse_list():
 
     region = bucket.attributes[0]
     assert region.name == 'region'
-    assert type(region._ParsedAttribute__value) == ParsedList
+    assert isinstance(region._ParsedAttribute__value, pf.ParsedList)
     assert len(region.value) == 3
 
     out = __test_file(
@@ -217,7 +222,7 @@ def test_parse_list():
 
     region = bucket.attributes[0]
     assert region.name == 'region'
-    assert type(region._ParsedAttribute__value) == ParsedList
+    assert isinstance(region._ParsedAttribute__value, pf.ParsedList)
     assert len(region.value) == 0
 
 
@@ -242,10 +247,10 @@ def test_parse_dict_list_in_dict():
 
     toto = bucket.attributes[0]
     assert toto.name == 'toto'
-    assert type(toto._ParsedAttribute__value) == ParsedDict
+    assert isinstance(toto._ParsedAttribute__value, pf.ParsedDict)
     tata = bucket.attributes[1]
     assert tata.name == 'tata'
-    assert type(tata._ParsedAttribute__value) == ParsedList
+    assert isinstance(tata._ParsedAttribute__value, pf.ParsedList)
 
 
 def test_parse_if_else():
@@ -302,7 +307,7 @@ def test_parse_if_else():
 
     region = bucket.attributes[0]
     assert region.name == 'region'
-    assert type(region._ParsedAttribute__value) == ParsedList
+    assert isinstance(region._ParsedAttribute__value, pf.ParsedList)
 
     assert len(region.value) == 1
     r = region.value[0]

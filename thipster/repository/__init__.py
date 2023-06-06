@@ -6,3 +6,6 @@ Currently, two options are available:
 - A local repository, which stores the models in a local folder
 - A GitHub repository
 """
+
+from .github import GithubRepo
+from .local import LocalRepo

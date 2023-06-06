@@ -1,5 +1,6 @@
-from thipster.engine.ParsedFile import Position
 from enum import Enum
+
+from thipster.engine.parsed_file import Position
 
 
 class TOKENTYPES(Enum):

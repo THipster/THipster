@@ -1,11 +1,11 @@
 """JSONRepo.py module.
 """
 
-from abc import ABC, abstractmethod
 import json
-from thipster.engine.I_Repository import I_Repository
+from abc import ABC, abstractmethod
 
-import thipster.engine.ResourceModel as rm
+import thipster.engine.resource_model as rm
+from thipster.engine import I_Repository
 
 
 class JSONRepo(I_Repository, ABC):
