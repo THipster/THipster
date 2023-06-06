@@ -1,6 +1,7 @@
 from thipster.engine.parsed_file import Position
+from thipster.parser.dsl_parser.token import TOKENTYPES as TT
+from thipster.parser.dsl_parser.token import Token
 from thipster.parser.dsl_parser.token_parser import TokenParser
-from thipster.parser.dsl_parser.token import Token, TOKENTYPES as TT
 
 
 def test_simple_file():

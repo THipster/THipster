@@ -1,6 +1,6 @@
+import thipster.parser.dsl_parser.ast as ast
 from thipster.engine.parsed_file import Position
 from thipster.parser.dsl_parser.token import Token
-import thipster.parser.dsl_parser.ast as ast
 
 
 def test_create_AST():

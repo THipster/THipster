@@ -1,6 +1,7 @@
 import google.auth
-from thipster.engine.i_auth import I_Auth
 from cdktf_cdktf_provider_google.provider import GoogleProvider
+
+from thipster.engine import I_Auth
 
 
 class GoogleAuth(I_Auth):

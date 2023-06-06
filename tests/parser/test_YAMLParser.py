@@ -1,7 +1,10 @@
-import thipster.engine.parsed_file as pf
-from thipster.parser.yaml_parser import YAMLParser, YAMLParserNoName
 import os
+
 import pytest
+
+import thipster.engine.parsed_file as pf
+from thipster.parser import YAMLParser
+from thipster.parser.yaml_parser import YAMLParserNoName
 
 
 def __test_parser_raises(mocker, input: str, exception: Exception)\

@@ -1,9 +1,10 @@
-import thipster.engine.engine as eng
-from thipster.engine.parsed_file import ParsedFile
-from thipster.engine.resource_model import ResourceModel
+import os
 
 import pytest
-import os
+
+import thipster.engine as eng
+from thipster.engine.parsed_file import ParsedFile
+from thipster.engine.resource_model import ResourceModel
 
 
 def logger(name: str):

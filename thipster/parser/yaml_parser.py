@@ -1,9 +1,10 @@
-from thipster.engine.i_parser import I_Parser
-import thipster.engine.parsed_file as pf
+import os
+
+import yaml
 from jinja2 import Environment, FileSystemLoader
 
-import os
-import yaml
+import thipster.engine.parsed_file as pf
+from thipster.engine import I_Parser
 
 
 class YAMLParserBaseException(Exception):

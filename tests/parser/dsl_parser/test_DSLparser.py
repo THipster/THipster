@@ -1,11 +1,16 @@
-import thipster.engine.parsed_file as pf
-from thipster.parser.dsl_parser.parser import DSLParser
-from thipster.parser.dsl_parser.parser import DSLParserPathNotFound
-from thipster.parser.dsl_parser.token import TOKENTYPES as TT
 import os
-from thipster.parser.dsl_parser.token_parser import DSLConditionException,\
-    DSLSyntaxException, DSLUnexpectedEOF
+
 import pytest
+
+import thipster.engine.parsed_file as pf
+from thipster.parser import DSLParser
+from thipster.parser.dsl_parser.exceptions import DSLParserPathNotFound
+from thipster.parser.dsl_parser.token import TOKENTYPES as TT
+from thipster.parser.dsl_parser.token_parser import (
+    DSLConditionException,
+    DSLSyntaxException,
+    DSLUnexpectedEOF,
+)
 
 
 def create_dir(dirname: str, files: dict[str, str]):

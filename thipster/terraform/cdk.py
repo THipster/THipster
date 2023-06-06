@@ -1,64 +1,20 @@
 import copy
+import importlib
+import os
 import shutil
 import subprocess
 import sys
-import os
-import importlib
 import uuid
-from thipster.engine.i_auth import I_Auth
 
-from python_terraform import Terraform
+from cdktf import App, TerraformOutput, TerraformStack
 from constructs import Construct
-from cdktf import App, TerraformStack, TerraformOutput
+from python_terraform import Terraform
 
-import thipster.engine.resource_model as rm
 import thipster.engine.parsed_file as pf
-from thipster.engine.i_terraform import I_Terraform
+import thipster.engine.resource_model as rm
+import thipster.terraform.exceptions as cdk_exceptions
+from thipster.engine import I_Auth, I_Terraform
 from thipster.helpers import createLogger as Logger
-
-
-class CDKException(Exception):
-    @property
-    def message(self):
-        return str(self)
-
-
-class CDKInvalidAttribute(CDKException):
-    def __init__(self, attr: str, modelType: str, **args: object) -> None:
-        super().__init__(*args)
-        self.__attr = attr
-        self.__modelType = modelType
-
-    def __str__(self) -> str:
-        return f'{self.__attr} in {self.__modelType} but not useful'
-
-
-class CDKMissingAttribute(CDKException):
-    pass
-
-
-class CDKMissingAttributeInDependency(CDKMissingAttribute):
-    pass
-
-
-class CDKDependencyNotDeclared(CDKException):
-    def __init__(self, depType: str, depName: str, **args: object) -> None:
-        super().__init__(*args)
-        self.__name = depName
-        self.__type = depType
-
-    def __str__(self) -> str:
-        return f'{self.__type} {self.__name} not declared \
-(be sure to declare it before using it)'
-
-
-class CDKCyclicDependencies(CDKException):
-    def __init__(self, stack: list[str], **args: object) -> None:
-        super().__init__(*args)
-        self.__stack = stack
-
-    def __str__(self) -> str:
-        return ','.join(self.__stack)
 
 
 class CDK(I_Terraform):
@@ -193,7 +149,7 @@ class CDK(I_Terraform):
         # Checks for cyclic dependency
         if typ in CDK._parentStack:
             CDK._logger.error('%s already present in parent Stack', typ)
-            raise CDKCyclicDependencies(CDK._parentStack)
+            raise cdk_exceptions.CDKCyclicDependencies(CDK._parentStack)
 
         CDK._parentStack.append(typ)
 
@@ -201,7 +157,7 @@ class CDK(I_Terraform):
 
         # Checks that all attributes are optional
         if noModif and not all(map(lambda x: x.optional, model.attributes.values())):
-            raise CDKMissingAttributeInDependency(typ)
+            raise cdk_exceptions.CDKMissingAttributeInDependency(typ)
 
         # Import package and class
         CDK._pip_install(model.cdk_provider)
@@ -420,7 +376,7 @@ class CDK(I_Terraform):
             if created_name not in CDK._created_resources.keys():
 
                 if isinstance(attribute.value, str):
-                    raise CDKDependencyNotDeclared(
+                    raise cdk_exceptions.CDKDependencyNotDeclared(
                         attribute.name, attribute.value,
                     )
 
@@ -448,7 +404,9 @@ class CDK(I_Terraform):
 
         # Checks if attribute is expected as an attibute
         if attribute.name not in model.attributes:
-            raise CDKInvalidAttribute(attribute.name, model.type)
+            raise cdk_exceptions.CDKInvalidAttribute(
+                attribute.name, model.type,
+            )
 
         # Processes list attribute
         attribute_value = attribute.value

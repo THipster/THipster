@@ -1,8 +1,9 @@
 import thipster.engine.parsed_file as pf
 import thipster.parser.dsl_parser.ast as ast
-from thipster.parser.dsl_parser.token import TOKENTYPES as TT
-from thipster.parser.dsl_parser.exceptions import DSLParserBaseException
-from thipster.parser.dsl_parser.token_parser import DSLSyntaxException
+
+from .exceptions import DSLParserBaseException
+from .token import TOKENTYPES as TT
+from .token_parser import DSLSyntaxException
 
 
 class DSLParserVariableAlreadyUsed(DSLParserBaseException):

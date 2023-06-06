@@ -1,5 +1,6 @@
-from thipster.repository.json import JSONRepo
 import os
+
+from .json import JSONRepo
 
 
 class LocalRepo(JSONRepo):

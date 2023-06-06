@@ -1,4 +1,5 @@
 from abc import ABC, abstractmethod
+
 from thipster.engine.parsed_file import ParsedFile
 
 
