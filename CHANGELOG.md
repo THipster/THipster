@@ -2,6 +2,25 @@
 
 <!--next-version-placeholder-->
 
+## v0.14.0 (2023-06-06)
+
+### :sparkles:
+
+* :sparkles: feat: multiple objects  as list ([#101](https://github.com/THipster/THipster/issues/101)) ([`9936256`](https://github.com/THipster/THipster/commit/9936256491c43221607fc309d628b95a547f8f61))
+
+### :arrow_up:
+
+* :arrow_up: chore(deps): Bump cdktf from 0.16.1 to 0.16.3 ([#117](https://github.com/THipster/THipster/issues/117)) ([`681bd37`](https://github.com/THipster/THipster/commit/681bd37193e19e709df55a8a964a060940522fef))
+
+### Other
+
+* :green_heart: fix(token): checkout release ([#125](https://github.com/THipster/THipster/issues/125)) ([`e498eb0`](https://github.com/THipster/THipster/commit/e498eb0c20260178964eaba27148c539bd3513f1))
+* :green_heart: fix(token): release ([#124](https://github.com/THipster/THipster/issues/124)) ([`1ffe7ec`](https://github.com/THipster/THipster/commit/1ffe7ecb68a6d3ba1a85e9d0da523f3e1d07eb99))
+* :green_heart: fix: Branch protection release ([#123](https://github.com/THipster/THipster/issues/123)) ([`82064a0`](https://github.com/THipster/THipster/commit/82064a03c8bfd3033abf60f80d9c133e3427e1f8))
+* 📝 feat(doc): Add readthedocs configuration ([#121](https://github.com/THipster/THipster/issues/121)) ([`61d8084`](https://github.com/THipster/THipster/commit/61d808479ab1d836ef0b64e9f62883bca1f43dab))
+* :white_check_mark: feat: improve e2e ([#120](https://github.com/THipster/THipster/issues/120)) ([`30c0a10`](https://github.com/THipster/THipster/commit/30c0a10424f5a3aa1c47f033ccdc6a683109d68d))
+* 📝 feat(doc): Add open source doc ([#116](https://github.com/THipster/THipster/issues/116)) ([`7cb9770`](https://github.com/THipster/THipster/commit/7cb977082852d15f46c38fc487f5d22993c09e38))
+
 ## v0.13.6 (2023-05-31)
 ### :bug:
 
