@@ -103,7 +103,7 @@ class Engine():
         Returns
         -------
         tuple[list[str], str]
-            A tuple made up of the list of directories containing the Terraform json 
+            A tuple made up of the list of directories containing the Terraform json
             files and a string with the results of the Terraform plan
         """
         # Parse file or directory

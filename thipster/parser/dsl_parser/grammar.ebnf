@@ -35,8 +35,3 @@ atom        = INT|FLOAT
 string      = STRING|VAR {INT|STRING|VAR|MINUS|DIV}
 
 type        = STRING {STRING|MINUS|DIV}
-
-
-
-
-

@@ -207,7 +207,7 @@ def test_get_vm():
         }
     },
     "cdk_name_key": "name",
-    
+
     "cdk_provider":"test_provider",
     "cdk_module":"test_module",
     "cdk_class":"vm_class"
@@ -263,7 +263,7 @@ def test_cyclic_import():
         }
     },
     "cdk_name_key": "name",
-    
+
     "cdk_provider":"test_provider",
     "cdk_module":"test_module",
     "cdk_class":"vm_class"

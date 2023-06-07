@@ -24,7 +24,7 @@ class GoogleAuth(I_Auth):
         credentials, project_id = google.auth.default()
 
         GoogleProvider(
-            app, "default_google",
+            app, 'default_google',
             project=project_id,
             access_token=credentials.token,
         )

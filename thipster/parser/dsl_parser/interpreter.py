@@ -218,7 +218,7 @@ class Interpreter():
         str
             The string value of the node
         """
-        ret = ""
+        ret = ''
         for value in element.values:
             ret += str(value.accept(self))
 
@@ -376,7 +376,7 @@ class Interpreter():
         Returns
         -------
         list[object]
-            A list with the required number of object (resource, list item, ...) 
+            A list with the required number of object (resource, list item, ...)
         """
         var = element.variable.accept(self) if element.variable else None
         res = []
@@ -421,7 +421,7 @@ class Interpreter():
         Returns
         -------
         ParsedDict
-            A ParsedDict object based on the node attributes 
+            A ParsedDict object based on the node attributes
         """
         return pf.ParsedDict([v.accept(self) for v in element.value])
 

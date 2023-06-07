@@ -23,9 +23,9 @@ REMOTE_REPO = 'THipster/models'
 class MockAuth(I_Auth):
     def authenticate(app):
         GoogleProvider(
-            app, "default_google",
-            project="project_id",
-            credentials="credentials.token",
+            app, 'default_google',
+            project='project_id',
+            credentials='credentials.token',
         )
 
 
@@ -83,7 +83,7 @@ def __test_file(file: str, local_repo: str = LOCAL_REPO, file_type: str = 'thips
 
 
 def get_output():
-    with open("thipster.tf.json") as f:
+    with open('thipster.tf.json') as f:
         file_contents = json.load(f)
         f.close()
     return file_contents
@@ -92,10 +92,10 @@ def get_output():
 def get_resource(resource_data: tuple):
     output = get_output()
 
-    resources_of_type = output.get("resource").get(resource_data[0])
+    resources_of_type = output.get('resource').get(resource_data[0])
     resource = None
     for r in resources_of_type.values():
-        if r.get("name") == resource_data[1]:
+        if r.get('name') == resource_data[1]:
             resource = r
 
     assert resource is not None
@@ -108,12 +108,12 @@ def assert_resource_created(
     resource_name: str,
 ):
     output = get_output()
-    assert output.get("resource") is not None
-    resources = output.get("resource")
+    assert output.get('resource') is not None
+    resources = output.get('resource')
 
     assert resources.get(resource_type) is not None
 
-    names = [x.get("name") for _, x in resources.get(resource_type).items()]
+    names = [x.get('name') for _, x in resources.get(resource_type).items()]
     assert resource_name in names
 
     return (resource_type, resource_name)
@@ -124,8 +124,8 @@ def assert_number_of_resource_type_is(
     amount: str,
 ):
     output = get_output()
-    assert output.get("resource") is not None
-    resources = output.get("resource")
+    assert output.get('resource') is not None
+    resources = output.get('resource')
 
     assert resources.get(resource_type) is not None
     assert len(resources.get(resource_type)) == amount
@@ -153,9 +153,9 @@ bucket my-bucket:
     """,
     )
 
-    assert_number_of_resource_type_is("google_storage_bucket", 1)
-    bucket = assert_resource_created("google_storage_bucket", "my-bucket")
-    assert_resource_parameters_are(bucket, ["location"])
+    assert_number_of_resource_type_is('google_storage_bucket', 1)
+    bucket = assert_resource_created('google_storage_bucket', 'my-bucket')
+    assert_resource_parameters_are(bucket, ['location'])
 
 
 def test_empty_bucket():
@@ -166,8 +166,8 @@ bucket dzvhvzarbazkhr:
     """,
     )
 
-    assert_number_of_resource_type_is("google_storage_bucket", 1)
-    assert_resource_created("google_storage_bucket", "dzvhvzarbazkhr")
+    assert_number_of_resource_type_is('google_storage_bucket', 1)
+    assert_resource_created('google_storage_bucket', 'dzvhvzarbazkhr')
 
     __test_file(
         file="""
@@ -178,9 +178,9 @@ bucket ezezeaz:
     """,
     )
 
-    assert_number_of_resource_type_is("google_storage_bucket", 2)
-    assert_resource_created("google_storage_bucket", "dzvhvzarbazkhr")
-    assert_resource_created("google_storage_bucket", "ezezeaz")
+    assert_number_of_resource_type_is('google_storage_bucket', 2)
+    assert_resource_created('google_storage_bucket', 'dzvhvzarbazkhr')
+    assert_resource_created('google_storage_bucket', 'ezezeaz')
 
 
 def test_dep_with_no_options():
@@ -218,11 +218,11 @@ loadbalancer my-lb:
     """,
     )
 
-    assert_number_of_resource_type_is("google_compute_network", 3)
-    assert_resource_created("google_compute_network", "lb-net")
+    assert_number_of_resource_type_is('google_compute_network', 3)
+    assert_resource_created('google_compute_network', 'lb-net')
 
-    assert_number_of_resource_type_is("google_compute_subnetwork", 1)
-    assert_resource_created("google_compute_subnetwork", "lb-subnet")
+    assert_number_of_resource_type_is('google_compute_subnetwork', 1)
+    assert_resource_created('google_compute_subnetwork', 'lb-subnet')
 
 
 def test_internal_object():
@@ -284,8 +284,8 @@ bucket corsBucket:
         """,
     )
 
-    assert_number_of_resource_type_is("google_storage_bucket", 1)
-    assert_resource_created("google_storage_bucket", "corsBucket")
+    assert_number_of_resource_type_is('google_storage_bucket', 1)
+    assert_resource_created('google_storage_bucket', 'corsBucket')
 
 
 def test_bucket_two_cors():
@@ -312,8 +312,8 @@ bucket:
         file_type='yaml',
     )
 
-    assert_number_of_resource_type_is("google_storage_bucket", 1)
-    bucket = assert_resource_created("google_storage_bucket", "corsBucket")
-    cors_block = get_resource_parameter(bucket, "cors")
+    assert_number_of_resource_type_is('google_storage_bucket', 1)
+    bucket = assert_resource_created('google_storage_bucket', 'corsBucket')
+    cors_block = get_resource_parameter(bucket, 'cors')
 
     assert len(cors_block) == 2

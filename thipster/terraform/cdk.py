@@ -92,8 +92,8 @@ class CDK(I_Terraform):
         # Move files
         for dirname in self.__dirs:
             shutil.move(
-                os.path.join(os.getcwd(), dirname, "cdk.tf.json"),
-                os.path.join(os.getcwd(), "thipster.tf.json"),
+                os.path.join(os.getcwd(), dirname, 'cdk.tf.json'),
+                os.path.join(os.getcwd(), 'thipster.tf.json'),
             )
 
         # Delete cdktf.out directory
@@ -126,7 +126,7 @@ class CDK(I_Terraform):
             Terraform plan output
         """
         t = Terraform()
-        _, stdout, stderr = t.plan(out="thipster.tfplan")
+        _, stdout, stderr = t.plan(out='thipster.tfplan')
         return stdout + stderr
 
     def _pip_install(package: str):
@@ -217,7 +217,7 @@ default False
         dependencies = copy.deepcopy(model.dependencies)
         resource_args = {}
 
-        name = f"{parent_name}-{uuid.uuid4()}"
+        name = f'{parent_name}-{uuid.uuid4()}'
         if model.name_key:
             resource_args[model.name_key] = name
 
@@ -249,7 +249,7 @@ default False
 
         Returns
         -------
-        object : 
+        object :
             the created resource
         """
         if isinstance(resource_args, dict):
@@ -276,7 +276,7 @@ default False
 
         Returns
         -------
-        object : 
+        object :
             the created resource
         """
         resource_class, resource_name, resource_args = CDK._create_default_resource(
@@ -329,7 +329,7 @@ default False
 
         Returns
         -------
-        object : 
+        object :
             the created resource
         """
         resource_class, resource_name, resource_args = CDK._create_default_resource(
@@ -389,7 +389,7 @@ default False
 
         Returns
         -------
-        object : 
+        object :
             the created resource
         """
         model = CDK._models[resource.type]
@@ -446,7 +446,7 @@ default False
         """
         if attribute.name in dependencies:
             created_name = f"{dependencies[attribute.name]['resource']}/"\
-                           f"{attribute.value}"
+                           f'{attribute.value}'
 
             # Checks if attribute is an explicit dependency
             if created_name not in CDK._created_resources.keys():
@@ -508,7 +508,7 @@ default False
         ----------
         self : _ResourceStack
             Terraform CDK stack that contains the resource
-        dependencies : 
+        dependencies :
             list of dependencies to create
         model : str
             model of the resource that is being created

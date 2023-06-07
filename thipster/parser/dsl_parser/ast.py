@@ -18,7 +18,7 @@ class StringNode(Node):
         self.__value = value
 
     def __str__(self) -> str:
-        return f"<STRING {self.__value}>"
+        return f'<STRING {self.__value}>'
 
     @property
     def value(self) -> Token:
