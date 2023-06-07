@@ -2,6 +2,12 @@
 
 <!--next-version-placeholder-->
 
+## v0.15.0 (2023-06-07)
+
+### :sparkles:
+
+* :sparkles: feat(engine): add tf apply ([#135](https://github.com/THipster/THipster/issues/135)) ([`43162b9`](https://github.com/THipster/THipster/commit/43162b9f39f0586b9d0be83b4f656f48e2a40430))
+
 ## v0.14.5 (2023-06-07)
 
 ### Other
