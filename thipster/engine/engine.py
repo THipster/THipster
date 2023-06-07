@@ -185,10 +185,21 @@ class Engine():
 
         Returns
         -------
-        tuple[str, float]
-            A tuple made up of the results of the Terraform plan and the time it took
-            to run it
+        str
+            The results of the Terraform plan
         """
         results = self.__terraform.plan()
+
+        return results
+
+    def _apply_terraform(self) -> str:
+        """Apply Terraform
+
+        Returns
+        -------
+        str
+            The results of the Terraform apply
+        """
+        results = self.__terraform.apply()
 
         return results
