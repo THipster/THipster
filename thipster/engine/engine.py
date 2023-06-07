@@ -18,8 +18,6 @@ class Engine():
     interfaces together.
     """
 
-    importedPackages = []
-
     def __init__(
             self, parser: I_Parser,
             repository: I_Repository,
@@ -107,13 +105,13 @@ class Engine():
             files and a string with the results of the Terraform plan
         """
         # Parse file or directory
-        file = self._parse_files(path)[0]
+        parsed_file = self._parse_files(path)[0]
 
         # Get needed models
-        models = self._get_models(file)[0]
+        models = self._get_models(parsed_file)[0]
 
         # Generate Terraform files
-        dirs = self.__terraform.generate(file, models, self.__auth)
+        dirs = self._generate_tf_files(parsed_file, models)[0]
 
         self.__terraform.init()
 
@@ -134,11 +132,11 @@ class Engine():
         """
         start = time.time()
 
-        file = self.__parser.run(path)
-        assert type(file) == pf.ParsedFile
+        parsed_file = self.__parser.run(path)
+        assert type(parsed_file) == pf.ParsedFile
 
         end = time.time()
-        return file, end - start
+        return parsed_file, end - start
 
     def _get_models(
         self, file: pf.ParsedFile,
@@ -161,3 +159,55 @@ class Engine():
         end = time.time()
 
         return models, end - start
+
+    def _generate_tf_files(
+        self, file: pf.ParsedFile, models: dict[str, ResourceModel],
+    ) -> tuple[list[str], float]:
+        """Generate Terraform files
+
+        Parameters
+        ----------
+        file : pf.ParsedFile
+            The ParsedFile object containing the resources defined in the input file
+        models : dict[str, ResourceModel]
+            The dictionary of models
+
+        Returns
+        -------
+        list[str]
+            A list of directories containing the Terraform json files
+        """
+        start = time.time()
+        dirs = self.__terraform.generate(file, models, self.__auth)
+        end = time.time()
+
+        return dirs, end - start
+
+    def _init_terraform(self) -> float:
+        """Initialize Terraform
+
+        Returns
+        -------
+        float
+            The time it took to initialize Terraform
+        """
+        start = time.time()
+        self.__terraform.init()
+        end = time.time()
+
+        return end - start
+
+    def _plan_terraform(self) -> tuple[str, float]:
+        """Plan Terraform
+
+        Returns
+        -------
+        tuple[str, float]
+            A tuple made up of the results of the Terraform plan and the time it took
+            to run it
+        """
+        start = time.time()
+        results = self.__terraform.plan()
+        end = time.time()
+
+        return results, end - start

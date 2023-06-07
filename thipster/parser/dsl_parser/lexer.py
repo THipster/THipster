@@ -1,5 +1,5 @@
 from thipster.engine.parsed_file import Position
-from thipster.helpers import createLogger
+from thipster.helpers import create_logger
 
 from .exceptions import DSLParserNoEndingQuotes
 from .lexer_position import LexerPosition
@@ -18,7 +18,7 @@ class Lexer():
         files : dict[str, str]
             Dictionnary of files to tokenize, fileName : fileContent
         """
-        self.__logger = createLogger(__name__)
+        self.__logger = create_logger(__name__)
         self.__files = files
         self.__tokenList = []
         self.__lexerPosition = LexerPosition()

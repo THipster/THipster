@@ -14,7 +14,7 @@ import thipster.engine.parsed_file as pf
 import thipster.engine.resource_model as rm
 import thipster.terraform.exceptions as cdk_exceptions
 from thipster.engine import I_Auth, I_Terraform
-from thipster.helpers import createLogger as Logger
+from thipster.helpers import create_logger as Logger
 
 
 class CDK(I_Terraform):
