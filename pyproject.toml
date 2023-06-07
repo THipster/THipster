@@ -22,7 +22,7 @@ patch_emoji = ":ambulance:,:bug:,:adhesive_bandage:,:lock:,:arrow_up:,:arrow_dow
 
 repository_url = "https://upload.pypi.org/legacy/"
 
-commit_subject = ":bookmark: {version} [skip ci]"
+commit_subject = ":bookmark: {version}"
 major_on_zero = false
 
 [pytest]
