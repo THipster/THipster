@@ -2,6 +2,14 @@
 
 <!--next-version-placeholder-->
 
+## v0.14.5 (2023-06-07)
+
+### Other
+
+* :bookmark: 0.14.4 [skip ci] ([`71426d6`](https://github.com/THipster/THipster/commit/71426d6b460271ab6b84624212db4cc44cad1dd7))
+* :memo: docs: cdk ([`494d877`](https://github.com/THipster/THipster/commit/494d877d5b3c3b2b835943994d0ce1f1f135a55b))
+* :green_heart: fix: skip ci on release commit ([`9545935`](https://github.com/THipster/THipster/commit/9545935b6fe7f3f1d2cbc041dd0a90de9f4e2160))
+
 ## v0.14.4 (2023-06-07)
 
 ### :arrow_up:
