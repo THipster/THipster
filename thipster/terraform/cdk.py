@@ -14,7 +14,7 @@ import thipster.engine.parsed_file as pf
 import thipster.engine.resource_model as rm
 import thipster.terraform.exceptions as cdk_exceptions
 from thipster.engine import I_Auth, I_Terraform
-from thipster.helpers import createLogger as Logger
+from thipster.helpers import create_logger as Logger
 
 
 class CDK(I_Terraform):
@@ -25,8 +25,13 @@ class CDK(I_Terraform):
     _created_resources = {}
     _logger = Logger(__name__)
 
-    def apply(self):
+    def apply(self, plan_file_path: str | None = None):
         """Applies generated Terraform plan
+
+        Parameters
+        ----------
+        plan_file_path : str, optional
+            path to the plan file, default None
 
         Returns
         -------
@@ -34,7 +39,7 @@ class CDK(I_Terraform):
             Terraform apply output
         """
         t = Terraform()
-        _, stdout, stderr = t.apply()
+        _, stdout, stderr = t.apply(plan_file_path)
         return stdout + stderr
 
     def generate(
