@@ -2,6 +2,17 @@
 
 <!--next-version-placeholder-->
 
+## v0.14.4 (2023-06-07)
+
+### :arrow_up:
+
+* :arrow_up: chore(deps): Bump google-auth from 2.19.0 to 2.19.1 ([#118](https://github.com/THipster/THipster/issues/118)) ([`e80883e`](https://github.com/THipster/THipster/commit/e80883e6484c699063e9743a68c9950b5628cc45))
+
+### Other
+
+* :green_heart: fix: revert skip ci on release commit (#129) ([#131](https://github.com/THipster/THipster/issues/131)) ([`53b8ec0`](https://github.com/THipster/THipster/commit/53b8ec062274d79777916cf199c3556f3fc772cd))
+* :green_heart: fix: skip ci on release commit (#129) ([#130](https://github.com/THipster/THipster/issues/130)) ([`91e3eff`](https://github.com/THipster/THipster/commit/91e3effc6411b9791ea9fa18df8ba1e94bc0e6ba))
+
 ## v0.14.3 (2023-06-06)
 
 ### :arrow_up:
