@@ -1,6 +1,5 @@
 """_Engine.py module.
 """
-import time
 
 import thipster.engine.parsed_file as pf
 
@@ -105,19 +104,19 @@ class Engine():
             files and a string with the results of the Terraform plan
         """
         # Parse file or directory
-        parsed_file = self._parse_files(path)[0]
+        parsed_file = self._parse_files(path)
 
         # Get needed models
-        models = self._get_models(parsed_file)[0]
+        models = self._get_models(parsed_file)
 
         # Generate Terraform files
-        dirs = self._generate_tf_files(parsed_file, models)[0]
+        dirs = self._generate_tf_files(parsed_file, models)
 
         self.__terraform.init()
 
         return dirs, self.__terraform.plan()
 
-    def _parse_files(self, path: str) -> tuple[pf.ParsedFile, float]:
+    def _parse_files(self, path: str) -> pf.ParsedFile:
         """Parse the input file or directory
 
         Parameters
@@ -127,20 +126,17 @@ class Engine():
 
         Returns
         -------
-        tuple[pf.ParsedFile, float]
-            A tuple made up of the ParsedFile object and the time it took to parse it
+        pf.ParsedFile
+            The ParsedFile object containing the resources defined in the input file
         """
-        start = time.time()
-
         parsed_file = self.__parser.run(path)
         assert type(parsed_file) == pf.ParsedFile
 
-        end = time.time()
-        return parsed_file, end - start
+        return parsed_file
 
     def _get_models(
         self, file: pf.ParsedFile,
-    ) -> tuple[dict[str, ResourceModel], float]:
+    ) -> dict[str, ResourceModel]:
         """Get the models from the repository
 
         Parameters
@@ -150,19 +146,17 @@ class Engine():
 
         Returns
         -------
-        tuple[dict[str, ResourceModel], float]
-            A tuple made up of the dictionary of models and the time it took to get them
+        dict[str, ResourceModel]
+            The dictionary of models
         """
-        start = time.time()
         types = [r.type for r in file.resources]
         models = self.__repository.get(types)
-        end = time.time()
 
-        return models, end - start
+        return models
 
     def _generate_tf_files(
         self, file: pf.ParsedFile, models: dict[str, ResourceModel],
-    ) -> tuple[list[str], float]:
+    ) -> list[str]:
         """Generate Terraform files
 
         Parameters
@@ -177,27 +171,16 @@ class Engine():
         list[str]
             A list of directories containing the Terraform json files
         """
-        start = time.time()
         dirs = self.__terraform.generate(file, models, self.__auth)
-        end = time.time()
 
-        return dirs, end - start
+        return dirs
 
-    def _init_terraform(self) -> float:
+    def _init_terraform(self) -> None:
         """Initialize Terraform
-
-        Returns
-        -------
-        float
-            The time it took to initialize Terraform
         """
-        start = time.time()
         self.__terraform.init()
-        end = time.time()
 
-        return end - start
-
-    def _plan_terraform(self) -> tuple[str, float]:
+    def _plan_terraform(self) -> str:
         """Plan Terraform
 
         Returns
@@ -206,8 +189,6 @@ class Engine():
             A tuple made up of the results of the Terraform plan and the time it took
             to run it
         """
-        start = time.time()
         results = self.__terraform.plan()
-        end = time.time()
 
-        return results, end - start
+        return results

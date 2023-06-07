@@ -25,8 +25,13 @@ class CDK(I_Terraform):
     _created_resources = {}
     _logger = Logger(__name__)
 
-    def apply(self):
+    def apply(self, plan_file_path: str | None = None):
         """Applies generated Terraform plan
+
+        Parameters
+        ----------
+        plan_file_path : str, optional
+            path to the plan file, default None
 
         Returns
         -------
@@ -34,7 +39,7 @@ class CDK(I_Terraform):
             Terraform apply output
         """
         t = Terraform()
-        _, stdout, stderr = t.apply()
+        _, stdout, stderr = t.apply(plan_file_path)
         return stdout + stderr
 
     def generate(
