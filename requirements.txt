@@ -4,4 +4,4 @@ requests==2.31.0
 cdktf-cdktf-provider-google==7.0.9
 Jinja2==3.1.2
 python-terraform==0.10.1
-google-auth==2.19.0
+google-auth==2.19.1
