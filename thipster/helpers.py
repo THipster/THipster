@@ -7,9 +7,9 @@ def create_logger(class_name: str) -> logging.Logger:
 
 
 def set_logging_config(
-    log_level: str = "INFO",
+    log_level: str = 'INFO',
     filename: str | None = None,
-    filemode: str = "w",
+    filemode: str = 'w',
 ) -> None:
     """Set logging configuration
 
@@ -23,8 +23,8 @@ def set_logging_config(
     """
     logging.basicConfig(
         level=log_level,
-        format="%(asctime)s %(levelname)s %(name)s %(message)s",
+        format='%(asctime)s %(levelname)s %(name)s %(message)s',
         filename=filename,
         filemode=filemode,
-        encoding="utf-8",
+        encoding='utf-8',
     )
