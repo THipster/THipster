@@ -7,7 +7,7 @@ from thipster.engine import I_Auth
 class GoogleAuth(I_Auth):
     """Authenticate to Google Cloud Platform (GCP) projects
 
-    To use this module, you need to have a GCP account and a project created. 
+    To use this module, you need to have a GCP account and a project created.
     You also need to have gcloud installed : https://cloud.google.com/sdk/docs/install
     Then login using glcloud : gcloud auth application-default login
     """

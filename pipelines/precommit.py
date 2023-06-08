@@ -14,7 +14,7 @@ async def pre_commit(version: str):
 
         setup = (
             base.pythonBase(client, version)
-            .with_exec(['apk', 'add', 'git', 'libgcc'])
+            .with_exec(['apk', 'add', 'git', 'libgcc', 'gcc', 'musl-dev'])
             .with_exec(['git', 'config', '--global', 'safe.directory', '*'])
             .with_exec(['pip', 'install', 'pre-commit'])
             .with_mounted_directory('/src', src)
