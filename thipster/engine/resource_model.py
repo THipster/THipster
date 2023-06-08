@@ -45,6 +45,10 @@ class Model_Attribute():
     def default(self):
         return self.__default.value if self.__default else None
 
+    @default.setter
+    def default(self, value):
+        self.__default = value
+
     @property
     def cdk_name(self):
         return self.__cdk_name
