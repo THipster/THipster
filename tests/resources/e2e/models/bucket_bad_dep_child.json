@@ -2,7 +2,7 @@
     "dependencies": {},
     "internalObjects": {},
     "attributes": {
-        "region": {
+        "bad_attribute": {
             "optional": false,
             "cdk_key": "location"
         }

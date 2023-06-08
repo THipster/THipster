@@ -22,6 +22,7 @@ class CDK(I_Terraform):
     _parent_resources_stack = []
     _imported_packages = []
 
+    _inherited_attributes: list[pf.ParsedAttribute] = []
     _created_resources = {}
     _logger = Logger(__name__)
 
@@ -208,8 +209,23 @@ default False
 
         model = CDK._models[resource_type]
 
-        # Checks that all attributes are optional
-        if no_modif and not all(map(lambda x: x.optional, model.attributes.values())):
+        attributes = copy.deepcopy(model.attributes)
+
+        for a in CDK._inherited_attributes:
+            if a.name in attributes.keys():
+                attributes[a.name].default = rm.Model_Literal(a.value)
+
+            else:
+                attributes[a.name] = rm.Model_Attribute(
+                    cdk_name=a.name,
+                    default=rm.Model_Literal(a.value),
+                )
+
+        # Checks that all attributes have a default value
+        if (
+            no_modif
+            and not all(map(lambda x: x.default is not None, attributes.values()))
+        ):
             raise cdk_exceptions.CDKMissingAttributeInDependency(resource_type)
 
         # Import package and class
@@ -226,14 +242,24 @@ default False
         if model.name_key:
             resource_args[model.name_key] = name
 
-        for _, v in model.attributes.items():
-            resource_args[v.cdk_name] = v.default
+        for attribute_name, attribute_value in attributes.items():
+
+            if not no_dependencies and attribute_name in dependencies:
+
+                CDK._check_explicit_dependency(
+                    self, resource_args, dependencies[attribute_name]['resource'],
+                    attribute_value.default, attribute_name,
+                )
+
+                del dependencies[attribute_name]
+
+            if attribute_name in model.attributes:
+                resource_args[attribute_value.cdk_name] = attribute_value.default
 
         # Create default defendencies if needed
         if not no_dependencies:
             CDK._generate_default_dependencies(
-                self, dependencies,
-                model, resource_args, name,
+                self, dependencies, model, resource_args, parent_name,
             )
 
         CDK._logger.debug('Created default %s named %s', resource_class, name)
@@ -257,8 +283,6 @@ default False
         object :
             the created resource
         """
-        if isinstance(resource_args, dict):
-            return CDK._create_resource_from_dict(self, resource_type, resource_args)
 
         if isinstance(resource_args, pf.ParsedResource):
             return CDK._create_resource_from_resource(self, resource_args)
@@ -294,74 +318,28 @@ default False
 
         # Process attributes
         dependencies = copy.deepcopy(model.dependencies)
-        for attribute in input_args:
-            if attribute.name and model.name_key:
-                resource_args[model.name_key] = attribute.name
 
-            CDK._process_attribute(
-                self, model, attribute, resource_args, dependencies,
-            )
+        def attributes(attribute_list):
+            for attribute in attribute_list:
+                if attribute.name and model.name_key:
+                    resource_args[model.name_key] = attribute.name
 
+                CDK._process_attribute(
+                    self, model, attribute, resource_args, dependencies,
+                )
+
+        attributes(input_args)
+        attributes(CDK._inherited_attributes)
+
+        CDK._inherited_attributes += input_args
         CDK._generate_default_dependencies(
             self, dependencies, model, resource_args, resource_name,
         )
-
-        # Create resource
-        CDK._parent_resources_stack.remove(resource_type)
-
-        CDK._logger.debug(
-            'Created default %s named %s',
-            resource_class, resource_name,
-        )
-
-        if not model.name_key:
-            return resource_class(**resource_args)
-        return resource_class(self, resource_name, **resource_args)
-
-    def _create_resource_from_dict(
-        self, resource_type: str, input_args: dict | None,
-    ):
-        """Create a resource from a dictionnary
-
-        Parameters
-        ----------
-        self : _ResourceStack
-            Terraform CDK stack that contains the resource
-        resource_type : str, optional
-            type of the resource to create, default None
-        input_args : dict
-            data source to create the resource
-
-        Returns
-        -------
-        object :
-            the created resource
-        """
-        resource_class, resource_name, resource_args = CDK._create_default_resource(
-            self,
-            resource_type,
-            no_modif=False,
-            no_dependencies=True,
-        )
-        model = CDK._models[resource_type]
-
-        # Process attributes
-        dependencies = copy.deepcopy(model.dependencies)
-        for name, value in input_args.items():
-            if name and model.name_key:
-                resource_args[model.name_key] = name
-
-            CDK._process_attribute(
-                self, model,
-                pf.ParsedAttribute(
-                    name, None, pf.ParsedLiteral(value),
-                ),
-                resource_args, dependencies,
+        CDK._inherited_attributes = CDK._inherited_attributes[
+            :-len(
+                input_args,
             )
-
-        CDK._generate_default_dependencies(
-            self, dependencies, model, resource_args, resource_name,
-        )
+        ]
 
         # Create resource
         CDK._parent_resources_stack.remove(resource_type)
@@ -404,18 +382,29 @@ default False
 
         # Process attributes
         dependencies = copy.deepcopy(model.dependencies)
-        for attribute in resource.attributes:
-            CDK._process_attribute(
-                self,
-                model,
-                attribute,
-                resource_args,
-                dependencies,
-            )
 
+        def attributes(attribute_list):
+            for attribute in attribute_list:
+                CDK._process_attribute(
+                    self,
+                    model,
+                    attribute,
+                    resource_args,
+                    dependencies,
+                )
+
+        attributes(resource.attributes)
+        attributes(CDK._inherited_attributes)
+
+        CDK._inherited_attributes += resource.attributes
         CDK._generate_default_dependencies(
             self, dependencies, model, resource_args, resource.name,
         )
+        CDK._inherited_attributes = CDK._inherited_attributes[
+            :-len(
+                resource.attributes,
+            )
+        ]
 
         # Create resource
         CDK._parent_resources_stack.remove(resource.type)
@@ -450,25 +439,10 @@ default False
             dependencies needed to create the resource
         """
         if attribute.name in dependencies:
-            created_name = f"{dependencies[attribute.name]['resource']}/"\
-                           f'{attribute.value}'
-
-            # Checks if attribute is an explicit dependency
-            if created_name not in CDK._created_resources.keys():
-
-                if isinstance(attribute.value, str):
-                    raise cdk_exceptions.CDKDependencyNotDeclared(
-                        attribute.name, attribute.value,
-                    )
-
-                # Creates explicit dependency
-                CDK._create_dependency(
-                    self, attribute.name, attribute.value,
-                    resource_args, attribute.name,
-                )
-
-            resource_args[attribute.name] = CDK._created_resources[created_name]
-
+            CDK._check_explicit_dependency(
+                self, resource_args, dependencies[attribute.name]['resource'],
+                attribute.value, attribute.name,
+            )
             del dependencies[attribute.name]
             return
 
@@ -485,9 +459,7 @@ default False
 
         # Checks if attribute is expected as an attibute
         if attribute.name not in model.attributes:
-            raise cdk_exceptions.CDKInvalidAttribute(
-                attribute.name, model.type,
-            )
+            return
 
         # Processes list attribute
         attribute_value = attribute.value
@@ -531,7 +503,17 @@ default False
         # Create default internal objects if needed
         for internal_object_name, internal_object in model.internal_objects.items():
             if internal_object_name not in resource_args:
-                for default_args in internal_object['defaults']:
+                for default_args_json in internal_object['defaults']:
+
+                    # Transform in list of ParsedAttributes
+                    default_args = []
+                    for arg_key, arg_value in default_args_json.items():
+                        default_args.append(
+                            pf.ParsedAttribute(
+                                arg_key, None, pf.ParsedLiteral(arg_value),
+                            ),
+                        )
+
                     CDK._create_internal_object(
                         self,
                         internal_object_name,
@@ -624,3 +606,25 @@ default False
             resource_args[dep_name] = id
 
         CDK._parent_resources_stack.remove(dep_value['resource'])
+
+    def _check_explicit_dependency(
+        self, resource_args, dependency_type, dependency_value, attribute_name,
+    ):
+        created_name = f'{dependency_type}/'\
+            f'{dependency_value}'
+
+        # Checks if attribute is an explicit dependency
+        if created_name not in CDK._created_resources.keys():
+
+            if isinstance(dependency_value, str):
+                raise cdk_exceptions.CDKDependencyNotDeclared(
+                    attribute_name, dependency_value,
+                )
+
+            # Creates explicit dependency
+            CDK._create_dependency(
+                self, attribute_name, dependency_value,
+                resource_args, attribute_name,
+            )
+
+        resource_args[attribute_name] = CDK._created_resources[created_name]

@@ -214,11 +214,12 @@ subnetwork lb-subnet:
 \tip_range: 10.0.1.0/24
 
 loadbalancer my-lb:
+\tnetwork: lb-net
 \tload_balancing_scheme: EXTERNAL
     """,
     )
 
-    assert_number_of_resource_type_is('google_compute_network', 3)
+    assert_number_of_resource_type_is('google_compute_network', 1)
     assert_resource_created('google_compute_network', 'lb-net')
 
     assert_number_of_resource_type_is('google_compute_subnetwork', 1)
