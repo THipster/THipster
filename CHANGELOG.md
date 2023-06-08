@@ -2,6 +2,16 @@
 
 <!--next-version-placeholder-->
 
+## v0.16.0 (2023-06-08)
+
+### :sparkles:
+
+* :sparkles: feat: dependencies inheritance from parent attributes ([#138](https://github.com/THipster/THipster/issues/138)) ([`b5e151a`](https://github.com/THipster/THipster/commit/b5e151a3449bb6ceac13cdd4b106052e8856e021))
+
+### Other
+
+* :green_heart: ci: restore pre-commit-hooks ([#139](https://github.com/THipster/THipster/issues/139)) ([`8731ca1`](https://github.com/THipster/THipster/commit/8731ca1ba859bd3b88f6e40e087c40542a80c640))
+
 ## v0.15.0 (2023-06-07)
 
 ### :sparkles:
