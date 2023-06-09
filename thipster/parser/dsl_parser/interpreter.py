@@ -1,19 +1,12 @@
 import thipster.engine.parsed_file as pf
 import thipster.parser.dsl_parser.ast as ast
 
-from .exceptions import DSLParserBaseException
+from .exceptions import (
+    DSLParserVariableAlreadyUsed,
+    DSLParserVariableNotDeclared,
+)
 from .token import TOKENTYPES as TT
 from .token_parser import DSLSyntaxException
-
-
-class DSLParserVariableAlreadyUsed(DSLParserBaseException):
-    def __init__(self, var: str, *args: object) -> None:
-        super().__init__(f'Variable already used : {var}', *args)
-
-
-class DSLParserVariableNotDeclared(DSLParserBaseException):
-    def __init__(self, var: str, *args: object) -> None:
-        super().__init__(f'Variable already used : {var}', *args)
 
 
 class Interpreter():

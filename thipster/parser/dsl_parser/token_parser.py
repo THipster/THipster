@@ -181,7 +181,7 @@ class TokenParser():
             nl = self.__get_newline()
             properties = self.__get_properties(indent+1)
         except DSLSyntaxException as e:
-            if e.tok.tokenType == TT.TAB:
+            if e.token.tokenType == TT.TAB:
                 raise DSLSyntaxException(
                     token=nl,
                     expected=TT.STRING,
@@ -478,7 +478,7 @@ class TokenParser():
                     return ast.CompExprNode(expr1, op, expr2)
 
         except DSLSyntaxException as e:
-            raise DSLConditionException(e.tok)
+            raise DSLConditionException(e.token)
 
     def __get_arith_expr(self) -> ast.ArithExprNode:
         terms = []

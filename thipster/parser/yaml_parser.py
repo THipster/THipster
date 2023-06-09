@@ -2,30 +2,35 @@ import os
 
 import yaml
 from jinja2 import Environment, FileSystemLoader
+from thipster.engine import THipsterException
 
 import thipster.engine.parsed_file as pf
 from thipster.engine import I_Parser
 
 
-class YAMLParserBaseException(Exception):
-    def __init__(self, message, *args: object) -> None:
+class YAMLParserBaseException(THipsterException):
+    def __init__(self, *args: object) -> None:
         super().__init__(*args)
-
-        self.__message = message
-
-    @property
-    def message(self):
-        return self.__message
 
 
 class YAMLParserPathNotFound(YAMLParserBaseException):
-    def __init__(file, *args: object) -> None:
-        super().__init__(f'Path not found : {file}', *args)
+    def __init__(self, file, *args: object) -> None:
+        super().__init__(*args)
+        self.file = file
+
+    @property
+    def message(self) -> str:
+        return f'Path not found : {self.file}',
 
 
 class YAMLParserNoName(YAMLParserBaseException):
-    def __init__(resource, *args: object) -> None:
-        super().__init__(f'No name for resource : {resource}', *args)
+    def __init__(self, resource, *args: object) -> None:
+        super().__init__(*args)
+        self.resource = resource
+
+    @property
+    def message(self) -> str:
+        return f'No name for resource : {self.resource}'
 
 
 class YAMLParser(I_Parser):
