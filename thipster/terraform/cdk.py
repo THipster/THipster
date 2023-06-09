@@ -20,7 +20,6 @@ from thipster.helpers import create_logger as Logger
 class CDK(I_Terraform):
     _models = []
     _parent_resources_stack = []
-    _imported_packages = []
 
     _inherited_attributes: list[pf.ParsedAttribute] = []
     _created_resources = {}
@@ -61,6 +60,7 @@ class CDK(I_Terraform):
         CDK._created_resources = {}
         CDK._models = models
         CDK._parent_resources_stack = []
+
         # Init CDK
         app = App()
 
@@ -143,11 +143,10 @@ class CDK(I_Terraform):
         package : str
             package to install
         """
-        if package not in CDK._imported_packages:
+        if package not in sys.modules:
             subprocess.check_call(
                 [sys.executable, '-m', 'pip', 'install', '-qqq', package],
             )
-            CDK._imported_packages.append(package)
 
     def _import(package_name: str, module_name: str, class_name: str) -> type:
         """Import a class from any package

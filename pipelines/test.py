@@ -16,7 +16,7 @@ async def test(version: str):
             base.thipsterBase(client, version)
             .with_mounted_directory('/src', src)
             .with_workdir('/src')
-            .with_exec(['pip', 'install', '-e', '.[test]'])
+            .with_exec(['pip', 'install', '-e', '.[google,test]'])
 
         )
 
