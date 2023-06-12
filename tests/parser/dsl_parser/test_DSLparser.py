@@ -575,7 +575,7 @@ def __test_syntax_error(
     exp = str(' or '.join(list(map(lambda x: str(x), expected))))\
         if isinstance(expected, list) else str(expected.value)
 
-    assert repr(exc_info.value) == f'(File : \
+    assert str(exc_info.value) == f'(File : \
 {os.getcwd()}/test/test_file.thips, Ln {str(ln)}, Col {str(col)}) :\n\t\
 Syntax error : Expected {exp}, got {str(got.value)}'
 
@@ -636,7 +636,7 @@ bucket my-bucket:
         mocker, input=input, exception=DSLUnexpectedEOF,
     )
 
-    assert repr(exc_info.value) == 'Unexpected EOF'
+    assert str(exc_info.value) == 'Unexpected EOF'
 
 
 def test_syntax_error_amount(mocker):

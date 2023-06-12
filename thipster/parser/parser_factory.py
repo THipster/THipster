@@ -1,20 +1,21 @@
 import os
 
 from thipster.engine import I_Parser
+from thipster.engine import THipsterException
 from thipster.engine.parsed_file import ParsedFile
 from .dsl_parser import DSLParser
 from .yaml_parser import YAMLParser
 
 
-class ParserPathNotFound(Exception):
+class ParserPathNotFound(THipsterException):
     def __init__(self, path, *args: object) -> None:
         super().__init__(*args)
 
-        self.__message = f'Path not found : {path}'
+        self.__path = path
 
     @property
-    def message(self):
-        return self.__message
+    def message(self) -> str:
+        return f'Path not found : {self.__path}'
 
 
 class ParserFactory(I_Parser):

@@ -5,6 +5,7 @@ package as well as the interfaces for the various components of the application.
 """
 
 from .engine import Engine
+from .exceptions import THipsterException
 from .i_auth import I_Auth
 from .i_parser import I_Parser
 from .i_repository import I_Repository
