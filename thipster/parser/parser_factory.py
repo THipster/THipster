@@ -61,8 +61,12 @@ class ParserFactory(I_Parser):
 
         return files
 
-    def __noParser(self):
-        raise Exception()
+    def __noParser(self, pathExtension):
+        class noParser():
+            def run(path):
+                raise Exception(f'{pathExtension} files can\'t be parsed')
+
+        return noParser
 
     def run(self, path: str) -> ParsedFile:
         """Run the ParserFactory
@@ -90,4 +94,6 @@ class ParserFactory(I_Parser):
 
         _, pathExtension = os.path.splitext(path)
 
-        return ParserFactory.__parsers.get(pathExtension, self.__noParser)
+        return ParserFactory.__parsers.get(
+            pathExtension, self.__noParser(pathExtension),
+        )

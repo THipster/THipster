@@ -27,6 +27,12 @@ To use THipster, you can simply install the package with pip:
 pip install thipster
 ```
 
+If you want to install the google dependencies aswell use
+
+```console
+pip install thipster[google]
+```
+
 The list of available versions can be found on [PyPI](https://pypi.org/project/thipster/).
 
 ## Usage
@@ -75,7 +81,7 @@ If you have questions, concerns, bug reports, etc, please file an issue in this 
 To install the project for development, you can use the following command:
 
 ```console
-pip install -r requirements.txt && pip install -e .[dev,test,doc]
+pip install -r requirements.txt && pip install -e .[dev,test,doc,google]
 pre-commit install && pre-commit run --all-files
 ```
 

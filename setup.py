@@ -47,5 +47,10 @@ simplified format, using either YAML (with JINJA) or the dedicated Thipster DSL.
             'sphinx',
             'myst-parser',
         ],
+
+        'google': [
+            'cdktf-cdktf-provider-google==7.0.9',
+            'google-auth==2.19.1',
+        ],
     },
 )
