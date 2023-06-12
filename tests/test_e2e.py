@@ -1,12 +1,13 @@
+import inspect
 import json
 import os
 import shutil
+import uuid
 
 import pytest
-from cdktf_cdktf_provider_google.provider import GoogleProvider
 
+from thipster.auth import Google
 from thipster.engine.engine import Engine
-from thipster.engine.i_auth import I_Auth
 from thipster.parser.parser_factory import ParserFactory
 from thipster.repository.local import LocalRepo
 from thipster.terraform import Terraform
@@ -20,16 +21,9 @@ LOCAL_REPO = 'tests/resources/e2e/models'
 REMOTE_REPO = 'THipster/models'
 
 
-class MockAuth(I_Auth):
-    def authenticate(app):
-        GoogleProvider(
-            app, 'default_google',
-            project='project_id',
-            credentials='credentials.token',
-        )
-
-
 def create_dir(dirname: str, files: dict[str, str]):
+    dirname = f'test/{dirname}'
+
     if not os.path.isdir(dirname):
         os.mkdir(dirname)
 
@@ -53,10 +47,18 @@ def create_file(filename: str, content: str, dirname: str = 'test'):
     file.close()
 
 
-def __test_file(file: str, local_repo: str = LOCAL_REPO, file_type: str = 'thips'):
-    path_input = 'test'
+def __test_file(
+        directory: str, file: str,
+        local_repo: str = LOCAL_REPO, file_type: str = 'thips',
+):
+    if not os.path.isdir('test'):
+        try:
+            os.mkdir('test')
+        except FileExistsError:
+            pass
+
     __destroy_dir = create_dir(
-        path_input,
+        directory,
         {
             f'test_file.{file_type}':
             file,
@@ -66,29 +68,44 @@ def __test_file(file: str, local_repo: str = LOCAL_REPO, file_type: str = 'thips
     engine = Engine(
         ParserFactory(),
         LocalRepo(local_repo),
-        MockAuth,
+        Google,
         Terraform(),
     )
     try:
-        engine.run(path_input)
+        engine.run(f'test/{directory}')
+        shutil.move(
+            os.path.join(os.getcwd(), 'thipster.tf.json'),
+            os.path.join(os.getcwd(), f'test/{directory}', 'thipster.tf.json'),
+        )
     except Exception as e:
-        raise e
-    finally:
         __destroy_dir()
 
         if os.path.exists('cdktf.out'):
             shutil.rmtree('cdktf.out')
 
+        raise e
 
-def get_output():
-    with open('thipster.tf.json') as f:
+    def clean_up():
+        __destroy_dir()
+
+        if os.path.exists('cdktf.out'):
+            shutil.rmtree('cdktf.out')
+
+        if os.path.exists('test') and len(os.listdir('test')):
+            shutil.rmtree('test')
+
+    return clean_up
+
+
+def get_output(test_name):
+    with open(f'test/{test_name}/thipster.tf.json') as f:
         file_contents = json.load(f)
         f.close()
     return file_contents
 
 
-def get_resource(resource_data: tuple):
-    output = get_output()
+def get_resource(output_path: str, resource_data: tuple):
+    output = get_output(output_path)
 
     resources_of_type = output.get('resource').get(resource_data[0])
     resource = None
@@ -105,7 +122,7 @@ def assert_resource_created(
     resource_type: str,
     resource_name: str,
 ):
-    output = get_output()
+    output = get_output(inspect.currentframe().f_back.f_code.co_name)
     assert output.get('resource') is not None
     resources = output.get('resource')
 
@@ -121,7 +138,7 @@ def assert_number_of_resource_type_is(
     resource_type: str,
     amount: str,
 ):
-    output = get_output()
+    output = get_output(inspect.currentframe().f_back.f_code.co_name)
     assert output.get('resource') is not None
     resources = output.get('resource')
 
@@ -130,34 +147,58 @@ def assert_number_of_resource_type_is(
 
 
 def assert_resource_parameters_are(resource_data: tuple, parameters: list[str]):
-    resource = get_resource(resource_data)
+    resource = get_resource(
+        inspect.currentframe().f_back.f_code.co_name, resource_data,
+    )
 
     for parameter in parameters:
         assert parameter in resource.keys()
 
 
 def get_resource_parameter(resource_data: tuple, parameter: str):
-    resource = get_resource(resource_data)
+    resource = get_resource(
+        inspect.currentframe().f_back.f_code.co_name, resource_data,
+    )
 
     assert parameter in resource.keys()
     return resource.get(parameter)
 
 
+def get_function_name():
+    return inspect.currentframe().f_back.f_code.co_name
+
+
+def get_go_function(function_name: str):
+    return function_name.replace('_', ' ').title().replace(' ', '')
+
+
 def test_bucket():
-    __test_file(
-        file="""
-bucket my-bucket:
-\tregion : euw
+    function_name = get_function_name()
+
+    bucket_name = f'test-bucket-{uuid.uuid4()}'
+    clean_up = __test_file(
+        directory=function_name,
+        file=f"""
+bucket {bucket_name}:
+\tregion : europe-west1
     """,
     )
 
+    # Assertions before Terratest
     assert_number_of_resource_type_is('google_storage_bucket', 1)
-    bucket = assert_resource_created('google_storage_bucket', 'my-bucket')
+    bucket = assert_resource_created('google_storage_bucket', bucket_name)
     assert_resource_parameters_are(bucket, ['location'])
+
+    # Terratest call
+
+    clean_up()
 
 
 def test_empty_bucket():
-    __test_file(
+    function_name = get_function_name()
+
+    clean_up = __test_file(
+        directory=function_name,
         file="""
 bucket dzvhvzarbazkhr:
 
@@ -167,7 +208,10 @@ bucket dzvhvzarbazkhr:
     assert_number_of_resource_type_is('google_storage_bucket', 1)
     assert_resource_created('google_storage_bucket', 'dzvhvzarbazkhr')
 
-    __test_file(
+    clean_up()
+
+    clean_up = __test_file(
+        directory=function_name,
         file="""
 bucket dzvhvzarbazkhr:
 
@@ -180,29 +224,44 @@ bucket ezezeaz:
     assert_resource_created('google_storage_bucket', 'dzvhvzarbazkhr')
     assert_resource_created('google_storage_bucket', 'ezezeaz')
 
+    clean_up()
+
 
 def test_dep_with_no_options():
+    function_name = get_function_name()
+
     with pytest.raises(CDKMissingAttributeInDependency):
-        __test_file(
+        clean_up = __test_file(
+            directory=function_name,
             file="""
 bucket_bad_dep_parent my-bucket:
 \tregion : euw
         """,
         )
 
+        clean_up()
+
 
 def test_cyclic_deps():
+    function_name = get_function_name()
+
     with pytest.raises(CDKCyclicDependencies):
-        __test_file(
+        clean_up = __test_file(
+            directory=function_name,
             file="""
 bucket_bad_dep_cyclic my-bucket:
 \tregion : euw
         """,
         )
 
+        clean_up()
+
 
 def test_lb():
-    __test_file(
+    function_name = get_function_name()
+
+    clean_up = __test_file(
+        directory=function_name,
         file="""
 network lb-net:
 
@@ -223,16 +282,25 @@ loadbalancer my-lb:
     assert_number_of_resource_type_is('google_compute_subnetwork', 1)
     assert_resource_created('google_compute_subnetwork', 'lb-subnet')
 
+    # Terratest call
+    clean_up()
+
 
 def test_internal_object():
-    __test_file(
+    function_name = get_function_name()
+
+    clean_up = __test_file(
+        directory=function_name,
         file="""
 firewall testParent:
 \tdirection: EGRESS
         """,
     )
 
-    __test_file(
+    clean_up()
+
+    clean_up = __test_file(
+        directory=function_name,
         file="""
 firewall testParent:
 \tdirection: EGRESS
@@ -242,10 +310,15 @@ firewall testParent:
         """,
     )
 
+    clean_up()
+
 
 def test_missing_explicit_dependency():
+    function_name = get_function_name()
+
     with pytest.raises(CDKDependencyNotDeclared):
-        __test_file(
+        clean_up = __test_file(
+            directory=function_name,
             file="""
 subnetwork lb-subnet:
 \tnetwork: lb-net
@@ -254,9 +327,14 @@ subnetwork lb-subnet:
             """,
         )
 
+        clean_up()
+
 
 def test_explicit_dependency():
-    __test_file(
+    function_name = get_function_name()
+
+    clean_up = __test_file(
+        directory=function_name,
         file="""
 network lb-net:
 
@@ -267,9 +345,14 @@ subnetwork lb-subnet:
         """,
     )
 
+    clean_up()
+
 
 def test_bucket_cors():
-    __test_file(
+    function_name = get_function_name()
+
+    clean_up = __test_file(
+        directory=function_name,
         file="""
 bucket corsBucket:
     cors:
@@ -286,9 +369,14 @@ bucket corsBucket:
     assert_number_of_resource_type_is('google_storage_bucket', 1)
     assert_resource_created('google_storage_bucket', 'corsBucket')
 
+    clean_up()
+
 
 def test_bucket_two_cors():
-    __test_file(
+    function_name = get_function_name()
+
+    clean_up = __test_file(
+        directory=function_name,
         file="""
 bucket:
   name: corsBucket
@@ -316,3 +404,5 @@ bucket:
     cors_block = get_resource_parameter(bucket, 'cors')
 
     assert len(cors_block) == 2
+
+    clean_up()
