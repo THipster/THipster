@@ -2,6 +2,12 @@
 
 <!--next-version-placeholder-->
 
+## v0.16.1 (2023-06-12)
+
+### :zap:
+
+* :zap: fix: improve package imports ([#141](https://github.com/THipster/THipster/issues/141)) ([`23b4146`](https://github.com/THipster/THipster/commit/23b41469eebca85c01e934c68388d3686baa0e1f))
+
 ## v0.16.0 (2023-06-08)
 
 ### :sparkles:
