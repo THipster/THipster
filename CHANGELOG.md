@@ -2,6 +2,12 @@
 
 <!--next-version-placeholder-->
 
+## v0.16.2 (2023-06-12)
+
+### :goal_net:
+
+* :goal_net: feat: improve exception generation ([#142](https://github.com/THipster/THipster/issues/142)) ([`a312c1a`](https://github.com/THipster/THipster/commit/a312c1a1d4cb8bf7b318e71f7804a353e66674c0))
+
 ## v0.16.1 (2023-06-12)
 
 ### :zap:
