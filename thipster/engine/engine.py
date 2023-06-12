@@ -110,11 +110,11 @@ class Engine():
         models = self._get_models(parsed_file)
 
         # Generate Terraform files
-        dirs = self._generate_tf_files(parsed_file, models)
+        self._generate_tf_files(parsed_file, models)
 
         self.__terraform.init()
 
-        return dirs, self.__terraform.plan()
+        return self.__terraform.plan()
 
     def _parse_files(self, path: str) -> pf.ParsedFile:
         """Parse the input file or directory
@@ -171,9 +171,7 @@ class Engine():
         list[str]
             A list of directories containing the Terraform json files
         """
-        dirs = self.__terraform.generate(file, models, self.__auth)
-
-        return dirs
+        self.__terraform.generate(file, models, self.__auth)
 
     def _init_terraform(self) -> None:
         """Initialize Terraform
