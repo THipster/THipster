@@ -44,19 +44,18 @@ You can use THipster in two ways:
 Main feature:
 - Generate Terraform files from a YAML+JINJA or THIPS file:
 ```python
-from thipster.engine.Engine import Engine as ThipsterEngine
-from thipster.repository.GithubRepo import GithubRepo
-from thipster.parser.ParserFactory import ParserFactory
-from thipster.auth.Google import GoogleAuth
-from thipster.terraform.CDK import CDK
+from thipster import Engine as ThipsterEngine
+from thipster.auth import Google
+from thipster.parser import ParserFactory
+from thipster.repository import GithubRepo
+from thipster.terraform import Terraform
 
 # create new THipster engine
-engine = ThipsterEngine(ParserFactory(), GithubRepo('THipster/models'), GoogleAuth, CDK())
+engine = ThipsterEngine(ParserFactory(), GithubRepo('THipster/models'), Google, Terraform())
 
 # generate Terraform files and plan from a YAML+JINJA file
-
-list_dir, tf_plan = engine.run('path/to/file/or/directory')
-print(tf_plan)
+terraform_plan = engine.run('path/to/file/or/directory')
+print(terraform_plan)
 ```
 
 ## How to test the software

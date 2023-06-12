@@ -70,7 +70,7 @@ def __test_file(file: str, local_repo: str = LOCAL_REPO, file_type: str = 'thips
         Terraform(),
     )
     try:
-        output = engine.run(path_input)
+        engine.run(path_input)
     except Exception as e:
         raise e
     finally:
@@ -78,8 +78,6 @@ def __test_file(file: str, local_repo: str = LOCAL_REPO, file_type: str = 'thips
 
         if os.path.exists('cdktf.out'):
             shutil.rmtree('cdktf.out')
-
-    return output
 
 
 def get_output():
