@@ -1,0 +1,218 @@
+import uuid
+
+import pytest
+
+from thipster.terraform.exceptions import (
+    CDKCyclicDependencies,
+    CDKDependencyNotDeclared,
+    CDKMissingAttributeInDependency,
+)
+
+from ..test_tools import (
+    assert_number_of_resource_type_is,
+    assert_resource_created,
+    get_function_name,
+    get_resource_parameter,
+    process_file,
+)
+
+
+def test_empty_bucket():
+    function_name = get_function_name()
+
+    bucket_name = f'empty-bucket-{uuid.uuid4().int}'
+    clean_up = process_file(
+        directory=function_name,
+        file=f"""
+bucket {bucket_name}:
+
+    """,
+    )
+
+    # Assertions on plan
+    assert_number_of_resource_type_is('google_storage_bucket', 1)
+    assert_resource_created('google_storage_bucket', bucket_name)
+
+    clean_up()
+
+
+def test_empty_bucket_two():
+    function_name = get_function_name()
+
+    empty_bucket_name = f'empty-bucket-{uuid.uuid4().int}'
+    bucket_name = f'empty-bucket-{uuid.uuid4().int}'
+    clean_up = process_file(
+        directory=function_name,
+        file=f"""
+bucket {empty_bucket_name}:
+
+bucket {bucket_name}:
+    region: europe-west2
+    """,
+    )
+
+    # Assertions on plan
+    assert_number_of_resource_type_is('google_storage_bucket', 2)
+    assert_resource_created('google_storage_bucket', empty_bucket_name)
+    assert_resource_created('google_storage_bucket', bucket_name)
+
+    clean_up()
+
+
+def test_dep_with_no_options():
+    function_name = get_function_name()
+
+    with pytest.raises(CDKMissingAttributeInDependency):
+        clean_up = process_file(
+            directory=function_name,
+            file="""
+bucket_bad_dep_parent my-bucket:
+\tregion : euw
+        """,
+        )
+
+        clean_up()
+
+
+def test_cyclic_deps():
+    function_name = get_function_name()
+
+    with pytest.raises(CDKCyclicDependencies):
+        clean_up = process_file(
+            directory=function_name,
+            file="""
+bucket_bad_dep_cyclic my-bucket:
+\tregion : euw
+        """,
+        )
+
+        clean_up()
+
+
+def test_default_internal_object():
+    function_name = get_function_name()
+
+    clean_up = process_file(
+        directory=function_name,
+        file="""
+firewall testparent:
+\tdirection: EGRESS
+        """,
+    )
+
+    clean_up()
+
+
+def test_explicit_internal_object():
+    function_name = get_function_name()
+    clean_up = process_file(
+        directory=function_name,
+        file="""
+firewall testparent:
+\tdirection: EGRESS
+
+\tallow:
+\t\tprotocol: tcp
+        """,
+    )
+
+    clean_up()
+
+
+def test_missing_explicit_dependency():
+    function_name = get_function_name()
+
+    with pytest.raises(CDKDependencyNotDeclared):
+        clean_up = process_file(
+            directory=function_name,
+            file="""
+subnetwork lb-subnet:
+\tnetwork: lb-net
+\tregion: europe-west1b
+\tip_range: 10.0.1.0/24
+            """,
+        )
+
+        clean_up()
+
+
+def test_explicit_dependency():
+    function_name = get_function_name()
+
+    clean_up = process_file(
+        directory=function_name,
+        file="""
+network lb-net:
+
+subnetwork lb-subnet:
+\tnetwork: lb-net
+\tregion: europe-west1
+\tip_range: 10.0.1.0/24
+        """,
+    )
+
+    clean_up()
+
+
+def test_bucket_cors():
+    function_name = get_function_name()
+
+    bucket_name = f'cors-bucket-{uuid.uuid4().int}'
+    clean_up = process_file(
+        directory=function_name,
+        file=f"""
+bucket {bucket_name}:
+    cors:
+        origin:
+            - "http://example.com"
+        method:
+            - "*"
+        responseHeader:
+            - "*"
+        maxAge: 400
+        """,
+    )
+
+    # Assertions on plan
+    assert_number_of_resource_type_is('google_storage_bucket', 1)
+    assert_resource_created('google_storage_bucket', bucket_name)
+
+    clean_up()
+
+
+def test_bucket_two_cors():
+    function_name = get_function_name()
+
+    bucket_name = f'cors-bucket-{uuid.uuid4().int}'
+    clean_up = process_file(
+        directory=function_name,
+        file=f"""
+bucket:
+  name: {bucket_name}
+  cors:
+    - origin:
+      - "http://example.com"
+      method:
+      - "*"
+      responseHeader:
+      - "*"
+      maxAge: 400
+    - origin:
+      - "http://example.com/other"
+      method:
+      - "*"
+      responseHeader:
+      - "*"
+      maxAge: 600
+""",
+        file_type='yaml',
+    )
+
+    # Assertions on plan
+    assert_number_of_resource_type_is('google_storage_bucket', 1)
+    bucket = assert_resource_created('google_storage_bucket', bucket_name)
+    cors_block = get_resource_parameter(bucket, 'cors')
+
+    assert len(cors_block) == 2
+
+    clean_up()
