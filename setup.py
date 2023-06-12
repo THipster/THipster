@@ -34,20 +34,19 @@ simplified format, using either YAML (with JINJA) or the dedicated Thipster DSL.
     ),
     extras_require={
         'test': [
-            'pytest',
-            'pytest-mock',
+            'pytest==7.3.1',
+            'pytest-mock==3.10.0',
         ],
         'dev': [
-            'pytest',
-            'pytest-mock',
-            'dagger.io',
-            'pre-commit',
+            'pytest==7.3.1',
+            'pytest-mock==3.10.0',
+            'dagger-io==0.6.1',
+            'pre-commit==3.3.2',
         ],
         'doc': [
-            'sphinx',
-            'myst-parser',
+            'Sphinx==6.2.1',
+            'myst-parser==1.0.0',
         ],
-
         'google': [
             'cdktf-cdktf-provider-google==7.0.10',
             'google-auth==2.19.1',
