@@ -7,11 +7,11 @@ def test_create_token():
     tokenType = 'test_type'
     value = 'test_value'
 
-    token = Token(position, tokenType=tokenType, value=value)
+    token = Token(position, token_type=tokenType, value=value)
 
     assert isinstance(token, Token)
     assert token.position == position
-    assert token.tokenType == tokenType
+    assert token.token_type == tokenType
     assert token.value == value
 
 
@@ -22,6 +22,6 @@ def test_token_to_string():
 
     tokenType = 'test_type'
     value = 'test_value'
-    token = Token(position, tokenType=tokenType, value=value)
+    token = Token(position, token_type=tokenType, value=value)
     tokenStr = f'(Type: {str(tokenType)}, Position: {positionStr}, Value: {value})'
     assert repr(token) == tokenStr

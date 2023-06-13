@@ -4,9 +4,9 @@ import thipster.parser.dsl_parser.ast as ast
 from .exceptions import (
     DSLParserVariableAlreadyUsed,
     DSLParserVariableNotDeclared,
+    DSLArithmeticException,
 )
 from .token import TOKENTYPES as TT
-from .token_parser import DSLSyntaxException
 
 
 class Interpreter():
@@ -48,56 +48,56 @@ class Interpreter():
         bool
             The boolean value of the node
         """
-        match element.operation.tokenType:
+        match element.operation.token_type:
             case TT.NOT:
-                return pf.ParsedLiteral(not element.leftValue.accept(self).value)
+                return pf.ParsedLiteral(not element.left_value.accept(self).value)
 
             case TT.OR:
                 return pf.ParsedLiteral(
-                    element.leftValue.accept(self).value or
-                    element.rightValue.accept(self).value,
+                    element.left_value.accept(self).value or
+                    element.right_value.accept(self).value,
                 )
 
             case TT.AND:
                 return pf.ParsedLiteral(
-                    element.leftValue.accept(self).value and
-                    element.rightValue.accept(self).value,
+                    element.left_value.accept(self).value and
+                    element.right_value.accept(self).value,
                 )
 
             case TT.EE:
                 return pf.ParsedLiteral(
-                    element.leftValue.accept(self).value ==
-                    element.rightValue.accept(self).value,
+                    element.left_value.accept(self).value ==
+                    element.right_value.accept(self).value,
                 )
 
             case TT.NE:
                 return pf.ParsedLiteral(
-                    element.leftValue.accept(self).value !=
-                    element.rightValue.accept(self).value,
+                    element.left_value.accept(self).value !=
+                    element.right_value.accept(self).value,
                 )
 
             case TT.LT:
                 return pf.ParsedLiteral(
-                    element.leftValue.accept(self).value <
-                    element.rightValue.accept(self).value,
+                    element.left_value.accept(self).value <
+                    element.right_value.accept(self).value,
                 )
 
             case TT.LTE:
                 return pf.ParsedLiteral(
-                    element.leftValue.accept(self).value <=
-                    element.rightValue.accept(self).value,
+                    element.left_value.accept(self).value <=
+                    element.right_value.accept(self).value,
                 )
 
             case TT.GT:
                 return pf.ParsedLiteral(
-                    element.leftValue.accept(self).value >
-                    element.rightValue.accept(self).value,
+                    element.left_value.accept(self).value >
+                    element.right_value.accept(self).value,
                 )
 
             case TT.GTE:
                 return pf.ParsedLiteral(
-                    element.leftValue.accept(self).value >=
-                    element.rightValue.accept(self).value,
+                    element.left_value.accept(self).value >=
+                    element.right_value.accept(self).value,
                 )
 
     def visitArithExpr(self, element: ast.ArithExprNode) -> int | float:
@@ -117,8 +117,8 @@ class Interpreter():
         if isinstance(total, pf.ParsedLiteral):
             total = total.value
 
-        for i in range(len(element.operation)):
-            match element.operation[i]:
+        for i in range(len(element.operations)):
+            match element.operations[i]:
                 case TT.PLUS:
                     add = element.terms[i+1].accept(self)
                     if isinstance(add, pf.ParsedLiteral):
@@ -278,7 +278,7 @@ class Interpreter():
         int
             The value of the node
         """
-        return int(element.value)
+        return int(element.token.value)
 
     def visitFloat(self, element: ast.FloatNode) -> float:
         """Visitor for a FloatNode
@@ -293,7 +293,7 @@ class Interpreter():
         float
             The value of the node
         """
-        return float(element.value)
+        return float(element.token.value)
 
     def visitBool(self, element: ast.BoolNode) -> bool:
         """Visitor for a BoolNode
@@ -308,7 +308,7 @@ class Interpreter():
         bool
             The value of the node
         """
-        return bool(element.value)
+        return bool(element.token.value)
 
     def visitString(self, element: ast.StringNode) -> str:
         """Visitor for a BoolNode
@@ -323,7 +323,7 @@ class Interpreter():
         bool
             The value of the node
         """
-        return str(element.value.value)
+        return str(element.token.value)
 
     def visitIf(self, element: ast.IfNode) -> object | None:
         """Visitor for an IfNode
@@ -338,7 +338,7 @@ class Interpreter():
         object | None
             The value of the child node if the condition is true, else None
         """
-        return element.ifCase.accept(self) if element.condition.accept(self).value\
+        return element.if_case.accept(self) if element.condition.accept(self).value\
             else None
 
     def visitIfElse(self, element: ast.IfElseNode):
@@ -355,8 +355,8 @@ class Interpreter():
             The value of the "if" child node if the condition is true, else the value\
                   of the "else" child node
         """
-        return element.ifCase.accept(self) if element.condition.accept(self).value\
-            else element.elseCase.accept(self)
+        return element.if_case.accept(self) if element.condition.accept(self).value\
+            else element.else_case.accept(self)
 
     def visitAmount(self, element: ast.AmountNode) -> list[object]:
         """Visitor for an AmountNode
@@ -375,7 +375,9 @@ class Interpreter():
         res = []
         amount = element.amount.accept(self).value
         if not isinstance(amount, int):
-            raise DSLSyntaxException(amount.value.position)
+            raise DSLArithmeticException(
+                element.amount.position, 'Integer expected',
+            )
 
         for _ in range(amount):
             res += element.node.accept(self)
@@ -416,7 +418,7 @@ class Interpreter():
         ParsedDict
             A ParsedDict object based on the node attributes
         """
-        return pf.ParsedDict([v.accept(self) for v in element.value])
+        return pf.ParsedDict([v.accept(self) for v in element.values])
 
     def visitLiteral(self, element: ast.LiteralNode) -> pf.ParsedLiteral:
         """Visitor for an LiteralNode
@@ -446,7 +448,7 @@ class Interpreter():
         ParsedList
             A ParsedLiteral object based on the node elements
         """
-        return pf.ParsedList([v.accept(self) for v in element.value])
+        return pf.ParsedList([v.accept(self) for v in element.values])
 
     def visitResource(self, element: ast.ResourceNode) -> list[pf.ParsedResource]:
         """Visitor for an ResourceNode
@@ -466,7 +468,7 @@ class Interpreter():
                 type=element.type.accept(self).value,
                 name=element.name.accept(self).value,
                 position=element.position,
-                attributes=[v.accept(self) for v in element.parameters.value],
+                attributes=[v.accept(self) for v in element.parameters.values],
             ),
         ]
 

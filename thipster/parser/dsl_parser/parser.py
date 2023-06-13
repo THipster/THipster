@@ -69,9 +69,9 @@ class DSLParser(I_Parser):
             ast = parser.run()
 
             interpreter = Interpreter()
-            parsedFile = interpreter.run(ast)
+            parsed_file = interpreter.run(ast)
 
-            return parsedFile
+            return parsed_file
         except DSLParserBaseException as e:
             raise e
         except Exception as e:

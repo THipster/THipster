@@ -11,103 +11,111 @@ class Node(ABC):
     def accept(self, visitor):
         raise NotImplementedError()
 
+    @property
+    def position(self):
+        raise NotImplementedError()
+
 
 class StringNode(Node):
-    def __init__(self, value: Token) -> None:
+    def __init__(self, token: Token) -> None:
         super().__init__()
-        self.__value = value
+        self.token = token
 
     def __str__(self) -> str:
-        return f'<STRING {self.__value}>'
+        return f'<STRING {self.token}>'
 
     @property
-    def value(self) -> Token:
-        return self.__value
+    def position(self) -> Position:
+        return self.token.position
 
     def accept(self, visitor):
         return visitor.visitString(self)
 
 
 class StringExprNode(Node):
-    def __init__(self, *values: Node) -> None:
+    def __init__(self, *values: Node | list[Node]) -> None:
         super().__init__()
-        self.__value = []
+        self.values: list[Node] = []
         for v in values:
             if isinstance(v, list):
-                self.__value.extend(v)
+                self.values.extend(v)
             else:
-                self.__value.append(v)
+                self.values.append(v)
 
     def __str__(self) -> str:
-        return f"<STRING-EXPR {' '.join(list(map(str, self.__value)))}>"
+        return f"<STRING-EXPR {' '.join(list(map(str, self.values)))}>"
 
     @property
-    def values(self) -> list[Node]:
-        return self.__value
+    def position(self) -> Token:
+        return self.values[0].position
 
     def accept(self, visitor):
         return visitor.visitStringExpr(self)
 
 
 class VariableNode(Node):
-    def __init__(self, name: Token) -> None:
+    def __init__(self, token: Token) -> None:
         super().__init__()
-        self.__name = name
+        self.token = token
 
     def __str__(self) -> str:
-        return f'<VAR {self.__name}>'
+        return f'<VAR {self.token}>'
 
     @property
     def name(self):
-        return self.__name.value
+        return self.token.value
+
+    @property
+    def position(self) -> Position:
+        return self.token.position
 
     def accept(self, visitor):
         return visitor.visitVariable(self)
 
 
 class BoolNode(Node):
-    def __init__(self, value: Token) -> None:
+    def __init__(self, token: Token) -> None:
         super().__init__()
-        self.__value = value
+        self.token = token
 
     def __str__(self) -> str:
-        return f'<BOOL {self.__value}>'
+        return f'<BOOL {self.token}>'
 
     @property
-    def value(self) -> bool:
-        return bool(self.__value.value)
+    def position(self) -> Position:
+        return self.token.position
 
     def accept(self, visitor):
         return visitor.visitBool(self)
 
 
 class IntNode(Node):
-    def __init__(self, value: Token) -> None:
+    def __init__(self, token: Token) -> None:
         super().__init__()
-        self.__value = value
+        self.token = token
 
     def __str__(self) -> str:
-        return f'<INT {self.__value}>'
+        return f'<INT {self.token}>'
 
     @property
-    def value(self):
-        return self.__value.value
+    def position(self) -> Position:
+        return self.token.position
 
     def accept(self, visitor):
         return visitor.visitInt(self)
 
 
 class FloatNode(Node):
-    def __init__(self, value: Token) -> None:
+    def __init__(self, token: Token) -> None:
         super().__init__()
-        self.__value = value
+        self.token = token
 
     def __str__(self) -> str:
-        return f'<FLOAT {self.__value}>'
+        return f'<FLOAT {self.token}>'
 
     @property
-    def value(self):
-        return self.__value.value
+    def position(self) -> Position:
+        return self.token.position
 
     def accept(self, visitor):
         return visitor.visitFloat(self)
@@ -117,47 +125,35 @@ class VariableDefinitionNode(Node):
     def __init__(self, name: Token, value: IntNode) -> None:
         super().__init__()
         self.__name = name
-        self.__value = value
+        self.value = value
 
     def __str__(self) -> str:
-        return f'<VARDEF {self.__name} = {self.__value}>'
+        return f'<VARDEF {self.__name} = {self.value}>'
 
     @property
     def name(self):
         return self.__name.value
 
     @property
-    def value(self):
-        return self.__value
-
-    @value.setter
-    def value(self, __value):
-        self.__value = __value
+    def position(self) -> Position:
+        return self.__name.position
 
     def accept(self, visitor):
         return visitor.visitVariableDefinition(self)
 
 
 class IfNode(Node):
-    def __init__(self, condition: StringNode, ifCase: Node | None) -> None:
+    def __init__(self, condition: StringNode, if_case: Node) -> None:
         super().__init__()
-        self.__condition = condition
-        self.__ifCase = ifCase
+        self.condition = condition
+        self.if_case = if_case
 
     def __str__(self) -> str:
-        return f'<IF {self.__condition}: {self.__ifCase}>'
+        return f'<IF {self.condition}: {self.if_case}>'
 
     @property
-    def condition(self):
-        return self.__condition
-
-    @property
-    def ifCase(self):
-        return self.__ifCase
-
-    @ifCase.setter
-    def ifCase(self, __value):
-        self.__ifCase = __value
+    def position(self) -> Position:
+        return self.if_case.position
 
     def accept(self, visitor):
         return visitor.visitIf(self)
@@ -165,19 +161,15 @@ class IfNode(Node):
 
 class IfElseNode(IfNode):
     def __init__(
-        self, condition: StringNode, ifCase: Node | None,
-        elseCase: Node | None,
+        self, condition: StringNode, if_case: Node,
+        else_case: Node | None,
     ) -> None:
-        super().__init__(condition, ifCase)
-        self.__elseCase = elseCase
+        super().__init__(condition, if_case)
+        self.else_case = else_case
 
     def __str__(self) -> str:
-        return f'<IF_E {str(self.condition)}: {str(self.ifCase)}, ELSE : \
-{str(self.elseCase)}>'
-
-    @property
-    def elseCase(self):
-        return self.__elseCase
+        return f'<IF_E {str(self.condition)}: {str(self.if_case)}, ELSE : \
+{str(self.else_case)}>'
 
     def accept(self, visitor):
         return visitor.visitIfElse(self)
@@ -185,208 +177,158 @@ class IfElseNode(IfNode):
 
 class AmountNode(Node):
     def __init__(
-        self,
-        amount: IntNode, variable: VariableDefinitionNode | None, node: Node | None,
+        self, position: Token,
+        amount: Node, variable: VariableDefinitionNode | None, node: Node | None,
     )\
             -> None:
         super().__init__()
-        self.__amount = amount
-        self.__node = node
-        self.__variable = variable
+        self.__position = position
+        self.amount = amount
+        self.node = node
+        self.variable = variable
 
     def __str__(self) -> str:
-        return f'<AMOUNT {self.__amount} #{self.__variable}: {self.__node}>'
+        return f'<AMOUNT {self.amount} #{self.variable}: {self.node}>'
 
     @property
-    def node(self) -> Node | None:
-        return self.__node
+    def position(self) -> Position:
+        return self.__position
 
-    @property
-    def amount(self) -> Node:
-        return self.__amount
-
-    @property
-    def variable(self) -> VariableDefinitionNode | None:
-        return self.__variable
-
-    @node.setter
-    def node(self, __value):
-        self.__node = __value
+    @position.setter
+    def position(self, _value) -> Position:
+        self.__position = _value
 
     def accept(self, visitor):
         return visitor.visitAmount(self)
 
 
 class ValueNode(Node, ABC):
-
-    @abstractmethod
-    def accept(self, visitor):
-        raise NotImplementedError()
-
-    @property
-    @abstractmethod
-    def value(self):
-        raise NotImplementedError()
-
-
-class ParameterNode(Node):
     pass
 
 
-class ParameterNode(Node):  # noqa: F811
+class ParameterNode(Node):
     def __init__(self, name: StringNode, value: ValueNode) -> None:
         super().__init__()
-        self.__name = name
-        self.__value = value
-        self.__position = None
+        self.name = name
+        self.value = value
 
     def __str__(self) -> str:
-        return f'<PARAMETER name = {str(self.__name)}, value = {str(self.__value)}>'
+        return f'<PARAMETER name = {str(self.name)}, value = {str(self.value)}>'
 
     @property
-    def name(self):
-        return self.__name
-
-    @property
-    def value(self):
-        return self.__value
-
-    @property
-    def position(self) -> Position | None:
-        return self.__position
-
-    @value.setter
-    def value(self, __value):
-        self.__value = __value
+    def position(self) -> Position:
+        return self.name.position
 
     def accept(self, visitor):
         return visitor.visitParameter(self)
 
 
 class DictNode(ValueNode):
-    def __init__(self, value: list[ParameterNode]) -> None:
+    def __init__(self, values: list[ParameterNode]) -> None:
         super().__init__()
-        self.__value = value
+        self.values = values
 
     def __str__(self) -> str:
-        return f"<DICT {' '.join(list(map(str, self.__value)))}>"
+        return f"<DICT {' '.join(list(map(str, self.values)))}>"
 
     @property
-    def value(self):
-        return self.__value
+    def position(self) -> Position:
+        return self.values[0].position
 
     def accept(self, visitor):
         return visitor.visitDict(self)
 
 
 class LiteralNode(ValueNode):
-    def __init__(self, value: Node) -> None:
+    def __init__(self, values: Node) -> None:
         super().__init__()
-        self.__value = value
+        self.value = values
 
     def __str__(self) -> str:
-        return f'<LITERAL {str(self.__value)}>'
+        return f'<LITERAL {str(self.value)}>'
 
     @property
-    def value(self) -> Node:
-        return self.__value
+    def position(self) -> Position:
+        return self.value.position
 
     def accept(self, visitor):
         return visitor.visitLiteral(self)
 
 
 class ListNode(ValueNode):
-    def __init__(self, value: list[ValueNode]) -> None:
+    def __init__(self, values: list[ValueNode]) -> None:
         super().__init__()
-        self.__value = value
+        self.values = values
 
     def __str__(self) -> str:
-        return f"<LIST {' '.join(list(map(str, self.__value)))}>"
+        return f"<LIST {' '.join(list(map(str, self.values)))}>"
 
     @property
-    def value(self):
-        return self.__value
+    def position(self) -> Position:
+        return self.values[0].position
 
     def accept(self, visitor):
         return visitor.visitList(self)
 
 
 class CompExprNode(Node):
-    def __init__(self, leftValue, operation, rightValue=None) -> None:
+    def __init__(
+            self, left_value: Node, operation, right_value: Node | None = None,
+    ) -> None:
         super().__init__()
-        self.__leftValue = leftValue
-        self.__operation = operation
-        self.__rightValue = rightValue
+        self.left_value = left_value
+        self.operation = operation
+        self.right_value = right_value
 
     @property
-    def leftValue(self) -> Node:
-        return self.__leftValue
-
-    @property
-    def operation(self) -> Node:
-        return self.__operation
-
-    @property
-    def rightValue(self) -> Node:
-        return self.__rightValue
+    def position(self) -> Position:
+        return self.left_value.position
 
     def accept(self, visitor):
         return visitor.visitCompExpr(self)
 
 
-class ArithExprNode(Node):
-    def __init__(self, terms, operations) -> None:
-        super().__init__()
-        if len(terms) != len(operations) + 1:
-            raise
-        self.__terms = terms
-        self.__operations = operations
-
-    @property
-    def terms(self) -> Node:
-        return self.__terms
-
-    @property
-    def operation(self) -> Node:
-        return self.__operations
-
-    def accept(self, visitor):
-        return visitor.visitArithExpr(self)
-
-
 class TermNode(Node):
-    def __init__(self, factors, operations) -> None:
+    def __init__(self, factors, operation) -> None:
         super().__init__()
-        if len(factors) != len(operations) + 1:
+        if len(factors) != len(operation) + 1:
             raise
-        self.__factors = factors
-        self.__operations = operations
+        self.factors: list[FactorNode] = factors
+        self.operation = operation
 
     @property
-    def factors(self) -> Node:
-        return self.__factors
-
-    @property
-    def operation(self) -> Node:
-        return self.__operations
+    def position(self) -> Position:
+        return self.factors[0].position
 
     def accept(self, visitor):
         return visitor.visitTerm(self)
 
 
-class FactorNode(Node):
-    def __init__(self, factors, operation) -> None:
+class ArithExprNode(Node):
+    def __init__(self, terms: list[TermNode], operations) -> None:
         super().__init__()
-        self.__factors = factors
-        self.__operations = operation
+        if len(terms) != len(operations) + 1:
+            raise
+        self.terms = terms
+        self.operations = operations
 
     @property
-    def factors(self) -> Node:
-        return self.__factors
+    def position(self) -> Position:
+        return self.terms[0].position
+
+    def accept(self, visitor):
+        return visitor.visitArithExpr(self)
+
+
+class FactorNode(Node):
+    def __init__(self, factors: list[Node], operation) -> None:
+        super().__init__()
+        self.factors = factors
+        self.operation = operation
 
     @property
-    def operation(self) -> Node:
-        return self.__operations
+    def position(self) -> Position:
+        return self.factors[0].position
 
     def accept(self, visitor):
         return visitor.visitFactor(self)
@@ -395,35 +337,22 @@ class FactorNode(Node):
 class ResourceNode(Node):
     def __init__(
         self,
-        resourceType: StringNode,
+        resource_type: StringNode,
         name: StringNode,
         parameters: DictNode | ListNode,
     ) -> None:
         super().__init__()
-        self.__type = resourceType
-        self.__name = name
-        self.__position = None
-        self.__parameters = parameters
+        self.type = resource_type
+        self.name = name
+        self.parameters = parameters
 
     def __str__(self) -> str:
-        return f'<RESOURCE type = {str(self.__type)}, \
-name = {str(self.__name)}, parameters = {str(self.__parameters)}>'
+        return f'<RESOURCE type = {str(self.type)}, \
+name = {str(self.name)}, parameters = {str(self.parameters)}>'
 
     @property
-    def type(self) -> StringNode:
-        return self.__type
-
-    @property
-    def name(self) -> StringNode:
-        return self.__name
-
-    @property
-    def position(self) -> Position | None:
-        return self.__position
-
-    @property
-    def parameters(self) -> DictNode | ListNode:
-        return self.__parameters
+    def position(self) -> Position:
+        return self.type.position
 
     def accept(self, visitor):
         return visitor.visitResource(self)
@@ -432,17 +361,17 @@ name = {str(self.__name)}, parameters = {str(self.__parameters)}>'
 class FileNode(Node):
     def __init__(self) -> None:
         super().__init__()
-        self.__resources = []
+        self.resources: list[ResourceNode | IfNode | AmountNode] = []
 
     def add(self, item: ResourceNode | IfNode | AmountNode) -> None:
-        self.__resources.append(item)
+        self.resources.append(item)
 
     def __str__(self) -> str:
-        return '\n'.join(list(map(str, self.__resources)))
+        return '\n'.join(list(map(str, self.resources)))
 
     @property
-    def resources(self) -> list[ResourceNode]:
-        return self.__resources
+    def position(self) -> Position:
+        return self.resources[0].position
 
     def accept(self, visitor):
         return visitor.visitFile(self)

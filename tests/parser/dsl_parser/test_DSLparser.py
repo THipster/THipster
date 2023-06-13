@@ -6,10 +6,11 @@ import thipster.engine.parsed_file as pf
 from thipster.parser import DSLParser
 from thipster.parser.dsl_parser.exceptions import DSLParserPathNotFound
 from thipster.parser.dsl_parser.token import TOKENTYPES as TT
-from thipster.parser.dsl_parser.token_parser import (
+from thipster.parser.dsl_parser.exceptions import (
     DSLConditionException,
     DSLSyntaxException,
     DSLUnexpectedEOF,
+    DSLArithmeticException,
 )
 
 from ...test_tools import create_dir
@@ -685,3 +686,12 @@ bucket if:
         mocker, input=input, ln=2, col=8,
         expected=[TT.STRING, TT.VAR], got=TT.IF,
     )
+
+
+def test_amount_error(mocker):
+    # RESERVED TOKEN NAME
+    input = """
+bucket my-bucket: amount: 3/2
+\tregion: euw
+"""
+    __test_parser_raises(mocker, input=input, exception=DSLArithmeticException)
