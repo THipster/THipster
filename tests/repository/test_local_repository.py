@@ -25,9 +25,8 @@ def create_file(filename: str, content: str, dirname: str = 'test'):
         os.mkdir(dirname)
     dirname = os.path.abspath(dirname)
 
-    file = open(f'{dirname}/{filename}', 'w')
-    file.write(content)
-    file.close()
+    with open(f'{dirname}/{filename}', 'w') as f:
+        f.write(content)
 
 
 def __setup_local(models: dict[str, str]):

@@ -34,8 +34,8 @@ class YAMLParserNoName(YAMLParserBaseException):
 
 
 class YAMLParser(I_Parser):
-
-    def __getfiles(path: str) -> list[str]:
+    @classmethod
+    def __getfiles(cls, path: str) -> list[str]:
         """Recursively get all files names in the requested directory and its\
               sudirectories
         Can be run on a path file aswell
@@ -59,14 +59,15 @@ class YAMLParser(I_Parser):
 
         if os.path.isdir(path):
             for content in os.listdir(path):
-                files += YAMLParser.__getfiles(f'{path}/{content}')
+                files += cls.__getfiles(f'{path}/{content}')
 
         if os.path.isfile(path):
             return [path]
 
         return files
 
-    def run(path: str) -> pf.ParsedFile:
+    @classmethod
+    def run(cls, path: str) -> pf.ParsedFile:
         """Run the YAMLParser
 
         Parameters
@@ -80,18 +81,21 @@ class YAMLParser(I_Parser):
             A ParsedFile object with the content of all the files in the input path
         """
         try:
-            files = YAMLParser.__getfiles(path)
+            files = cls.__getfiles(path)
             parsedFile = pf.ParsedFile()
 
             for file in files:
                 filedir, filename = os.path.split(file)
 
-                environment = Environment(loader=FileSystemLoader(filedir))
+                environment = Environment(
+                    loader=FileSystemLoader(filedir),
+                    autoescape=True,
+                )
                 template = environment.get_template(filename)
                 rendered = template.render()
                 content = yaml.safe_load(rendered)
 
-                parsedFile.resources += YAMLParser.__convert(content)
+                parsedFile.resources += cls.__convert(content)
 
             return parsedFile
         except yaml.YAMLError as exc:
@@ -101,7 +105,8 @@ class YAMLParser(I_Parser):
         except Exception as e:
             raise e
 
-    def __convert(file: dict) -> list[pf.ParsedResource]:
+    @classmethod
+    def __convert(cls, file: dict) -> list[pf.ParsedResource]:
         """Converts a dictionnary into a list of ParsedResources
 
         Parameters
@@ -126,7 +131,7 @@ class YAMLParser(I_Parser):
                         raise YAMLParserNoName(key)
 
                     resources.append(
-                        YAMLParser.__get_resource(
+                        cls.__get_resource(
                             content=res, resourceType=key, name=name,
                         ),
                     )
@@ -138,14 +143,15 @@ class YAMLParser(I_Parser):
                     raise YAMLParserNoName(key)
 
                 resources.append(
-                    YAMLParser.__get_resource(
+                    cls.__get_resource(
                         content=val, resourceType=key, name=name,
                     ),
                 )
 
         return resources
 
-    def __get_resource(content: dict, resourceType: str, name: str)\
+    @classmethod
+    def __get_resource(cls, content: dict, resourceType: str, name: str)\
             -> pf.ParsedResource:
         """Converts a dict in a ParsedResource
 
@@ -166,7 +172,7 @@ class YAMLParser(I_Parser):
         attr = []
 
         for key, val in content.items():
-            attr.append(YAMLParser.__get__attr(key, val))
+            attr.append(cls.__get__attr(key, val))
 
         return pf.ParsedResource(
             type=resourceType,
@@ -175,7 +181,8 @@ class YAMLParser(I_Parser):
             attributes=attr,
         )
 
-    def __get__attr(name: str, value: object) -> pf.ParsedAttribute:
+    @classmethod
+    def __get__attr(cls, name: str, value: object) -> pf.ParsedAttribute:
         """Converts an object in a ParsedAttribute
 
         Parameters
@@ -191,9 +198,9 @@ class YAMLParser(I_Parser):
             A ParsedAttribute object with wanted value type
         """
         if type(value) == dict:
-            val = YAMLParser.__get_dict(value)
+            val = cls.__get_dict(value)
         elif type(value) == list:
-            val = YAMLParser.__get_list(value)
+            val = cls.__get_list(value)
         else:
             val = pf.ParsedLiteral(value)
 
@@ -203,7 +210,8 @@ class YAMLParser(I_Parser):
             position=None,
         )
 
-    def __get_dict(input: dict) -> pf.ParsedDict:
+    @classmethod
+    def __get_dict(cls, input: dict) -> pf.ParsedDict:
         """Converts a dict into a list of ParsedDict
 
         Parameters
@@ -219,11 +227,12 @@ class YAMLParser(I_Parser):
         attr = []
 
         for key, val in input.items():
-            attr.append(YAMLParser.__get__attr(key, val))
+            attr.append(cls.__get__attr(key, val))
 
         return pf.ParsedDict(attr)
 
-    def __get_list(input: list) -> pf.ParsedList:
+    @classmethod
+    def __get_list(cls, input: list) -> pf.ParsedList:
         """Converts a dictionnary into a ParsedList
 
         Parameters
@@ -240,7 +249,7 @@ class YAMLParser(I_Parser):
 
         for val in input:
             if isinstance(val, dict):
-                attr.append(YAMLParser.__get_dict(val))
+                attr.append(cls.__get_dict(val))
             else:
                 attr.append(pf.ParsedLiteral(val))
 

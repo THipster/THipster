@@ -7,15 +7,23 @@ from .dsl_parser import DSLParser
 from .yaml_parser import YAMLParser
 
 
+def _noParser(pathExtension):
+    class noParser():
+        def run(path):
+            raise Exception(f'{pathExtension} files can\'t be parsed')
+
+    return noParser
+
+
 class ParserPathNotFound(THipsterException):
-    def __init__(self, path, *args: object) -> None:
+    def __init__(cls, path, *args: object) -> None:
         super().__init__(*args)
 
-        self.__path = path
+        cls.__path = path
 
     @property
-    def message(self) -> str:
-        return f'Path not found : {self.__path}'
+    def message(cls) -> str:
+        return f'Path not found : {cls.__path}'
 
 
 class ParserFactory(I_Parser):
@@ -27,10 +35,12 @@ class ParserFactory(I_Parser):
         '.thips': DSLParser,
     }
 
-    def addParser(parser: I_Parser, extensions: list[str]):
-        ParserFactory.__parsers.update({e: parser for e in extensions})
+    @classmethod
+    def addParser(cls, parser: I_Parser, extensions: list[str]):
+        cls.__parsers.update({e: parser for e in extensions})
 
-    def __getfiles(self, path: str) -> list[str]:
+    @classmethod
+    def __getfiles(cls, path: str) -> list[str]:
         """Recursively get all files names in the requested directory and its\
               sudirectories
         Can be run on a path file aswell
@@ -55,21 +65,15 @@ class ParserFactory(I_Parser):
 
         if os.path.isdir(path):
             for content in os.listdir(path):
-                files += self.__getfiles(f'{path}/{content}')
+                files += cls.__getfiles(f'{path}/{content}')
 
         if os.path.isfile(path):
             return [path]
 
         return files
 
-    def __noParser(self, pathExtension):
-        class noParser():
-            def run(path):
-                raise Exception(f'{pathExtension} files can\'t be parsed')
-
-        return noParser
-
-    def run(self, path: str) -> ParsedFile:
+    @classmethod
+    def run(cls, path: str) -> ParsedFile:
         """Run the ParserFactory
 
         Parameters
@@ -82,19 +86,20 @@ class ParserFactory(I_Parser):
         ParsedFile
             A ParsedFile object with the content of all the files in the input path
         """
-        files = self.__getfiles(path)
+        files = cls.__getfiles(path)
 
         res = ParsedFile()
         for file in files:
-            parsedFile = self.__getParser(file).run(file)
+            parsedFile = cls.__getParser(file).run(file)
             res.resources += parsedFile.resources
 
         return res
 
-    def __getParser(self, path) -> I_Parser:
+    @classmethod
+    def __getParser(cls, path) -> I_Parser:
 
         _, pathExtension = os.path.splitext(path)
 
-        return ParserFactory.__parsers.get(
-            pathExtension, self.__noParser(pathExtension),
+        return cls.__parsers.get(
+            pathExtension, _noParser(pathExtension),
         )

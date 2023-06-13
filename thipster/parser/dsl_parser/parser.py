@@ -11,7 +11,8 @@ from .token_parser import TokenParser
 
 class DSLParser(I_Parser):
 
-    def __getfiles(path: str) -> dict[str, str]:
+    @classmethod
+    def __getfiles(cls, path: str) -> dict[str, str]:
         """Recursively get all files in the requested directory and its sudirectories
         Can be run on a path file aswell
 
@@ -45,7 +46,8 @@ class DSLParser(I_Parser):
 
         return files
 
-    def run(path: str) -> ParsedFile:
+    @classmethod
+    def run(cls, path: str) -> ParsedFile:
         """Run the DSLParser
 
         Parameters
