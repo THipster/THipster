@@ -10,14 +10,20 @@ async def test(version: str):
     """
     async with dagger.Connection(dagger.Config(log_output=sys.stderr)) as client:
 
+        gcp_credentials_content = (
+            client.host().env_variable('GOOGLE_APPLICATION_CREDENTIALS_CONTENT').secret()
+        )
+
         src = client.host().directory('.')
 
         setup = (
             base.thipsterBase(client, version)
             .with_mounted_directory('/src', src)
             .with_workdir('/src')
-            .with_exec(['pip', 'install', '-e', '.[google,test]'])
-
+            .with_exec(['pip', 'install', '-e', '.[test]'])
+            .with_secret_variable(
+                'GOOGLE_APPLICATION_CREDENTIALS_CONTENT', gcp_credentials_content,
+            )
         )
 
         tests = setup.with_exec(['pytest', 'tests'])

@@ -39,6 +39,8 @@ jobs:
           pip install dagger-io
       - name: Run Dagger_test.py pipeline
         run: python pipelines/prhandler.py
+        env:
+          GOOGLE_APPLICATION_CREDENTIALS_CONTENT: ${{ secrets.GOOGLE_APPLICATION_CREDENTIALS_CONTENT }}
 
   run_pre-commit:
     name: "Dagger.io Pre-commit only on doc"
