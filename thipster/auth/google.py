@@ -12,7 +12,7 @@ class GoogleAuth(I_Auth):
     Then login using glcloud : gcloud auth application-default login
     """
 
-    def authenticate(app):
+    def authenticate(self, app):
         """Generates the google provider block for the Terraform CDK
 
         Parameters

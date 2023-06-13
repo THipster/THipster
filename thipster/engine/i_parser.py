@@ -1,4 +1,4 @@
-from abc import ABC, abstractmethod
+from abc import ABC, abstractclassmethod
 
 from thipster.engine.parsed_file import ParsedFile
 
@@ -6,8 +6,8 @@ from thipster.engine.parsed_file import ParsedFile
 class I_Parser(ABC):
     """Parser module interface
     """
-    @abstractmethod
-    def run(self, path: str) -> ParsedFile:
+    @abstractclassmethod
+    def run(cls, path: str) -> ParsedFile:
         """Abstract run method
 
         Parameters

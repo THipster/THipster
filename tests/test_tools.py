@@ -17,7 +17,7 @@ REMOTE_REPO = 'THipster/models'
 
 
 class MockAuth(I_Auth):
-    def authenticate(app):
+    def authenticate(self, app):
         GoogleProvider(
             app, 'default_google',
             project='project_id',
@@ -79,7 +79,7 @@ def process_file(
     engine = Engine(
         ParserFactory(),
         LocalRepo(local_repo),
-        Google if not mock_auth else MockAuth,
+        Google() if not mock_auth else MockAuth(),
         Terraform(),
     )
     try:
