@@ -26,7 +26,8 @@ def test_empty_bucket():
         file=f"""
 bucket {bucket_name}:
 
-    """,
+""",
+        mock_auth=True,
     )
 
     # Assertions on plan
@@ -48,7 +49,8 @@ bucket {empty_bucket_name}:
 
 bucket {bucket_name}:
     region: europe-west2
-    """,
+""",
+        mock_auth=True,
     )
 
     # Assertions on plan
@@ -68,7 +70,8 @@ def test_dep_with_no_options():
             file="""
 bucket_bad_dep_parent my-bucket:
 \tregion : euw
-        """,
+""",
+            mock_auth=True,
         )
 
         clean_up()
@@ -83,7 +86,8 @@ def test_cyclic_deps():
             file="""
 bucket_bad_dep_cyclic my-bucket:
 \tregion : euw
-        """,
+""",
+            mock_auth=True,
         )
 
         clean_up()
@@ -97,7 +101,8 @@ def test_default_internal_object():
         file="""
 firewall testparent:
 \tdirection: EGRESS
-        """,
+""",
+        mock_auth=True,
     )
 
     clean_up()
@@ -113,7 +118,8 @@ firewall testparent:
 
 \tallow:
 \t\tprotocol: tcp
-        """,
+""",
+        mock_auth=True,
     )
 
     clean_up()
@@ -130,7 +136,8 @@ subnetwork lb-subnet:
 \tnetwork: lb-net
 \tregion: europe-west1b
 \tip_range: 10.0.1.0/24
-            """,
+""",
+            mock_auth=True,
         )
 
         clean_up()
@@ -148,7 +155,8 @@ subnetwork lb-subnet:
 \tnetwork: lb-net
 \tregion: europe-west1
 \tip_range: 10.0.1.0/24
-        """,
+""",
+        mock_auth=True,
     )
 
     clean_up()
@@ -170,7 +178,8 @@ bucket {bucket_name}:
         responseHeader:
             - "*"
         maxAge: 400
-        """,
+""",
+        mock_auth=True,
     )
 
     # Assertions on plan
@@ -206,6 +215,7 @@ bucket:
       maxAge: 600
 """,
         file_type='yaml',
+        mock_auth=True,
     )
 
     # Assertions on plan

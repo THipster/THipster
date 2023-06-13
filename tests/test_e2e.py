@@ -1,3 +1,4 @@
+import os
 import uuid
 
 import pytest
@@ -10,6 +11,8 @@ from .test_tools import (
     get_function_name,
     process_file,
 )
+
+AUTH_FILE_PATH = os.path.join(os.getcwd(), 'tests/credentials.json')
 
 
 @pytest.fixture
@@ -33,10 +36,43 @@ def apply_output():
     return _apply_output
 
 
-def test_bucket(apply_output):
+@pytest.fixture
+def authentication():
+    delete_credentials = False
+    if (
+        not os.path.exists(
+            os.path.join(
+                os.getenv('HOME'),
+                '.config/gcloud/application_default_credentials.json',
+            ),
+        )
+        and (
+            os.getenv('GOOGLE_APPLICATION_CREDENTIALS') is not None
+            or os.getenv('GOOGLE_APPLICATION_CREDENTIALS') != ''
+        )
+    ):
+
+        delete_credentials = True
+        if os.getenv('GOOGLE_APPLICATION_CREDENTIALS_CONTENT') is None:
+            raise Exception('No credentials available')
+
+        with open(AUTH_FILE_PATH, 'w') as auth_file:
+            auth_file.write(
+                os.environ['GOOGLE_APPLICATION_CREDENTIALS_CONTENT'],
+            )
+        os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = AUTH_FILE_PATH
+
+    yield
+
+    if delete_credentials:
+        os.remove(AUTH_FILE_PATH)
+
+
+def test_bucket(apply_output, authentication):
+    _ = authentication
     function_name = get_function_name()
 
-    bucket_name = f'test-bucket-{uuid.uuid4()}'
+    bucket_name = f'test-bucket-{uuid.uuid4().int}'
     clean_up = process_file(
         directory=function_name,
         file=f"""
@@ -60,7 +96,8 @@ bucket {bucket_name}:
         clean_up()
 
 
-def test_lb(apply_output):
+def test_lb(apply_output, authentication):
+    _ = authentication
     function_name = get_function_name()
 
     clean_up = process_file(

@@ -3,14 +3,26 @@ import json
 import os
 import shutil
 
+from cdktf_cdktf_provider_google.provider import GoogleProvider
+
+from thipster import Engine
 from thipster.auth import Google
-from thipster.engine.engine import Engine
-from thipster.parser.parser_factory import ParserFactory
-from thipster.repository.local import LocalRepo
+from thipster.engine import I_Auth
+from thipster.parser import ParserFactory
+from thipster.repository import LocalRepo
 from thipster.terraform import Terraform
 
 LOCAL_REPO = 'tests/resources/e2e/models'
 REMOTE_REPO = 'THipster/models'
+
+
+class MockAuth(I_Auth):
+    def authenticate(app):
+        GoogleProvider(
+            app, 'default_google',
+            project='project_id',
+            credentials='credentials.token',
+        )
 
 
 def __create_dir(dirname: str, files: dict[str, str]):
@@ -42,12 +54,10 @@ def __create_file(filename: str, content: str, dirname: str = 'test'):
 def process_file(
         directory: str, file: str,
         local_repo: str = LOCAL_REPO, file_type: str = 'thips',
+        mock_auth=False,
 ):
     if not os.path.isdir('test'):
-        try:
-            os.mkdir('test')
-        except FileExistsError:
-            pass
+        os.mkdir('test')
 
     __destroy_dir = __create_dir(
         directory,
@@ -57,10 +67,19 @@ def process_file(
         },
     )
 
+    def clean_up():
+        __destroy_dir()
+
+        if os.path.exists('cdktf.out'):
+            shutil.rmtree('cdktf.out')
+
+        if os.path.exists('test') and len(os.listdir('test')) == 0:
+            shutil.rmtree('test')
+
     engine = Engine(
         ParserFactory(),
         LocalRepo(local_repo),
-        Google,
+        Google if not mock_auth else MockAuth,
         Terraform(),
     )
     try:
@@ -70,21 +89,8 @@ def process_file(
             os.path.join(os.getcwd(), f'test/{directory}', 'thipster.tf.json'),
         )
     except Exception as e:
-        __destroy_dir()
-
-        if os.path.exists('cdktf.out'):
-            shutil.rmtree('cdktf.out')
-
+        clean_up()
         raise e
-
-    def clean_up():
-        __destroy_dir()
-
-        if os.path.exists('cdktf.out'):
-            shutil.rmtree('cdktf.out')
-
-        if os.path.exists('test') and len(os.listdir('test')):
-            shutil.rmtree('test')
 
     return clean_up
 
