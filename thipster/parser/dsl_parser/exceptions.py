@@ -1,4 +1,5 @@
 from thipster.engine import THipsterException
+from thipster.engine.parsed_file import Position
 from .token import TOKENTYPES as TT
 from .token import Token
 
@@ -28,11 +29,11 @@ class DSLSyntaxException(DSLParserBaseException):
     def message(self) -> str:
         if type(self.expected) is TT:
             return f"""{str(self.token.position)} :\n\tSyntax error : Expected \
-{str(self.expected.value)}, got {str(self.token.tokenType)}"""
+{str(self.expected.value)}, got {str(self.token.token_type)}"""
         else:
             return f"""{str(self.token.position)} :\n\tSyntax error : Expected \
 {str(' or '.join(list(map(str, self.expected))))}, got {
-    str(self.token.tokenType)}"""
+    str(self.token.token_type)}"""
 
 
 class DSLConditionException(DSLParserBaseException):
@@ -42,7 +43,18 @@ class DSLConditionException(DSLParserBaseException):
 
     @property
     def message(self) -> str:
-        return f"""{str(self.token.position)} :\n\tBad condition"""
+        return f'{str(self.token.position)} :\n\tBad condition'
+
+
+class DSLArithmeticException(DSLParserBaseException):
+    def __init__(self, position: Position, error_message: str, *args: object) -> None:
+        super().__init__(*args)
+        self.position = position
+        self.error_message = error_message
+
+    @property
+    def message(self) -> str:
+        return f'{str(self.position)} :\n\tArithmetic error :{self.error_message}'
 
 
 class DSLUnexpectedEOF(DSLParserBaseException):

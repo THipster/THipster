@@ -76,7 +76,7 @@ def test_get_bucket():
 
     assert len(bucket.attributes) == 1
     assert len(bucket.dependencies) == 0
-    assert bucket.type == 'test/bucket'
+    assert bucket.resource_type == 'test/bucket'
 
 
 def test_get_bucket_with_cors():
@@ -158,7 +158,7 @@ def test_get_bucket_with_cors():
     assert len(bucket.attributes) == 1
     assert len(bucket.dependencies) == 0
     assert len(bucket.internal_objects) == 1
-    assert bucket.type == 'test/bucket'
+    assert bucket.resource_type == 'test/bucket'
 
 
 def test_get_vm():
@@ -228,7 +228,7 @@ def test_get_vm():
 
     vm = models['test/vm']
 
-    assert vm.type == 'test/vm'
+    assert vm.resource_type == 'test/vm'
     assert len(vm.attributes) == 2
     assert len(vm.dependencies) == 1
 
@@ -237,7 +237,7 @@ def test_get_vm():
 
     network = models['test/network']
 
-    assert network.type == 'test/network'
+    assert network.resource_type == 'test/network'
     assert len(network.attributes) == 1
     assert len(network.dependencies) == 0
 

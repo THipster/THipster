@@ -9,7 +9,7 @@ def test_create_AST():
 
     tree.add(
         ast.ResourceNode(
-            resourceType=ast.StringNode(
+            resource_type=ast.StringNode(
                 Token(Position('file', 1, 1), 'STRING', 'bucket'),
             ),
             name=ast.StringExprNode(

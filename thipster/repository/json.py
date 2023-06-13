@@ -132,7 +132,7 @@ class JSONRepo(I_Repository, ABC):
             name,
             attributes=self.__create_attribute(json_model['attributes']),
             dependencies=json_model['dependencies'],
-            internalObjects=json_model['internalObjects'],
+            internal_objects=json_model['internalObjects'],
             name_key=json_model['cdk_name_key']
             if 'cdk_name_key' in json_model else None,
             cdk_provider=json_model['cdk_provider'],

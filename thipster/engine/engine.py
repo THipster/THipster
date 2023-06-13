@@ -149,7 +149,7 @@ class Engine():
         dict[str, ResourceModel]
             The dictionary of models
         """
-        types = [r.type for r in file.resources]
+        types = [r.resource_type for r in file.resources]
         models = self.__repository.get(types)
 
         return models

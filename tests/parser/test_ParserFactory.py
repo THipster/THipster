@@ -38,7 +38,7 @@ def test_yaml_file():
     assert len(out.resources) == 1
 
     bucket = out.resources[0]
-    assert bucket.type == 'bucket'
+    assert bucket.resource_type == 'bucket'
     assert bucket.name == 'my_bucket'
     assert len(bucket.attributes) == 1
 
@@ -59,7 +59,7 @@ def test_yaml_file():
     assert len(out.resources) == 1
 
     bucket = out.resources[0]
-    assert bucket.type == 'bucket'
+    assert bucket.resource_type == 'bucket'
     assert bucket.name == 'my-bucket'
     assert len(bucket.attributes) == 1
 
@@ -80,7 +80,7 @@ def test_thips_file():
     assert len(out.resources) == 1
 
     bucket = out.resources[0]
-    assert bucket.type == 'bucket'
+    assert bucket.resource_type == 'bucket'
     assert bucket.name == 'my-bucket'
     assert len(bucket.attributes) == 1
 
@@ -106,7 +106,7 @@ def test_two_types_of_file():
     assert len(out.resources) == 2
 
     for bucket in out.resources:
-        assert bucket.type == 'bucket'
+        assert bucket.resource_type == 'bucket'
         assert 'my-bucket' in bucket.name
         assert len(bucket.attributes) == 1
 

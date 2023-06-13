@@ -51,7 +51,7 @@ class Token():
 
     def __init__(
         self, position: Position,
-        tokenType: TOKENTYPES, value: str | None = None,
+        token_type: TOKENTYPES, value: str | None = None,
     ):
         """
 
@@ -64,34 +64,22 @@ class Token():
         value : str, optional
             Token value, by default None
         """
-        self.__position = position
-        self.__tokenType = tokenType
-        self.__value = value
-
-    @property
-    def position(self):
-        return self.__position
-
-    @property
-    def tokenType(self):
-        return self.__tokenType
-
-    @property
-    def value(self):
-        return self.__value
+        self.position = position
+        self.token_type = token_type
+        self.value = value
 
     def __eq__(self, __value: object) -> bool:
         if isinstance(__value, Token):
             return (
                 self.position == __value.position and
-                self.tokenType == __value.tokenType and
+                self.token_type == __value.token_type and
                 self.value == __value.value
             )
         else:
             raise TypeError('Value must be a Token')
 
     def __repr__(self) -> str:
-        tokenString = f'(Type: {str(self.tokenType)}, Position: {str(self.position)}'
+        tokenString = f'(Type: {str(self.token_type)}, Position: {str(self.position)}'
         if self.value:
             tokenString += f', Value: {self.value}'
         tokenString += ')'
@@ -99,4 +87,4 @@ class Token():
         return tokenString
 
     def __str__(self) -> str:
-        return f'({self.tokenType} {self.value})'
+        return f'({self.token_type} {self.value})'

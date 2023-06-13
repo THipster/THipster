@@ -1,4 +1,5 @@
 import os
+import random
 import uuid
 
 import pytest
@@ -100,18 +101,19 @@ def test_lb(apply_output, authentication):
     _ = authentication
     function_name = get_function_name()
 
+    test_id = random.randint(0, 1000)
     clean_up = process_file(
         directory=function_name,
-        file="""
-network lb-net:
+        file=f"""
+network lb-net-{test_id}:
 
-subnetwork lb-subnet:
-\tnetwork: lb-net
+subnetwork lb-subnet-{test_id}:
+\tnetwork: lb-net-{test_id}
 \tregion: europe-west1
 \tip_range: 10.0.1.0/24
 
-loadbalancer my-lb:
-\tnetwork: lb-net
+loadbalancer my-lb-{test_id}:
+\tnetwork: lb-net-{test_id}
 \tload_balancing_scheme: EXTERNAL
     """,
     )
@@ -119,10 +121,12 @@ loadbalancer my-lb:
     try:
         # Assertions on plan
         assert_number_of_resource_type_is('google_compute_network', 1)
-        assert_resource_created('google_compute_network', 'lb-net')
+        assert_resource_created('google_compute_network', f'lb-net-{test_id}')
 
         assert_number_of_resource_type_is('google_compute_subnetwork', 1)
-        assert_resource_created('google_compute_subnetwork', 'lb-subnet')
+        assert_resource_created(
+            'google_compute_subnetwork', f'lb-subnet-{test_id}',
+        )
 
         # Test apply
         _ = [o for o in apply_output(function_name)]
