@@ -86,7 +86,10 @@ class YAMLParser(I_Parser):
             for file in files:
                 filedir, filename = os.path.split(file)
 
-                environment = Environment(loader=FileSystemLoader(filedir))
+                environment = Environment(
+                    loader=FileSystemLoader(filedir),
+                    autoescape=True,
+                )
                 template = environment.get_template(filename)
                 rendered = template.render()
                 content = yaml.safe_load(rendered)
