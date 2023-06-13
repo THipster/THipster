@@ -20,7 +20,7 @@ async def test(version: str):
             base.thipsterBase(client, version)
             .with_mounted_directory('/src', src)
             .with_workdir('/src')
-            .with_exec(['pip', 'install', '-e', '.[google,test]'])
+            .with_exec(['pip', 'install', '-e', '.[test]'])
             .with_secret_variable(
                 'GOOGLE_APPLICATION_CREDENTIALS_CONTENT', gcp_credentials_content,
             )
