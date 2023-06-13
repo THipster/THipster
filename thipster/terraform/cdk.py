@@ -461,7 +461,7 @@ def _process_attribute(
 
     # Checks if attribute is an internal object
     if attribute.name in model.internal_objects:
-        resource_args = _create_internal_object(
+        _create_internal_object(
             resource_self,
             attribute.name,
             model.internal_objects[attribute.name],
