@@ -2,6 +2,17 @@
 
 <!--next-version-placeholder-->
 
+## v0.16.5 (2023-06-13)
+
+### :lock:
+
+* :lock: fix: codeql fixes ([#148](https://github.com/THipster/THipster/issues/148)) ([`05088c8`](https://github.com/THipster/THipster/commit/05088c8a861d06e1833feba7469cd99d94275aa6))
+
+### Other
+
+* ✅ feat(tests): tftest ([#145](https://github.com/THipster/THipster/issues/145)) ([`0a2dbb4`](https://github.com/THipster/THipster/commit/0a2dbb433ed7f79b0268b1383b9f06638e515a9e))
+* :construction_worker: feat(ci): Add codeql workflow ([#144](https://github.com/THipster/THipster/issues/144)) ([`40be1f6`](https://github.com/THipster/THipster/commit/40be1f67313e76fcc973368aa0d6d07458f99513))
+
 ## v0.16.4 (2023-06-12)
 
 ### :arrow_up:
