@@ -25,15 +25,13 @@ class MockAuth(I_Auth):
         )
 
 
-def __create_dir(dirname: str, files: dict[str, str]):
-    dirname = f'test/{dirname}'
-
+def create_dir(dirname: str, files: dict[str, str]):
     if not os.path.isdir(dirname):
         os.mkdir(dirname)
 
     dirname = os.path.abspath(dirname)
     for name, content in files.items():
-        __create_file(name, content, dirname)
+        create_file(name, content, dirname)
 
     def destroy_files():
         shutil.rmtree(dirname)
@@ -41,14 +39,13 @@ def __create_dir(dirname: str, files: dict[str, str]):
     return destroy_files
 
 
-def __create_file(filename: str, content: str, dirname: str = 'test'):
+def create_file(filename: str, content: str, dirname: str = 'test'):
     if not os.path.isdir(dirname):
         os.mkdir(dirname)
     dirname = os.path.abspath(dirname)
 
-    file = open(f'{dirname}/{filename}', 'w')
-    file.write(content)
-    file.close()
+    with open(f'{dirname}/{filename}', 'w') as f:
+        f.write(content)
 
 
 def process_file(
@@ -59,8 +56,8 @@ def process_file(
     if not os.path.isdir('test'):
         os.mkdir('test')
 
-    __destroy_dir = __create_dir(
-        directory,
+    __destroy_dir = create_dir(
+        f'test/{directory}',
         {
             f'test_file.{file_type}':
             file,

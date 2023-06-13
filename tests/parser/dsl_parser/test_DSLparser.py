@@ -12,31 +12,7 @@ from thipster.parser.dsl_parser.token_parser import (
     DSLUnexpectedEOF,
 )
 
-
-def create_dir(dirname: str, files: dict[str, str]):
-    if not os.path.isdir(dirname):
-        os.mkdir(dirname)
-
-    dirname = os.path.abspath(dirname)
-    for name, content in files.items():
-        create_file(name, content, dirname)
-
-    def destroy_files():
-        for content in os.listdir(dirname):
-            os.remove(f'{dirname}/{content}')
-        os.rmdir(dirname)
-
-    return destroy_files
-
-
-def create_file(filename: str, content: str, dirname: str = 'test'):
-    if not os.path.isdir(dirname):
-        os.mkdir(dirname)
-    dirname = os.path.abspath(dirname)
-
-    file = open(f'{dirname}/{filename}', 'w')
-    file.write(content)
-    file.close()
+from ...test_tools import create_dir
 
 
 def test_get_files():
