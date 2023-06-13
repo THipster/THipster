@@ -158,7 +158,7 @@ class TokenParser():
             try:
                 value = self.__get_value()
                 self.__get_whitespaces()
-                if_else_etrl = self.__get_if_else_ctrl()
+                if_else_ctrl = self.__get_if_else_ctrl()
                 self.__get_whitespaces()
             except:
                 raise
@@ -168,9 +168,9 @@ class TokenParser():
                 value=value,
             )
 
-            if if_else_etrl:
-                if_else_etrl.if_case = parameter.value
-                parameter.value = if_else_etrl
+            if if_else_ctrl:
+                if_else_ctrl.if_case = parameter.value
+                parameter.value = if_else_ctrl
 
             return parameter
 

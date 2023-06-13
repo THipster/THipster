@@ -50,7 +50,7 @@ def test_parse_simple_file():
     assert len(out.resources) == 1
 
     bucket = out.resources[0]
-    assert bucket.type == 'bucket'
+    assert bucket.resource_type == 'bucket'
     assert bucket.name == 'my-bucket'
     assert len(bucket.attributes) == 1
 
@@ -73,7 +73,7 @@ bucket:
     assert len(out.resources) == 1
 
     bucket = out.resources[0]
-    assert bucket.type == 'bucket'
+    assert bucket.resource_type == 'bucket'
     assert bucket.name == 'test_name'
     assert len(bucket.attributes) == 1
 
@@ -94,7 +94,7 @@ def test_parse_two_resources():
     )
     assert len(out.resources) == 2
     for bucket in out.resources:
-        assert bucket.type == 'bucket'
+        assert bucket.resource_type == 'bucket'
         assert 'my-bucket' in bucket.name
         assert len(bucket.attributes) == 1
 
@@ -116,7 +116,7 @@ def test_parse_dict_in_dict():
     assert len(out.resources) == 1
 
     bucket = out.resources[0]
-    assert bucket.type == 'bucket'
+    assert bucket.resource_type == 'bucket'
     assert bucket.name == 'my-bucket'
     assert len(bucket.attributes) == 2
 
@@ -141,7 +141,7 @@ def test_parse_list():
     assert len(out.resources) == 1
 
     bucket = out.resources[0]
-    assert bucket.type == 'bucket'
+    assert bucket.resource_type == 'bucket'
     assert bucket.name == 'my-bucket'
     assert len(bucket.attributes) == 1
 
@@ -168,7 +168,7 @@ def test_parse_dict_in_list():
     assert len(out.resources) == 1
 
     bucket = out.resources[0]
-    assert bucket.type == 'bucket'
+    assert bucket.resource_type == 'bucket'
     assert bucket.name == 'my-bucket'
     assert len(bucket.attributes) == 1
 

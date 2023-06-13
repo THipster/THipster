@@ -67,7 +67,7 @@ class CDK(I_Terraform):
         app = App()
 
         f_position = file.resources[0].position
-        file_name = f_position.fileName if f_position else 'thipster_infrastructure'
+        file_name = f_position.filename if f_position else 'thipster_infrastructure'
 
         cls._logger.debug('Creating tf code for file %s', file_name)
 
@@ -79,12 +79,13 @@ class CDK(I_Terraform):
                 _authenticator.authenticate(self)
 
                 for resource in file.resources:
-                    res = _create_resource_from_resource(
+                    created_resource = _create_resource_from_resource(
                         self,
                         resource=resource,
                     )
 
-                    cls._created_resources[f'{resource.type}/{resource.name}'] = res.id
+                    cls._created_resources[f'{resource.resource_type}/{resource.name}']\
+                        = created_resource.id
 
         _ResourceStack(app, file_name)
 
@@ -369,7 +370,7 @@ def _create_resource_from_resource(resource_self, resource: pf.ParsedResource):
     # Create resource with default values
     resource_class, _, resource_args = _create_default_resource(
         resource_self,
-        resource.type,
+        resource.resource_type,
         no_modif=False,
         no_dependencies=True,
     )
@@ -387,7 +388,7 @@ def _create_resource_from_resource(resource_self, resource: pf.ParsedResource):
     object :
         the created resource
     """
-    model = CDK._models[resource.type]
+    model = CDK._models[resource.resource_type]
 
     if model.name_key:
         resource_args[model.name_key] = resource.name
@@ -419,7 +420,7 @@ def _create_resource_from_resource(resource_self, resource: pf.ParsedResource):
     ]
 
     # Create resource
-    CDK._parent_resources_stack.remove(resource.type)
+    CDK._parent_resources_stack.remove(resource.resource_type)
 
     CDK._logger.debug(
         'Created resource %s named %s',

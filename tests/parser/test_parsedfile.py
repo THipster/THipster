@@ -15,7 +15,7 @@ def test_create_resource():
     )
 
     assert isinstance(resource, pf.ParsedResource)
-    assert resource.type == 'test_type'
+    assert resource.resource_type == 'test_type'
     assert resource.name == 'test_name'
     assert resource.attributes is None
     assert resource.position is pos
@@ -130,7 +130,7 @@ def test_create_composite_attr():
     )
 
     assert isinstance(resource, pf.ParsedResource)
-    assert resource.type == 'test_type'
+    assert resource.resource_type == 'test_type'
     assert isinstance(resource.attributes, list)
     for attribute in resource.attributes:
         assert isinstance(attribute, pf.ParsedAttribute)

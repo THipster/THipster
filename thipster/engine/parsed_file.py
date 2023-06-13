@@ -1,20 +1,14 @@
 """parsedFile.py Module
 """
 
-from abc import ABC, abstractmethod
+from abc import ABC
 
 
 class I_ParsedValue(ABC):
     """Parsed Value Interface
     """
 
-    @property
-    @abstractmethod
-    def value(self):
-        """Abstract value attribute
-        """
-
-        pass
+    pass
 
 
 class Position():
@@ -24,42 +18,21 @@ class Position():
     It includes the file name, line and column numbers of the designated element.
     """
 
-    def __init__(self, fileName: str, ln: int, col: int):
+    def __init__(self, filename: str, ln: int, col: int):
         """
         Parameters
         ----------
         fileName : str
-            File name
+            file name
         ln : int
-            Line number
+            line number
         col : int
-            Column number
+            column number
         """
 
-        self.__fileName = fileName
-        self.__ln = ln
-        self.__col = col
-
-    @property
-    def fileName(self):
-        """Name of the file
-        """
-
-        return self.__fileName
-
-    @property
-    def ln(self):
-        """Line number of the token
-        """
-
-        return self.__ln
-
-    @property
-    def col(self):
-        """Column number of the token
-        """
-
-        return self.__col
+        self.filename = filename
+        self.ln = ln
+        self.col = col
 
     def __str__(self) -> str:
         """Returns a string of the position object
@@ -67,10 +40,10 @@ class Position():
         Returns
         -------
         str
-            Displays the filename, line and column
+            (File : {}, Ln {}, Col {})
         """
 
-        return f'(File : {self.fileName}, Ln {self.ln}, Col {self.col})'
+        return f'(File : {self.filename}, Ln {self.ln}, Col {self.col})'
 
     def __eq__(self, __value: object) -> bool:
         """Check if 2 positions are equal
@@ -93,7 +66,7 @@ class Position():
 
         if isinstance(__value, Position):
             return (
-                self.fileName == __value.fileName and
+                self.filename == __value.filename and
                 self.ln == __value.ln and
                 self.col == __value.col
             )
@@ -114,8 +87,8 @@ class ParsedAttribute():
         value : I_parsed_Value
         """
 
-        self.__name = name
-        self.__position = position
+        self.name: str = name
+        self.position: Position | None = position
         self.__value = value
 
     @property
@@ -124,20 +97,6 @@ class ParsedAttribute():
         """
 
         return self.__value.value
-
-    @property
-    def name(self):
-        """Name of the parsed attribute
-        """
-
-        return self.__name
-
-    @property
-    def position(self):
-        """Position of the parsed attribute
-        """
-
-        return self.__position
 
 
 class ParsedList(I_ParsedValue):
@@ -152,14 +111,7 @@ class ParsedList(I_ParsedValue):
         """
 
         super().__init__()
-        self.__value = value
-
-    @property
-    def value(self):
-        """Value of the parsed list
-        """
-
-        return self.__value
+        self.value: list[I_ParsedValue] = value
 
     def __iter__(self):
         self.i = 0
@@ -187,14 +139,7 @@ class ParsedLiteral(I_ParsedValue):
         """
 
         super().__init__()
-        self.__value = value
-
-    @property
-    def value(self):
-        """Value of the Parsed literal
-        """
-
-        return self.__value
+        self.value: bool | int | float | str = value
 
 
 class ParsedDict(I_ParsedValue):
@@ -209,14 +154,7 @@ class ParsedDict(I_ParsedValue):
         """
 
         super().__init__()
-        self.__value = value
-
-    @property
-    def value(self):
-        """Value of the Parsed Dictionary
-        """
-
-        return self.__value
+        self.value: list[ParsedAttribute] = value
 
 
 class ParsedResource():
@@ -235,42 +173,17 @@ class ParsedResource():
         ----------
         type : str
         name : str
+            name of the resource
         position : Position
+            position of the resource in its origin file
         attributes : list[Parsed_Attribute]
+            list of attributes of the resource
         """
 
-        self.__type = type
-        self.__name = name
-        self.__position = position
-        self.__attributes = attributes
-
-    @property
-    def type(self) -> str:
-        """Type of the Parsed Resource
-        """
-
-        return self.__type
-
-    @property
-    def name(self) -> str:
-        """Name of the Parsed Resource
-        """
-
-        return self.__name
-
-    @property
-    def position(self) -> Position | None:
-        """Position of the Parsed Resource in its origin file
-        """
-
-        return self.__position
-
-    @property
-    def attributes(self) -> list[ParsedAttribute]:
-        """List of Attributes of the Parsed Resource
-        """
-
-        return self.__attributes
+        self.resource_type: str = type
+        self.name: str = name
+        self.position: Position | None = position
+        self.attributes: list[ParsedAttribute] = attributes
 
 
 class ParsedFile():
@@ -281,18 +194,4 @@ class ParsedFile():
     """
 
     def __init__(self):
-        self.__resources = []
-
-    @property
-    def resources(self) -> list[ParsedResource]:
-        """List of the resources defined in the Parsed File
-        """
-
-        return self.__resources
-
-    @resources.setter
-    def resources(self, resources):
-        """Set the resources list
-        """
-
-        self.__resources = resources
+        self.resources: list[ParsedResource] = []

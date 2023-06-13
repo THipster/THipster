@@ -77,7 +77,7 @@ def test_parse_simple_file():
     assert len(out.resources) == 1
 
     bucket = out.resources[0]
-    assert bucket.type == 'bucket'
+    assert bucket.resource_type == 'bucket'
     assert bucket.name == 'my-bucket'
     assert len(bucket.attributes) == 1
 
@@ -113,7 +113,7 @@ bucket my-bucket2:
     )
     assert len(out.resources) == 2
     for bucket in out.resources:
-        assert bucket.type == 'bucket'
+        assert bucket.resource_type == 'bucket'
         assert 'my-bucket' in bucket.name
         assert len(bucket.attributes) == 1
 
@@ -135,7 +135,7 @@ bucket my-bucket2:
     )
     assert len(out.resources) == 2
     for bucket in out.resources:
-        assert bucket.type == 'bucket'
+        assert bucket.resource_type == 'bucket'
         assert 'my-bucket' in bucket.name
         assert len(bucket.attributes) == 1
 
@@ -157,7 +157,7 @@ def test_parse_list():
     assert len(out.resources) == 1
 
     bucket = out.resources[0]
-    assert bucket.type == 'bucket'
+    assert bucket.resource_type == 'bucket'
     assert bucket.name == 'my-bucket'
     assert len(bucket.attributes) == 1
 
@@ -175,7 +175,7 @@ def test_parse_list():
     assert len(out.resources) == 1
 
     bucket = out.resources[0]
-    assert bucket.type == 'bucket'
+    assert bucket.resource_type == 'bucket'
     assert bucket.name == 'my-bucket'
     assert len(bucket.attributes) == 1
 
@@ -193,7 +193,7 @@ def test_parse_list():
     assert len(out.resources) == 1
 
     bucket = out.resources[0]
-    assert bucket.type == 'bucket'
+    assert bucket.resource_type == 'bucket'
     assert bucket.name == 'my-bucket'
     assert len(bucket.attributes) == 1
 
@@ -218,7 +218,7 @@ def test_parse_dict_list_in_dict():
     assert len(out.resources) == 1
 
     bucket = out.resources[0]
-    assert bucket.type == 'bucket'
+    assert bucket.resource_type == 'bucket'
     assert bucket.name == 'my-bucket'
     assert len(bucket.attributes) == 2
 
@@ -241,7 +241,7 @@ def test_parse_if_else():
     assert len(out.resources) == 1
 
     bucket = out.resources[0]
-    assert bucket.type == 'bucket'
+    assert bucket.resource_type == 'bucket'
     assert bucket.name == 'my-bucket'
     assert len(bucket.attributes) == 1
 
@@ -259,7 +259,7 @@ def test_parse_if_else():
     assert len(out.resources) == 1
 
     bucket = out.resources[0]
-    assert bucket.type == 'bucket'
+    assert bucket.resource_type == 'bucket'
     assert bucket.name == 'my-bucket'
     assert len(bucket.attributes) == 1
 
@@ -278,7 +278,7 @@ def test_parse_if_else():
     assert len(out.resources) == 1
 
     bucket = out.resources[0]
-    assert bucket.type == 'bucket'
+    assert bucket.resource_type == 'bucket'
     assert bucket.name == 'my-bucket'
     assert len(bucket.attributes) == 1
 
@@ -301,7 +301,7 @@ def test_parse_literal_types():
     assert len(out.resources) == 1
 
     bucket = out.resources[0]
-    assert bucket.type == 'bucket'
+    assert bucket.resource_type == 'bucket'
     assert bucket.name == 'my-bucket'
     assert len(bucket.attributes) == 1
 
@@ -318,7 +318,7 @@ def test_parse_literal_types():
     assert len(out.resources) == 1
 
     bucket = out.resources[0]
-    assert bucket.type == 'bucket'
+    assert bucket.resource_type == 'bucket'
     assert bucket.name == 'my-bucket'
     assert len(bucket.attributes) == 1
 
@@ -335,7 +335,7 @@ def test_parse_literal_types():
     assert len(out.resources) == 1
 
     bucket = out.resources[0]
-    assert bucket.type == 'bucket'
+    assert bucket.resource_type == 'bucket'
     assert bucket.name == 'my-bucket'
     assert len(bucket.attributes) == 1
 
@@ -352,7 +352,7 @@ def test_parse_literal_types():
     assert len(out.resources) == 1
 
     bucket = out.resources[0]
-    assert bucket.type == 'bucket'
+    assert bucket.resource_type == 'bucket'
     assert bucket.name == 'my-bucket'
     assert len(bucket.attributes) == 1
 
@@ -370,7 +370,7 @@ def test_parse_amount():
 
     assert len(out.resources) == 3
     for bucket in out.resources:
-        assert bucket.type == 'bucket'
+        assert bucket.resource_type == 'bucket'
         assert 'my-bucket' in bucket.name
         assert len(bucket.attributes) == 1
 
@@ -386,7 +386,7 @@ def test_parse_amount():
 
     assert len(out.resources) == 3
     for bucket, i in zip(out.resources, range(1, 4)):
-        assert bucket.type == 'bucket'
+        assert bucket.resource_type == 'bucket'
         assert 'my-bucket' in bucket.name
         assert len(bucket.attributes) == 1
 
@@ -404,7 +404,7 @@ def test_var_in_name():
 
     assert len(out.resources) == 3
     for bucket, i in zip(out.resources, range(1, 4)):
-        assert bucket.type == 'bucket'
+        assert bucket.resource_type == 'bucket'
         assert bucket.name == 'my-bucket' + str(i)
         assert len(bucket.attributes) == 1
 
@@ -424,7 +424,7 @@ def test_comparisons():
         assert len(out.resources) == 1
 
         bucket = out.resources[0]
-        assert bucket.type == 'bucket'
+        assert bucket.resource_type == 'bucket'
         assert bucket.name == 'my-bucket'
         assert len(bucket.attributes) == 1
 
@@ -470,7 +470,7 @@ def test_arithmetic():
     assert len(out.resources) == 1
 
     bucket = out.resources[0]
-    assert bucket.type == 'bucket'
+    assert bucket.resource_type == 'bucket'
     assert bucket.name == 'my-bucket'
     assert len(bucket.attributes) == 1
 
@@ -488,7 +488,7 @@ def test_arithmetic():
     assert len(out.resources) == 1
 
     bucket = out.resources[0]
-    assert bucket.type == 'bucket'
+    assert bucket.resource_type == 'bucket'
     assert bucket.name == 'my-bucket'
     assert len(bucket.attributes) == 1
 
@@ -505,7 +505,7 @@ def test_arithmetic():
     assert len(out.resources) == 1
 
     bucket = out.resources[0]
-    assert bucket.type == 'bucket'
+    assert bucket.resource_type == 'bucket'
     assert bucket.name == 'my-bucket'
     assert len(bucket.attributes) == 1
 
@@ -523,7 +523,7 @@ def test_arithmetic():
     assert len(out.resources) == 1
 
     bucket = out.resources[0]
-    assert bucket.type == 'bucket'
+    assert bucket.resource_type == 'bucket'
     assert bucket.name == 'my-bucket'
     assert len(bucket.attributes) == 1
 
