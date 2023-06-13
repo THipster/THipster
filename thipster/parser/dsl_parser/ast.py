@@ -39,7 +39,7 @@ class StringExprNode(Node):
                 self.__value.append(v)
 
     def __str__(self) -> str:
-        return f"<STRING-EXPR {' '.join(list(map(lambda x : str(x), self.__value)))}>"
+        return f"<STRING-EXPR {' '.join(list(map(str, self.__value)))}>"
 
     @property
     def values(self) -> list[Node]:
@@ -269,7 +269,7 @@ class DictNode(ValueNode):
         self.__value = value
 
     def __str__(self) -> str:
-        return f"<DICT {' '.join(list(map(lambda x : str(x), self.__value)))}>"
+        return f"<DICT {' '.join(list(map(str, self.__value)))}>"
 
     @property
     def value(self):
@@ -301,7 +301,7 @@ class ListNode(ValueNode):
         self.__value = value
 
     def __str__(self) -> str:
-        return f"<LIST {' '.join(list(map(lambda x : str(x), self.__value)))}>"
+        return f"<LIST {' '.join(list(map(str, self.__value)))}>"
 
     @property
     def value(self):
@@ -438,7 +438,7 @@ class FileNode(Node):
         self.__resources.append(item)
 
     def __str__(self) -> str:
-        return '\n'.join(list(map(lambda x: str(x), self.__resources)))
+        return '\n'.join(list(map(str, self.__resources)))
 
     @property
     def resources(self) -> list[ResourceNode]:

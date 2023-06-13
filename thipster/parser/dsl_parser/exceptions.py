@@ -31,7 +31,7 @@ class DSLSyntaxException(DSLParserBaseException):
 {str(self.expected.value)}, got {str(self.token.tokenType)}"""
         else:
             return f"""{str(self.token.position)} :\n\tSyntax error : Expected \
-{str(' or '.join(list(map(lambda x : str(x), self.expected))))}, got {
+{str(' or '.join(list(map(str, self.expected))))}, got {
     str(self.token.tokenType)}"""
 
 

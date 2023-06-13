@@ -46,7 +46,7 @@ class CDK(I_Terraform):
     @classmethod
     def generate(
         cls, file: pf.ParsedFile, models: dict[str, rm.ResourceModel],
-        _auth: I_Auth,
+        _authenticator: I_Auth,
     ):
         """Generate Terraform file from given parsed file and models
 
@@ -76,7 +76,7 @@ class CDK(I_Terraform):
             def __init__(self, scope: Construct, ns: str):
                 super().__init__(scope, ns)
 
-                _auth.authenticate(self)
+                _authenticator.authenticate(self)
 
                 for resource in file.resources:
                     res = _create_resource_from_resource(

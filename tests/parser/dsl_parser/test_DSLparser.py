@@ -548,7 +548,7 @@ def __test_syntax_error(
 
     exc_info = __test_parser_raises(mocker, input, DSLSyntaxException)
 
-    exp = str(' or '.join(list(map(lambda x: str(x), expected))))\
+    exp = str(' or '.join(list(map(str, expected))))\
         if isinstance(expected, list) else str(expected.value)
 
     assert str(exc_info.value) == f'(File : \
