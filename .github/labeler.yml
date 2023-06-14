@@ -1,6 +1,6 @@
 # PR labeler configuration file
 ci:
-- any: ['.github/**/*','!.github/ISSUE_TEMPLATE/*','!.github/PULL_REQUEST_TEMPLATE/*']
+- any: ['.github/**/*','!.github/ISSUE_TEMPLATE/*','!.github/pull_request_template.md']
 - pipelines/**/*
 - .pre-commit-config.yaml
 
@@ -8,7 +8,7 @@ gitignore:
 - .gitignore
 
 github_actions:
-- any: ['.github/**/*','!.github/ISSUE_TEMPLATE/*','!.github/PULL_REQUEST_TEMPLATE/*']
+- any: ['.github/**/*','!.github/ISSUE_TEMPLATE/*','!.github/pull_request_template.md']
 
 tests:
 - any: ['tests/**/*']
@@ -20,7 +20,7 @@ documentation:
 - LICENSE
 - README.md
 - .github/ISSUE_TEMPLATE/**/*
-- .github/PULL_REQUEST_TEMPLATE/**/*
+- .github/pull_request_template.md
 
 auth:
 - thipster/auth/**/*
