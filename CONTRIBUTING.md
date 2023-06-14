@@ -148,9 +148,9 @@ While the prerequisites above must be satisfied prior to having your pull reques
 #### Pull Requests Templates
 
 1. :bug: Fix a bug
-2. :zap: Improve performance
-3. :memo: Update documentation
-4. :sparkles: Add a feature
+2. :sparkles: Add a new feature
+3. :boom: Introduce breaking changes
+4. :memo: Update documentation
 
 ## Styleguides
 

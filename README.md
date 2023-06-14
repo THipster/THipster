@@ -5,6 +5,21 @@ It allows users to write infrastructure as code in a simplified format, using ei
 
 Written entirely in Python, it leverages the Python CDK for Terraform to create Terraform files and apply them to the chosen provider.
 
+<p align="center">
+  <a href="https://github.com/THipster/THipster/blob/main/LICENSE" target="_blank" alt="License">
+    <img src="https://img.shields.io/github/license/THipster/THipster" alt="License">
+  </a>
+  <a href="https://thipster.readthedocs.io/en/latest/?badge=latest" target="_blank" alt="Read the docs documentation">
+    <img src="https://readthedocs.org/projects/thipster/badge/?version=latest" alt="Read the docs documentation">
+  </a>
+  <a href="https://pypi.org/project/thipster/" target="_blank" alt="PyPi package">
+    <img src="https://img.shields.io/pypi/v/thipster?color=brightgreen&label=pypi%20package" alt="Package version">
+  </a>
+  <a href="https://pypi.org/project/thipster/" target="_blank" alt="PyPi package">
+    <img src="https://img.shields.io/pypi/pyversions/thipster?color=brightgreen" alt="Supported Python versions">
+  </a>
+</p>
+
 ## Technology Stack
 Written in Python 3.11, thipster is designed as a python package, to be used either as a standalone tool, or as a module inside a running process like a CI/CD pipeline.
 

@@ -19,9 +19,21 @@ with writing Terraform files. It allows users to write infrastructure as code in
 simplified format, using either YAML (with JINJA) or the dedicated Thipster DSL.',
     long_description=readme,
     long_description_content_type='text/markdown',
+    keywords=[
+        'thipster',
+        'terraform',
+        'infrastructure',
+        'infrastructure-as-code',
+        'iac',
+        'generator',
+        'dsl',
+        'yaml',
+    ],
     classifiers=[
         'Development Status :: 1 - Planning',
-        'Programming Language :: Python',
+        'Programming Language :: Python :: 3.11',
+        'License :: OSI Approved :: MIT License',
+        'Operating System :: OS Independent',
     ],
 
     download_url='https://github.com/THipster/THipster.git',
