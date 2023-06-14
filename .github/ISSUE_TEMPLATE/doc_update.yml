@@ -1,0 +1,78 @@
+name: Documentation Update 📝
+description: Suggest an update to the documentation
+labels: ["documentation","to sort"]
+body:
+- type: markdown
+  attributes:
+    value: |
+      ## Documentation Update
+- type: textarea
+  id: changes-description
+  attributes:
+    label: Description of the changes
+    placeholder: |
+      Describe the exact changes you wish to implement and why in as many details as possible.
+      If you're providing snippets in the issue, use Markdown code blocks : https://help.github.com/articles/markdown-basics/#multiple-lines.
+  validations:
+    required: true
+- type: textarea
+  id: thipster-version
+  attributes:
+    label: THipster version(s)
+    placeholder: |
+      Version(s) of the Pypi thipster's package documentation you are updating.
+  validations:
+    required: true
+- type: dropdown
+  id: host-os
+  attributes:
+    label: OS name
+    multiple: false
+    options:
+    - Linux
+    - MacOS
+    - Windows
+    - Other
+    - All
+  validations:
+    required: true
+- type: textarea
+  id: host-os-details
+  attributes:
+    label: OS details
+    placeholder: |
+      Version and details of the OS you're using. Are you running THipster in a virtual machine?
+      If so, which VM software are you using and which operating systems and versions are used for the host and the guest?
+  validations:
+    required: true
+- type: textarea
+  id: python-version
+  attributes:
+    label: Python version(s)
+    placeholder: |
+      For which python version(s) is this documentation update?
+      You can find the Python version with: python --version
+  validations:
+    required: true
+- type: dropdown
+  id: Component
+  attributes:
+    label: Component
+    description: "Which component(s) in the toolchain is concerned by the update?"
+    multiple: true
+    options:
+    - Engine
+    - Parser
+    - Auth
+    - Resource Library
+    - Other
+  validations:
+    required: true
+- type: textarea
+  id: additional-info
+  attributes:
+    label: Additional infos
+    placeholder: |
+      Add any additional context information or screenshots you think are useful.
+  validations:
+    required: false
