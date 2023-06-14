@@ -1,5 +1,8 @@
+import pytest
+
 from thipster.engine.resource_model import ResourceModel
 from thipster.repository import GithubRepo
+from thipster.repository.exceptions import ModelNotFoundError
 
 
 def test_get_bucket():
@@ -47,3 +50,12 @@ def test_get_vm():
     assert network.resource_type == 'gcp/network'
     assert len(network.attributes) == 1
     assert len(network.dependencies) == 0
+
+
+def test_model_not_found():
+    resources = ['not_an_existing_model']
+
+    repo = GithubRepo('THipster/models')
+
+    with pytest.raises(ModelNotFoundError):
+        repo.get(resources)

@@ -1,7 +1,10 @@
 import os
 
+import pytest
+
 from thipster.engine.resource_model import ResourceModel
 from thipster.repository import LocalRepo
+from thipster.repository.exceptions import ModelNotFoundError
 
 
 def create_dir(dirname: str, files: dict[str, str]):
@@ -280,3 +283,12 @@ def test_cyclic_import():
 
     assert 'test/cyclic' in models.keys()
     assert isinstance(models['test/cyclic'], ResourceModel)
+
+
+def test_model_not_found():
+    resources = ['not_an_existing_model']
+
+    repo = LocalRepo('THipster/models')
+
+    with pytest.raises(ModelNotFoundError):
+        repo.get(resources)

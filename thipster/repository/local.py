@@ -1,6 +1,7 @@
 import os
 
 from .json import JSONRepo
+from .exceptions import ModelNotFoundError
 
 
 class LocalRepo(JSONRepo):
@@ -10,5 +11,8 @@ class LocalRepo(JSONRepo):
 
     def get_json(self, name: str) -> str | bytes | bytearray:
         name += '.json'
-        with open(os.path.join(self.__repo, name), 'r') as file:
-            return file.read()
+        try:
+            with open(os.path.join(self.__repo, name), 'r') as file:
+                return file.read()
+        except Exception:
+            raise ModelNotFoundError(name)
