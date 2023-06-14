@@ -2,10 +2,9 @@ import os
 
 import yaml
 from jinja2 import Environment, FileSystemLoader
-from thipster.engine import THipsterException
 
 import thipster.engine.parsed_file as pf
-from thipster.engine import I_Parser
+from thipster.engine import I_Parser, THipsterException
 
 
 class YAMLParserBaseException(THipsterException):

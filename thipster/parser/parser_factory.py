@@ -1,8 +1,8 @@
 import os
 
-from thipster.engine import I_Parser
-from thipster.engine import THipsterException
+from thipster.engine import I_Parser, THipsterException
 from thipster.engine.parsed_file import ParsedFile
+
 from .dsl_parser import DSLParser
 from .yaml_parser import YAMLParser
 

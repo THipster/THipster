@@ -30,3 +30,11 @@ mock_use_standalone_module = true
 
 [tool.ruff]
 exclude = ["__init__.py"]
+select = [
+    "F",
+    "E",
+    "W",
+    "I",
+    "UP",
+    "C90",
+]

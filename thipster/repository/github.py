@@ -4,7 +4,6 @@
 import requests
 
 from .exceptions import ModelNotFoundError
-
 from .json import JSONRepo
 
 

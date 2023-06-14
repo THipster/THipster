@@ -4,14 +4,14 @@ import pytest
 
 import thipster.engine.parsed_file as pf
 from thipster.parser import DSLParser
-from thipster.parser.dsl_parser.exceptions import DSLParserPathNotFound
-from thipster.parser.dsl_parser.token import TOKENTYPES as TT
 from thipster.parser.dsl_parser.exceptions import (
+    DSLArithmeticException,
     DSLConditionException,
+    DSLParserPathNotFound,
     DSLSyntaxException,
     DSLUnexpectedEOF,
-    DSLArithmeticException,
 )
+from thipster.parser.dsl_parser.token import TOKENTYPES as TT
 
 from ...test_tools import create_dir
 

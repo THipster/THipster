@@ -1,5 +1,6 @@
-import anyio
 import test
+
+import anyio
 import precommit
 
 
