@@ -3,6 +3,8 @@
 
 import requests
 
+from .exceptions import ModelNotFoundError
+
 from .json import JSONRepo
 
 
@@ -43,5 +45,8 @@ class GithubRepo(JSONRepo):
         response = requests.get(
             f'https://raw.githubusercontent.com/{self.__repo}/{self.__branch}/{name}.json',
         )
+
+        if not response.ok:
+            raise ModelNotFoundError(name)
 
         return response.content
