@@ -226,3 +226,32 @@ bucket:
     assert len(cors_block) == 2
 
     clean_up()
+
+
+def test_subnetwork_in_network():
+    function_name = get_function_name()
+
+    network_name = f'network-{uuid.uuid4().int}'
+    clean_up = process_file(
+        directory=function_name,
+        file=f"""
+network:
+  name: {network_name}
+  auto_create_subnetworks: false
+  subnetwork:
+    - region: europe-west1
+      ip_range: 10.0.1.0/24
+    - region: us-west1
+      ip_range: 10.0.2.0/24
+""",
+        file_type='yaml',
+        mock_auth=True,
+    )
+
+    # Assertions on plan
+    assert_number_of_resource_type_is('google_compute_network', 1)
+    assert_resource_created('google_compute_network', network_name)
+
+    assert_number_of_resource_type_is('google_compute_subnetwork', 2)
+
+    clean_up()
