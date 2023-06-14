@@ -2,9 +2,9 @@ import thipster.engine.parsed_file as pf
 import thipster.parser.dsl_parser.ast as ast
 
 from .exceptions import (
+    DSLArithmeticException,
     DSLParserVariableAlreadyUsed,
     DSLParserVariableNotDeclared,
-    DSLArithmeticException,
 )
 from .token import TOKENTYPES as TT
 

@@ -1,5 +1,6 @@
 from thipster.engine import THipsterException
 from thipster.engine.parsed_file import Position
+
 from .token import TOKENTYPES as TT
 from .token import Token
 

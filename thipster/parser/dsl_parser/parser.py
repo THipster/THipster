@@ -39,7 +39,7 @@ class DSLParser(I_Parser):
                 files.update(DSLParser.__getfiles(f'{path}/{content}'))
 
         if os.path.isfile(path):
-            with open(path, 'r') as f:
+            with open(path) as f:
                 files.update({path: f.read()})
 
                 f.close()
