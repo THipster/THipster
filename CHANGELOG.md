@@ -2,6 +2,16 @@
 
 <!--next-version-placeholder-->
 
+## v0.16.7 (2023-06-14)
+
+### :wrench:
+
+* :wrench: feat: add ruff configuration ([#153](https://github.com/THipster/THipster/issues/153)) ([`60d86da`](https://github.com/THipster/THipster/commit/60d86daef89839e87f0b547dbbd41e504629748d))
+
+### Other
+
+* :memo: fix(doc): Update repository and package documentation ([#152](https://github.com/THipster/THipster/issues/152)) ([`17059c2`](https://github.com/THipster/THipster/commit/17059c29448e11afaaac501597933cbad3aa08ed))
+
 ## v0.16.6 (2023-06-14)
 
 ### :goal_net:
