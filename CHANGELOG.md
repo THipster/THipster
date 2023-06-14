@@ -2,6 +2,16 @@
 
 <!--next-version-placeholder-->
 
+## v0.16.6 (2023-06-14)
+
+### :goal_net:
+
+* :goal_net: fix: catch file not found on models ([#150](https://github.com/THipster/THipster/issues/150)) ([`9416e4c`](https://github.com/THipster/THipster/commit/9416e4cc5ffd2ec185debfc4488280e15ec23e14))
+
+### Other
+
+* :art: fix: improve classes code ([#149](https://github.com/THipster/THipster/issues/149)) ([`c72e0a4`](https://github.com/THipster/THipster/commit/c72e0a4df9108037ac218d76100f5d9e1a16f64c))
+
 ## v0.16.5 (2023-06-13)
 
 ### :lock:
