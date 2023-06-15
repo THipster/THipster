@@ -1,30 +1,20 @@
 import os
 
-from thipster.engine import ParserPort, THipsterError
+from thipster.engine import ParserPort
 from thipster.engine.parsed_file import ParsedFile
 
 from .dsl_parser import DSLParser
+from .exceptions import (
+    NoFileFoundError,
+    ParserPathNotFoundError,
+)
 from .yaml_parser import YAMLParser
 
 
-def _no_parser(path_extension):
-    class NoParser(ParserPort):
-        @classmethod
-        def run(cls, path):
-            raise Exception(f'{path_extension} files can\'t be parsed')
-
-    return NoParser
-
-
-class ParserPathNotFoundError(THipsterError):
-    def __init__(self, path, *args: object) -> None:
-        super().__init__(*args)
-
-        self.__path = path
-
-    @property
-    def message(self) -> str:
-        return f'Path not found : {self.__path}'
+class NoParser(ParserPort):
+    @classmethod
+    def run(cls, path) -> ParsedFile:
+        return ParsedFile()
 
 
 class ParserFactory(ParserPort):
@@ -94,6 +84,9 @@ class ParserFactory(ParserPort):
             parsed_file = cls.__get_parser(file).run(file)
             res.resources += parsed_file.resources
 
+        if len(res.resources) == 0:
+            raise NoFileFoundError(path)
+
         return res
 
     @classmethod
@@ -102,5 +95,5 @@ class ParserFactory(ParserPort):
         _, path_extension = os.path.splitext(path)
 
         return cls.__parsers.get(
-            path_extension, _no_parser(path_extension),
+            path_extension, NoParser,
         )
