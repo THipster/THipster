@@ -1,4 +1,5 @@
 import os
+from abc import ABC
 
 import yaml
 from jinja2 import Environment, FileSystemLoader
@@ -6,20 +7,12 @@ from jinja2 import Environment, FileSystemLoader
 import thipster.engine.parsed_file as pf
 from thipster.engine import ParserPort, THipsterError
 
+from .exceptions import ParserPathNotFoundError
 
-class YAMLParserBaseError(THipsterError):
+
+class YAMLParserBaseError(THipsterError, ABC):
     def __init__(self, *args: object) -> None:
         super().__init__(*args)
-
-
-class YAMLParserPathNotFoundError(YAMLParserBaseError):
-    def __init__(self, file, *args: object) -> None:
-        super().__init__(*args)
-        self.file = file
-
-    @property
-    def message(self) -> str:
-        return f'Path not found : {self.file}'
 
 
 class YAMLParserNoNameError(YAMLParserBaseError):
@@ -52,7 +45,7 @@ class YAMLParser(ParserPort):
         path = os.path.abspath(path)
 
         if not os.path.exists(path):
-            raise YAMLParserPathNotFoundError(path)
+            raise ParserPathNotFoundError(path)
 
         files = []
 

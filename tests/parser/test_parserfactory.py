@@ -1,5 +1,8 @@
+import pytest
+
 from thipster.engine.parsed_file import ParsedFile
 from thipster.parser import ParserFactory
+from thipster.parser.exceptions import NoFileFoundError
 
 from ..test_tools import create_dir
 
@@ -113,3 +116,39 @@ def test_two_types_of_file():
         region = bucket.attributes[0]
         assert region.name == 'region'
         assert region.value == 'euw'
+
+
+def test_no_parsable_file():
+    with pytest.raises(NoFileFoundError):
+        __test_file(
+            {
+                'test_file.txt':
+                """ """,
+                'test_file2.txt':
+                """ """,
+            },
+        )
+
+
+def test_one_parsable_file():
+    out = __test_file(
+        {
+            'test_file.thips':
+            """bucket my-bucket1:
+\tregion: euw
+""",
+            'test_file2.txt':
+            """ """,
+        },
+    )
+
+    assert len(out.resources) == 1
+
+    bucket = out.resources[0]
+    assert bucket.resource_type == 'bucket'
+    assert bucket.name == 'my-bucket1'
+    assert len(bucket.attributes) == 1
+
+    region = bucket.attributes[0]
+    assert region.name == 'region'
+    assert region.value == 'euw'
