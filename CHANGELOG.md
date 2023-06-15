@@ -2,6 +2,16 @@
 
 <!--next-version-placeholder-->
 
+## v0.17.0 (2023-06-15)
+
+### :sparkles:
+
+* :sparkles: feat: allow resource creation from dependency ([#155](https://github.com/THipster/THipster/issues/155)) ([`e5e4e82`](https://github.com/THipster/THipster/commit/e5e4e82e8eb50785576ea24a8044c81d442bce1b))
+
+### Other
+
+* :memo: fix: pr template directory ([#154](https://github.com/THipster/THipster/issues/154)) ([`d3e5b74`](https://github.com/THipster/THipster/commit/d3e5b744404e0fb90c5fa0b7def19fdf48d46abf))
+
 ## v0.16.7 (2023-06-14)
 
 ### :wrench:
