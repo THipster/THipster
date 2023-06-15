@@ -84,7 +84,7 @@ class ParsedAttribute():
         ----------
         name : str
         position : Position
-        value : I_parsed_Value
+        value : ParsedValue
         """
 
         self.name: str = name
@@ -107,7 +107,7 @@ class ParsedList(ParsedValue):
         """
         Parameters
         ----------
-        value : list[I_Parsed_Value]
+        value : list[ParsedValue]
         """
 
         super().__init__()
@@ -150,7 +150,7 @@ class ParsedDict(ParsedValue):
         """
         Parameters
         ----------
-        value : list[Parsed_Attribute]
+        value : list[ParsedAttribute]
         """
 
         super().__init__()
@@ -176,7 +176,7 @@ class ParsedResource():
             name of the resource
         position : Position
             position of the resource in its origin file
-        attributes : list[Parsed_Attribute]
+        attributes : list[ParsedAttribute]
             list of attributes of the resource
         """
 

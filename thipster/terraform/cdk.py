@@ -62,7 +62,7 @@ class CDK(TerraformPort):
             parsedFile object to transform
         models : dict[str, rm.ResourceModel]
             associated models
-        _auth : I_Auth
+        _auth : AuthPort
             authenticator to use
         """
         cls._created_resources = {}

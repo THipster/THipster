@@ -52,9 +52,9 @@ class JSONRepo(RepositoryPort, ABC):
 
         Returns
         -------
-        I_Model_Value | None
-            Value of the attribute, implementation of I_Model_Value : Model_Dict,
-            Model_List, Model_Literal or None
+        ModelValue | None
+            Value of the attribute, implementation of ModelValue : ModelDict,
+            ModelList, ModelLiteral or None
         """
         if val is None:
             return None
@@ -75,7 +75,7 @@ class JSONRepo(RepositoryPort, ABC):
 
         Returns
         -------
-        list[Model_Attribute]
+        list[ModelAttribute]
             Attributes of the resource model
         """
 

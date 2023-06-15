@@ -26,13 +26,13 @@ class Engine():
         """
         Parameters
         ----------
-        parser : I_Parser
+        parser : ParserPort
             Instance of a Parser class
-        repository : I_Repository
+        repository : RepositoryPort
             Instance of a Respository class
-        auth : I_Auth
+        auth : AuthPort
             Instance of an Auth class
-        terraform : I_Terraform
+        terraform : TerraformPort
             Instance of a Terraform class
 
         """

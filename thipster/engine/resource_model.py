@@ -25,7 +25,7 @@ class ModelAttribute():
         ----------
         name : str
             Attribute name
-        default : I_Model_Value, optional
+        default : ModelValue, optional
             Default Attribute value if there is one, by default None
         optional : bool, optional
             Is attribute optional ?, by default True
