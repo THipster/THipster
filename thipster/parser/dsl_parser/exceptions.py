@@ -1,16 +1,16 @@
-from thipster.engine import THipsterException
+from thipster.engine import THipsterError
 from thipster.engine.parsed_file import Position
 
 from .token import TOKENTYPES as TT
 from .token import Token
 
 
-class DSLParserBaseException(THipsterException):
+class DSLParserBaseError(THipsterError):
     def __init__(self, *args: object) -> None:
         super().__init__(*args)
 
 
-class DSLParserPathNotFound(DSLParserBaseException):
+class DSLParserPathNotFoundError(DSLParserBaseError):
     def __init__(self, file, *args: object) -> None:
         super().__init__(*args)
         self.file = file
@@ -20,7 +20,7 @@ class DSLParserPathNotFound(DSLParserBaseException):
         return f'Path not found : {self.file}'
 
 
-class DSLSyntaxException(DSLParserBaseException):
+class DSLSyntaxError(DSLParserBaseError):
     def __init__(self, token: Token, expected: TT | list[TT], *args: object) -> None:
         super().__init__(*args)
         self.token = token
@@ -37,7 +37,7 @@ class DSLSyntaxException(DSLParserBaseException):
     str(self.token.token_type)}"""
 
 
-class DSLConditionException(DSLParserBaseException):
+class DSLConditionError(DSLParserBaseError):
     def __init__(self, token: Token, *args: object) -> None:
         super().__init__(*args)
         self.token = token
@@ -47,7 +47,7 @@ class DSLConditionException(DSLParserBaseException):
         return f'{str(self.token.position)} :\n\tBad condition'
 
 
-class DSLArithmeticException(DSLParserBaseException):
+class DSLArithmeticError(DSLParserBaseError):
     def __init__(self, position: Position, error_message: str, *args: object) -> None:
         super().__init__(*args)
         self.position = position
@@ -58,7 +58,7 @@ class DSLArithmeticException(DSLParserBaseException):
         return f'{str(self.position)} :\n\tArithmetic error :{self.error_message}'
 
 
-class DSLUnexpectedEOF(DSLParserBaseException):
+class DSLUnexpectedEOFError(DSLParserBaseError):
     def __init__(self, *args: object) -> None:
         super().__init__(*args)
 
@@ -67,7 +67,7 @@ class DSLUnexpectedEOF(DSLParserBaseException):
         return 'Unexpected EOF'
 
 
-class DSLParserNoEndingQuotes(DSLParserBaseException):
+class DSLParserNoEndingQuotesError(DSLParserBaseError):
     def __init__(self, position, *args: object) -> None:
         super().__init__(*args)
         self.position = position
@@ -77,21 +77,21 @@ class DSLParserNoEndingQuotes(DSLParserBaseException):
         return f'Invalid syntax, missing ending quotes at : {self.position}'
 
 
-class DSLParserVariableAlreadyUsed(DSLParserBaseException):
+class DSLParserVariableAlreadyUsedError(DSLParserBaseError):
     def __init__(self, var: str, *args: object) -> None:
         super().__init__(*args)
         self.variable = var
 
     @property
     def message(self) -> str:
-        return f'Variable already used : {self.variable}',
+        return f'Variable already used : {self.variable}'
 
 
-class DSLParserVariableNotDeclared(DSLParserBaseException):
+class DSLParserVariableNotDeclaredError(DSLParserBaseError):
     def __init__(self, var: str, *args: object) -> None:
         super().__init__(*args)
         self.variable = var
 
     @property
     def message(self) -> str:
-        return f'Variable not declared : {self.variable}',
+        return f'Variable not declared : {self.variable}'

@@ -7,7 +7,7 @@ from cdktf_cdktf_provider_google.provider import GoogleProvider
 
 from thipster import Engine
 from thipster.auth import Google
-from thipster.engine import I_Auth
+from thipster.engine import AuthPort
 from thipster.parser import ParserFactory
 from thipster.repository import LocalRepo
 from thipster.terraform import Terraform
@@ -16,7 +16,7 @@ LOCAL_REPO = 'tests/resources/e2e/models'
 REMOTE_REPO = 'THipster/models'
 
 
-class MockAuth(I_Auth):
+class MockAuth(AuthPort):
     def authenticate(self, app):
         GoogleProvider(
             app, 'default_google',

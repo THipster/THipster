@@ -3,7 +3,7 @@ from thipster.engine.parsed_file import Position
 from thipster.parser.dsl_parser.token import Token
 
 
-def test_create_AST():
+def test_create_ast():
     # bucket nom-#test \n\t toto: tata
     tree = ast.FileNode()
 

@@ -1,10 +1,10 @@
 import google.auth
 from cdktf_cdktf_provider_google.provider import GoogleProvider
 
-from thipster.engine import I_Auth
+from thipster.engine import AuthPort
 
 
-class GoogleAuth(I_Auth):
+class GoogleAuth(AuthPort):
     """Authenticate to Google Cloud Platform (GCP) projects
 
     To use this module, you need to have a GCP account and a project created.

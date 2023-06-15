@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 
 
-class I_Auth(ABC):
+class AuthPort(ABC):
     """Authentification module interface
     """
 

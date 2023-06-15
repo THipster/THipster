@@ -3,11 +3,11 @@ from abc import ABC, abstractmethod
 from thipster.engine.resource_model import ResourceModel
 
 
-class I_Repository(ABC):
+class RepositoryPort(ABC):
     """Repository module interface
     """
     @abstractmethod
-    def get(self, resourceNames: list[str]) -> dict[str, ResourceModel]:
+    def get(self, resource_names: list[str]) -> dict[str, ResourceModel]:
         """Abstract get method
 
         Parameters

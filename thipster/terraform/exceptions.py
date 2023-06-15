@@ -1,36 +1,38 @@
-from thipster.engine import THipsterException
+from thipster.engine import THipsterError
 
 
-class CDKException(THipsterException):
+class CDKError(THipsterError):
     pass
 
 
-class CDKInvalidAttribute(CDKException):
-    def __init__(self, attr: str, modelType: str, **args: object) -> None:
+class CDKInvalidAttributeError(CDKError):
+    def __init__(self, attr: str, model_type: str, **args: object) -> None:
         super().__init__(*args)
         self.__attr = attr
-        self.__modelType = modelType
+        self.__modelType = model_type
 
     @property
     def message(self) -> str:
         return f'{self.__attr} in {self.__modelType} but not useful'
 
 
-class CDKMissingAttribute(CDKException):
+class CDKMissingAttributeError(CDKError):
     @property
     def message(self) -> str:
         return 'Missing an attribute'
 
 
-class CDKMissingAttributeInDependency(CDKMissingAttribute):
+class CDKMissingAttributeInDependencyError(CDKMissingAttributeError):
     pass
 
 
-class CDKDependencyNotDeclared(CDKException):
-    def __init__(self, depType: str, depName: str, **args: object) -> None:
+class CDKDependencyNotDeclaredError(CDKError):
+    def __init__(
+            self, dependency_type: str, dependency_name: str, **args: object,
+    ) -> None:
         super().__init__(*args)
-        self.__name = depName
-        self.__type = depType
+        self.__name = dependency_name
+        self.__type = dependency_type
 
     @property
     def message(self) -> str:
@@ -38,7 +40,7 @@ class CDKDependencyNotDeclared(CDKException):
 (be sure to declare it before using it)'
 
 
-class CDKCyclicDependencies(CDKException):
+class CDKCyclicDependenciesError(CDKError):
     def __init__(self, stack: list[str], **args: object) -> None:
         super().__init__(*args)
         self.__stack = stack

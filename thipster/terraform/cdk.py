@@ -13,7 +13,7 @@ from python_terraform import Terraform
 import thipster.engine.parsed_file as pf
 import thipster.engine.resource_model as rm
 import thipster.terraform.exceptions as cdk_exceptions
-from thipster.engine import I_Auth, I_Terraform
+from thipster.engine import AuthPort, TerraformPort
 from thipster.helpers import create_logger
 
 
@@ -22,7 +22,7 @@ class ResourceCreationContext():
         pass
 
 
-class CDK(I_Terraform):
+class CDK(TerraformPort):
     _models = []
     _parent_resources_stack = []
     _resources_to_create = []
@@ -52,7 +52,7 @@ class CDK(I_Terraform):
     @classmethod
     def generate(
         cls, file: pf.ParsedFile, models: dict[str, rm.ResourceModel],
-        _authenticator: I_Auth,
+        _authenticator: AuthPort,
     ):
         """Generate Terraform file from given parsed file and models
 
@@ -221,7 +221,7 @@ default False
         CDK._logger.error(
             '%s already present in parent Stack', resource_type,
         )
-        raise cdk_exceptions.CDKCyclicDependencies(
+        raise cdk_exceptions.CDKCyclicDependenciesError(
             CDK._parent_resources_stack,
         )
 
@@ -233,12 +233,12 @@ default False
 
     for a in CDK._inherited_attributes:
         if a.name in attributes.keys():
-            attributes[a.name].default = rm.Model_Literal(a.value)
+            attributes[a.name].default = rm.ModelLiteral(a.value)
 
         else:
-            attributes[a.name] = rm.Model_Attribute(
+            attributes[a.name] = rm.ModelAttribute(
                 cdk_name=a.name,
-                default=rm.Model_Literal(a.value),
+                default=rm.ModelLiteral(a.value),
             )
 
     # Checks that all attributes have a default value
@@ -246,7 +246,9 @@ default False
         no_modif
         and not all(map(lambda x: x.default is not None, attributes.values()))
     ):
-        raise cdk_exceptions.CDKMissingAttributeInDependency(resource_type)
+        raise cdk_exceptions.CDKMissingAttributeInDependencyError(
+            resource_type,
+        )
 
     # Import package and class
     CDK._pip_install(model.cdk_provider)
@@ -740,7 +742,7 @@ def _check_explicit_dependency(
     if created_name not in CDK._created_resources.keys():
 
         if isinstance(dependency_value, str):
-            raise cdk_exceptions.CDKDependencyNotDeclared(
+            raise cdk_exceptions.CDKDependencyNotDeclaredError(
                 attribute_name, dependency_value,
             )
 

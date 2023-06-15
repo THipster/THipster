@@ -3,10 +3,10 @@
 
 import thipster.engine.parsed_file as pf
 
-from .i_auth import I_Auth
-from .i_parser import I_Parser
-from .i_repository import I_Repository
-from .i_terraform import I_Terraform
+from .i_auth import AuthPort
+from .i_parser import ParserPort
+from .i_repository import RepositoryPort
+from .i_terraform import TerraformPort
 from .resource_model import ResourceModel
 
 
@@ -18,10 +18,10 @@ class Engine():
     """
 
     def __init__(
-            self, parser: I_Parser,
-            repository: I_Repository,
-            auth: I_Auth,
-            terraform:  I_Terraform,
+            self, parser: ParserPort,
+            repository: RepositoryPort,
+            auth: AuthPort,
+            terraform:  TerraformPort,
     ):
         """
         Parameters
@@ -47,7 +47,7 @@ class Engine():
 
     @parser.setter
     def parser(self, value):
-        if not isinstance(value, I_Parser):
+        if not isinstance(value, ParserPort):
             raise Exception()
 
         self.__parser = value
@@ -58,7 +58,7 @@ class Engine():
 
     @repository.setter
     def repository(self, value):
-        if not isinstance(value, I_Repository):
+        if not isinstance(value, RepositoryPort):
             raise Exception()
 
         self.__repository = value
@@ -69,7 +69,7 @@ class Engine():
 
     @auth.setter
     def auth(self, value):
-        if not isinstance(value, I_Auth):
+        if not isinstance(value, AuthPort):
             raise Exception()
 
         self.__auth = value
@@ -80,7 +80,7 @@ class Engine():
 
     @terraform.setter
     def terraform(self, value):
-        if not isinstance(value, I_Terraform):
+        if not isinstance(value, TerraformPort):
             raise Exception()
 
         self.__terraform = value

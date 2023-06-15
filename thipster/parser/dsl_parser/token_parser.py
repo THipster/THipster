@@ -1,9 +1,9 @@
 import thipster.parser.dsl_parser.ast as ast
 
 from .exceptions import (
-    DSLConditionException,
-    DSLSyntaxException,
-    DSLUnexpectedEOF,
+    DSLConditionError,
+    DSLSyntaxError,
+    DSLUnexpectedEOFError,
 )
 from .token import TOKENTYPES as TT
 from .token import Token
@@ -35,9 +35,9 @@ class TokenParser():
         if expected:
             if type(expected) is list:
                 if next_token_type not in expected:
-                    raise DSLSyntaxException(self.__tokens[0], expected)
+                    raise DSLSyntaxError(self.__tokens[0], expected)
             elif next_token_type != expected:
-                raise DSLSyntaxException(self.__tokens[0], expected)
+                raise DSLSyntaxError(self.__tokens[0], expected)
         return self.__tokens.pop(0)
 
     def __check(self, expected: TT, index: int = 0) -> Token | None:
@@ -52,7 +52,7 @@ class TokenParser():
     def __get_next_type(self, index: int = 0):
         """Get the type of the next token"""
         if len(self.__tokens) <= index:
-            raise DSLUnexpectedEOF
+            raise DSLUnexpectedEOFError
 
         return self.__tokens[index].token_type
 
@@ -119,7 +119,7 @@ class TokenParser():
 
             properties = self.__get_properties(indent+1)
 
-        except DSLSyntaxException as e:
+        except DSLSyntaxError as e:
             raise e
 
         resource = ast.ResourceNode(
@@ -145,7 +145,7 @@ class TokenParser():
             self.__get_whitespaces()
             self.__next(TT.COLON)
             self.__get_whitespaces()
-        except DSLSyntaxException as e:
+        except DSLSyntaxError as e:
             raise e
 
         next_token_type = self.__get_next_type()
@@ -180,9 +180,9 @@ class TokenParser():
             self.__get_whitespaces()
             newline = self.__get_newline()
             properties = self.__get_properties(indent+1)
-        except DSLSyntaxException as e:
+        except DSLSyntaxError as e:
             if e.token.token_type == TT.TAB:
-                raise DSLSyntaxException(
+                raise DSLSyntaxError(
                     token=newline,
                     expected=TT.STRING,
                 )
@@ -217,14 +217,14 @@ class TokenParser():
                 props = self.__get_list(indent)
 
             else:
-                raise DSLSyntaxException(self.__next(), TT.TAB)
+                raise DSLSyntaxError(self.__next(), TT.TAB)
 
-        except DSLUnexpectedEOF as eof:
+        except DSLUnexpectedEOFError as eof:
             if indent > 1:
-                raise DSLUnexpectedEOF from eof
+                raise DSLUnexpectedEOFError from eof
 
             if eof.__cause__:
-                raise DSLUnexpectedEOF from eof.__cause__
+                raise DSLUnexpectedEOFError from eof.__cause__
 
             props = ast.DictNode([])
 
@@ -338,7 +338,7 @@ class TokenParser():
             amount = self.__get_arith_expr()
 
             self.__get_whitespaces()
-        except DSLSyntaxException as e:
+        except DSLSyntaxError as e:
             raise e
 
         amount_variable = self.__check(TT.VAR)
@@ -364,7 +364,7 @@ class TokenParser():
         try:
             condition = self.__get_comp_expr()
             self.__get_whitespaces()
-        except DSLSyntaxException as e:
+        except DSLSyntaxError as e:
             raise e
 
         return ast.IfNode(
@@ -485,8 +485,8 @@ class TokenParser():
                     self.__get_whitespaces()
                     return ast.CompExprNode(left_expression, operator, right_expression)
 
-        except DSLSyntaxException as e:
-            raise DSLConditionException(e.token)
+        except DSLSyntaxError as e:
+            raise DSLConditionError(e.token)
 
     def __get_arith_expr(self) -> ast.ArithExprNode:
         terms = []
@@ -563,7 +563,7 @@ class TokenParser():
                 return expression
 
             case _:
-                raise DSLSyntaxException(
+                raise DSLSyntaxError(
                     self.__tokens[0], [TT.INT, TT.FLOAT, TT.PARENTHESES_START],
                 )
 

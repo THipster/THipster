@@ -3,9 +3,9 @@ import uuid
 import pytest
 
 from thipster.terraform.exceptions import (
-    CDKCyclicDependencies,
-    CDKDependencyNotDeclared,
-    CDKMissingAttributeInDependency,
+    CDKCyclicDependenciesError,
+    CDKDependencyNotDeclaredError,
+    CDKMissingAttributeInDependencyError,
 )
 
 from ..test_tools import (
@@ -64,7 +64,7 @@ bucket {bucket_name}:
 def test_dep_with_no_options():
     function_name = get_function_name()
 
-    with pytest.raises(CDKMissingAttributeInDependency):
+    with pytest.raises(CDKMissingAttributeInDependencyError):
         clean_up = process_file(
             directory=function_name,
             file="""
@@ -80,7 +80,7 @@ bucket_bad_dep_parent my-bucket:
 def test_cyclic_deps():
     function_name = get_function_name()
 
-    with pytest.raises(CDKCyclicDependencies):
+    with pytest.raises(CDKCyclicDependenciesError):
         clean_up = process_file(
             directory=function_name,
             file="""
@@ -128,7 +128,7 @@ firewall testparent:
 def test_missing_explicit_dependency():
     function_name = get_function_name()
 
-    with pytest.raises(CDKDependencyNotDeclared):
+    with pytest.raises(CDKDependencyNotDeclaredError):
         clean_up = process_file(
             directory=function_name,
             file="""

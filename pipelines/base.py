@@ -1,7 +1,7 @@
 import dagger
 
 
-def pythonBase(client: dagger.Client, version: str) -> dagger.Container:
+def python_base(client: dagger.Client, version: str) -> dagger.Container:
     """Returns a dagger pipeline container with the python base image
 
     Parameters
@@ -26,7 +26,7 @@ def pythonBase(client: dagger.Client, version: str) -> dagger.Container:
     return python
 
 
-def thipsterBase(client: dagger.Client, version: str) -> dagger.Container:
+def thipster_base(client: dagger.Client, version: str) -> dagger.Container:
     """Returns a dagger pipeline container with the python base image
 
     Parameters
@@ -44,7 +44,7 @@ def thipsterBase(client: dagger.Client, version: str) -> dagger.Container:
     src = client.host().directory('.')
 
     thips = (
-        pythonBase(client, version)
+        python_base(client, version)
         # Install Terraform CLI
         .with_exec(['wget', 'https://releases.hashicorp.com/terraform/1.4.6/terraform_1.4.6_linux_amd64.zip'])
         .with_exec(['unzip', 'terraform_1.4.6_linux_amd64.zip'])

@@ -4,95 +4,49 @@ from thipster.engine.parsed_file import Position
 class LexerPosition():
     def __init__(
         self,
-        fileName: str = '',
-        startLine: int = 1,
-        startColumn: int = 1,
+        filename: str = '',
     ) -> None:
         """Class to represent the state and position of the lexer
 
         Parameters
         ----------
-        fileName : str
+        filename : str
             Name of the current file
-        startLine : int, optional
-            Starting line in the current file, by default 1
-        startColumn : int, optional
-            Starting column in the current file, by default 1
         """
-        self.__currentFile = fileName
-        self.__currentLine = startLine
-        self.__currentColumn = startColumn
-        self.__currentToken = ''
-        self.__currentTokenIndex = startColumn
-        self.__currentTokenLine = startColumn
-        self.__isVariable = False
-        self.__isQuotedString = False
-        self.__isMultiLine = False
-        self.__consecutiveWhitespaces = 0
+        self.currentFile = filename
+        self.currentLine = 1
+        self.currentColumn = 1
+        self.currentToken = ''
+        self.currentTokenIndex = 1
+        self.__currentTokenLine = 1
+        self.isVariable = False
+        self.isQuotedString = False
+        self.isMultiLine = False
+        self.consecutiveWhitespaces = 0
 
     @property
-    def currentFile(self):
-        return self.__currentFile
-
-    @property
-    def currentLine(self):
-        return self.__currentLine
-
-    @property
-    def currentColumn(self):
-        return self.__currentColumn
-
-    @property
-    def currentToken(self):
-        return self.__currentToken
-
-    @property
-    def currentTokenIndex(self):
-        return self.__currentTokenIndex
-
-    @property
-    def isCurrentTokenAVariable(self):
-        return self.__isVariable
-
-    @property
-    def isCurrentTokenMultiLine(self):
-        return self.__isMultiLine
-
-    @property
-    def isQuotedString(self):
-        return self.__isQuotedString
-
-    @isQuotedString.setter
-    def isQuotedString(self, value):
-        self.__isQuotedString = value
-
-    @property
-    def consecutiveWhitespaces(self):
-        return self.__consecutiveWhitespaces
-
-    @property
-    def currentCharPosition(self) -> Position:
+    def currentCharPosition(self) -> Position:  # noqa: N802
         return Position(
-            self.__currentFile,
-            self.__currentLine,
-            self.__currentColumn,
+            self.currentFile,
+            self.currentLine,
+            self.currentColumn,
         )
 
     @property
-    def currentTokenPosition(self) -> Position:
+    def currentTokenPosition(self) -> Position:  # noqa: N802
         return Position(
-            self.__currentFile,
+            self.currentFile,
             self.__currentTokenLine,
-            self.__currentTokenIndex,
+            self.currentTokenIndex,
         )
 
-    def newLine(self) -> None:
+    def new_line(self) -> None:
         """Get the position to the next line
         """
-        self.__currentLine += 1
-        self.__currentColumn = 1
+        self.currentLine += 1
+        self.currentColumn = 1
 
-    def nextColumn(self, step: int = 1) -> None:
+    def next_column(self, step: int = 1) -> None:
         """Get the position to a new column
 
         Parameters
@@ -100,12 +54,12 @@ class LexerPosition():
         step : int
             Step to modify the current column, by default 1
         """
-        if (self.__currentColumn + step) > 0:
-            self.__currentColumn += step
+        if (self.currentColumn + step) > 0:
+            self.currentColumn += step
         else:
-            self.__currentColumn = 0  # Raise exception ?
+            self.currentColumn = 0  # Raise exception ?
 
-    def addCharToCurrentToken(self, char) -> None:
+    def add_to_current_token(self, char) -> None:
         """Add a char to the current stored token
 
         Parameters
@@ -113,59 +67,39 @@ class LexerPosition():
         char : _type_
             Char to add to the token
         """
-        self.__currentToken += char
+        self.currentToken += char
 
-    def setCurrentTokenIndex(self, newIndex: int | None = None) -> None:
+    def set_current_token_index(self, new_index: int | None = None) -> None:
         """Modify the stored token index
 
         Parameters
         ----------
-        newIndex : int, optional
+        new_index : int, optional
             New index of the stored token, by default None
         """
-        if newIndex:
-            self.__currentTokenIndex = newIndex
+        if new_index:
+            self.currentTokenIndex = new_index
         else:
-            self.__currentTokenIndex = self.__currentColumn
-            self.__currentTokenLine = self.__currentLine
+            self.currentTokenIndex = self.currentColumn
+            self.__currentTokenLine = self.currentLine
 
-    def resetCurrentToken(self, newIndex: int | None = None) -> None:
+    def reset_current_token(self, new_index: int | None = None) -> None:
         """Reset the current stored token and its index
 
         Parameters
         ----------
-        newIndex : int, optional
+        new_index : int, optional
             New index of the stored token, by default None
         """
-        self.__currentToken = ''
-        self.setCurrentTokenIndex(newIndex)
+        self.currentToken = ''
+        self.set_current_token_index(new_index)
 
-    def addConsecutiveWhitespace(self) -> None:
+    def increment_consecutive_whitespaces(self) -> None:
         """Add a consecutive whitespace to the lexer state
         """
-        self.__consecutiveWhitespaces += 1
+        self.consecutiveWhitespaces += 1
 
-    def resetConsecutiveWhitespaces(self) -> None:
+    def reset_consecutive_whitespaces(self) -> None:
         """Reset consecutive whitespaces of the lexer state to 0
         """
-        self.__consecutiveWhitespaces = 0
-
-    def setIsVariable(self, value: bool = False) -> None:
-        """Set the current stored token as a variable
-
-        Parameters
-        ----------
-        value : bool, optional
-            Is the stored token a variable True or False, by default False
-        """
-        self.__isVariable = value
-
-    def setIsMultiLine(self, value: bool = False) -> None:
-        """Set the current token as a multi-line input
-
-        Parameters
-        ----------
-        value : bool, optional
-            Is the current token a multi-line input True or False, by default False
-        """
-        self.__isMultiLine = value
+        self.consecutiveWhitespaces = 0

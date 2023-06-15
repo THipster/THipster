@@ -1,15 +1,15 @@
 import os
 
-from thipster.engine import I_Parser
+from thipster.engine import ParserPort
 from thipster.engine.parsed_file import ParsedFile
 
-from .exceptions import DSLParserBaseException, DSLParserPathNotFound
+from .exceptions import DSLParserBaseError, DSLParserPathNotFoundError
 from .interpreter import Interpreter
 from .lexer import Lexer
 from .token_parser import TokenParser
 
 
-class DSLParser(I_Parser):
+class DSLParser(ParserPort):
 
     @classmethod
     def __getfiles(cls, path: str) -> dict[str, str]:
@@ -30,7 +30,7 @@ class DSLParser(I_Parser):
         path = os.path.abspath(path)
 
         if not os.path.exists(path):
-            raise DSLParserPathNotFound(path)
+            raise DSLParserPathNotFoundError(path)
 
         files = {}
 
@@ -72,7 +72,7 @@ class DSLParser(I_Parser):
             parsed_file = interpreter.run(ast)
 
             return parsed_file
-        except DSLParserBaseException as e:
+        except DSLParserBaseError as e:
             raise e
         except Exception as e:
             raise e

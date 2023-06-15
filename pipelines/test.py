@@ -17,7 +17,7 @@ async def test(version: str):
         src = client.host().directory('.')
 
         setup = (
-            base.thipsterBase(client, version)
+            base.thipster_base(client, version)
             .with_mounted_directory('/src', src)
             .with_workdir('/src')
             .with_exec(['pip', 'install', '-e', '.[test]'])

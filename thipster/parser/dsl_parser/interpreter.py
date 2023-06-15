@@ -2,9 +2,9 @@ import thipster.engine.parsed_file as pf
 import thipster.parser.dsl_parser.ast as ast
 
 from .exceptions import (
-    DSLArithmeticException,
-    DSLParserVariableAlreadyUsed,
-    DSLParserVariableNotDeclared,
+    DSLArithmeticError,
+    DSLParserVariableAlreadyUsedError,
+    DSLParserVariableNotDeclaredError,
 )
 from .token import TOKENTYPES as TT
 
@@ -35,7 +35,7 @@ class Interpreter():
         """
         return tree.accept(self)
 
-    def visitCompExpr(self, element: ast.CompExprNode) -> bool:
+    def visit_comp_expr(self, element: ast.CompExprNode) -> bool:
         """Visitor for a StringNode
 
         Parameters
@@ -100,7 +100,7 @@ class Interpreter():
                     element.right_value.accept(self).value,
                 )
 
-    def visitArithExpr(self, element: ast.ArithExprNode) -> int | float:
+    def visit_arith_expr(self, element: ast.ArithExprNode) -> int | float:
         """Visitor for a StringNode
 
         Parameters
@@ -133,7 +133,7 @@ class Interpreter():
 
         return pf.ParsedLiteral(total)
 
-    def visitTerm(self, element: ast.TermNode) -> int | float:
+    def visit_term(self, element: ast.TermNode) -> int | float:
         """Visitor for a StringNode
 
         Parameters
@@ -166,7 +166,7 @@ class Interpreter():
 
         return total
 
-    def visitFactor(self, element: ast.FactorNode) -> int | float:
+    def visit_factor(self, element: ast.FactorNode) -> int | float:
         """Visitor for a StringNode
 
         Parameters
@@ -198,7 +198,7 @@ class Interpreter():
                     total = total**pow
                 return pf.ParsedLiteral(total)
 
-    def visitStringExpr(self, element: ast.StringExprNode) -> str:
+    def visit_string_expr(self, element: ast.StringExprNode) -> str:
         """Visitor for a StringExprNode
 
         Parameters
@@ -217,7 +217,7 @@ class Interpreter():
 
         return pf.ParsedLiteral(ret)
 
-    def visitVariableDefinition(self, element: ast.VariableDefinitionNode) -> str:
+    def visit_variable_definition(self, element: ast.VariableDefinitionNode) -> str:
         """Visitor for a VariableDefinitionNode
 
         Parameters
@@ -236,13 +236,13 @@ class Interpreter():
             Tried to declare a varible that was already declared
         """
         if element.name in self.__variables:
-            raise DSLParserVariableAlreadyUsed(element.name)
+            raise DSLParserVariableAlreadyUsedError(element.name)
 
         self.__variables[element.name] = element.value.accept(self)
 
         return element.name
 
-    def visitVariable(self, element: ast.VariableNode) -> object:
+    def visit_variable(self, element: ast.VariableNode) -> object:
         """Visitor for a VariableNode
 
         Parameters
@@ -261,11 +261,11 @@ class Interpreter():
             Tried to use a varible that was not declared
         """
         if element.name not in self.__variables:
-            raise DSLParserVariableNotDeclared(element.name)
+            raise DSLParserVariableNotDeclaredError(element.name)
 
         return self.__variables[element.name]
 
-    def visitInt(self, element: ast.IntNode) -> int:
+    def visit_int(self, element: ast.IntNode) -> int:
         """Visitor for an IntNode
 
         Parameters
@@ -280,7 +280,7 @@ class Interpreter():
         """
         return int(element.token.value)
 
-    def visitFloat(self, element: ast.FloatNode) -> float:
+    def visit_float(self, element: ast.FloatNode) -> float:
         """Visitor for a FloatNode
 
         Parameters
@@ -295,7 +295,7 @@ class Interpreter():
         """
         return float(element.token.value)
 
-    def visitBool(self, element: ast.BoolNode) -> bool:
+    def visit_bool(self, element: ast.BoolNode) -> bool:
         """Visitor for a BoolNode
 
         Parameters
@@ -310,7 +310,7 @@ class Interpreter():
         """
         return bool(element.token.value)
 
-    def visitString(self, element: ast.StringNode) -> str:
+    def visit_string(self, element: ast.StringNode) -> str:
         """Visitor for a BoolNode
 
         Parameters
@@ -325,7 +325,7 @@ class Interpreter():
         """
         return str(element.token.value)
 
-    def visitIf(self, element: ast.IfNode) -> object | None:
+    def visit_if(self, element: ast.IfNode) -> object | None:
         """Visitor for an IfNode
 
         Parameters
@@ -341,7 +341,7 @@ class Interpreter():
         return element.if_case.accept(self) if element.condition.accept(self).value\
             else None
 
-    def visitIfElse(self, element: ast.IfElseNode):
+    def visit_ifelse(self, element: ast.IfElseNode):
         """Visitor for an IfElseNode
 
         Parameters
@@ -358,7 +358,7 @@ class Interpreter():
         return element.if_case.accept(self) if element.condition.accept(self).value\
             else element.else_case.accept(self)
 
-    def visitAmount(self, element: ast.AmountNode) -> list[object]:
+    def visit_amount(self, element: ast.AmountNode) -> list[object]:
         """Visitor for an AmountNode
 
         Parameters
@@ -375,7 +375,7 @@ class Interpreter():
         res = []
         amount = element.amount.accept(self).value
         if not isinstance(amount, int):
-            raise DSLArithmeticException(
+            raise DSLArithmeticError(
                 element.amount.position, 'Integer expected',
             )
 
@@ -385,7 +385,7 @@ class Interpreter():
                 self.__variables[var] += 1
         return res
 
-    def visitParameter(self, element: ast.ParameterNode) -> pf.ParsedAttribute:
+    def visit_parameter(self, element: ast.ParameterNode) -> pf.ParsedAttribute:
         """Visitor for an ParameterNode
 
         Parameters
@@ -405,7 +405,7 @@ class Interpreter():
             value=element.value.accept(self),
         )
 
-    def visitDict(self, element: ast.DictNode) -> pf.ParsedDict:
+    def visit_dict(self, element: ast.DictNode) -> pf.ParsedDict:
         """Visitor for an DictNode
 
         Parameters
@@ -420,7 +420,7 @@ class Interpreter():
         """
         return pf.ParsedDict([v.accept(self) for v in element.values])
 
-    def visitLiteral(self, element: ast.LiteralNode) -> pf.ParsedLiteral:
+    def visit_literal(self, element: ast.LiteralNode) -> pf.ParsedLiteral:
         """Visitor for an LiteralNode
 
         Parameters
@@ -435,7 +435,7 @@ class Interpreter():
         """
         return pf.ParsedLiteral(element.value.accept(self))
 
-    def visitList(self, element: ast.ListNode) -> pf.ParsedList:
+    def visit_list(self, element: ast.ListNode) -> pf.ParsedList:
         """Visitor for an ListNode
 
         Parameters
@@ -450,7 +450,7 @@ class Interpreter():
         """
         return pf.ParsedList([v.accept(self) for v in element.values])
 
-    def visitResource(self, element: ast.ResourceNode) -> list[pf.ParsedResource]:
+    def visit_resource(self, element: ast.ResourceNode) -> list[pf.ParsedResource]:
         """Visitor for an ResourceNode
 
         Parameters
@@ -472,7 +472,7 @@ class Interpreter():
             ),
         ]
 
-    def visitFile(self, element: ast.FileNode):
+    def visit_file(self, element: ast.FileNode):
         """Visitor for an FileNode
 
         Parameters

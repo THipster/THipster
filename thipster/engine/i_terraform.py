@@ -3,12 +3,13 @@ from abc import ABC, abstractclassmethod
 import thipster.engine.parsed_file as pf
 import thipster.engine.resource_model as rm
 
-from .i_auth import I_Auth
+from .i_auth import AuthPort
 
 
-class I_Terraform(ABC):
+class TerraformPort(ABC):
     """Terraform module interface
     """
+    @classmethod
     @abstractclassmethod
     def apply(cls, plan_file_path: str | None = None):
         """Apply generated terraform code
@@ -26,10 +27,11 @@ class I_Terraform(ABC):
         """
         raise NotImplementedError('Should implement apply()')
 
+    @classmethod
     @abstractclassmethod
     def generate(
         cls, file: pf.ParsedFile, models: dict[str, rm.ResourceModel],
-        _authenticator: I_Auth,
+        _authenticator: AuthPort,
     ):
         """Generates Terraform code from parsed file and models
 
@@ -48,6 +50,7 @@ class I_Terraform(ABC):
         """
         raise NotImplementedError('Should implement generate()')
 
+    @classmethod
     @abstractclassmethod
     def init(cls):
         """Init Terraform for generated terraform code
@@ -60,6 +63,7 @@ class I_Terraform(ABC):
         """
         raise NotImplementedError('Should implement generate()')
 
+    @classmethod
     @abstractclassmethod
     def plan(cls):
         """Get plan from generated terraform code
