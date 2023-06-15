@@ -14,16 +14,22 @@ import thipster.engine.parsed_file as pf
 import thipster.engine.resource_model as rm
 import thipster.terraform.exceptions as cdk_exceptions
 from thipster.engine import I_Auth, I_Terraform
-from thipster.helpers import create_logger as Logger
+from thipster.helpers import create_logger
+
+
+class ResourceCreationContext():
+    def __init__(self) -> None:
+        pass
 
 
 class CDK(I_Terraform):
     _models = []
     _parent_resources_stack = []
+    _resources_to_create = []
 
     _inherited_attributes: list[pf.ParsedAttribute] = []
     _created_resources = {}
-    _logger = Logger(__name__)
+    _logger = create_logger(__name__)
 
     @classmethod
     def apply(cls, plan_file_path: str | None = None):
@@ -183,7 +189,7 @@ class CDK(I_Terraform):
 
 def _create_default_resource(
     resource_self, resource_type: str, parent_name: str | None = None,
-    no_modif: bool = True, no_dependencies: bool = False,
+    no_modif: bool = True, no_dependencies: bool = False, arg_to_complete: str = None,
 ):
     """Create a resource with all default values
 
@@ -193,6 +199,8 @@ def _create_default_resource(
         Terraform CDK stack that contains the resource
     resource_type : str
         type of the resource to create
+    parent_name : str
+        name of the parent resource
     parent_name : str, optional
         name of its parent, default None
     no_modif : bool, optional
@@ -200,6 +208,8 @@ def _create_default_resource(
 default False
     no_dependencies : bool, optional
         if True, create the default dependencies, default False
+    arg_to_complete: str
+        name of the argument that will get a value after parent resource creation
 
     Returns
     -------
@@ -245,7 +255,7 @@ default False
     )
 
     # Process name + default values
-    dependencies = copy.deepcopy(model.dependencies)
+    dependencies = _get_dependency_list(model, arg_to_complete)
     resource_args = {}
 
     name = f'{parent_name}-{uuid.uuid4()}'
@@ -277,7 +287,10 @@ default False
     return (resource_class, name, resource_args)
 
 
-def _create_resource(resource_self, resource_args: object, resource_type: str = None):
+def _create_resource(
+        resource_self, resource_args: object, parent_name: str,
+        resource_type: str = None, arg_to_complete: bool = True,
+):
     """Create a resource with the given values
 
     Parameters
@@ -286,8 +299,12 @@ def _create_resource(resource_self, resource_args: object, resource_type: str = 
         Terraform CDK stack that contains the resource
     resource_args : object
         data source to create the resource
+    parent_name : str
+        name of the parent resource
     resource_type : str, optional
         type of the resource to create, default None
+    arg_to_complete: str
+        name of the argument that will get a value after parent resource creation
 
     Returns
     -------
@@ -296,13 +313,18 @@ def _create_resource(resource_self, resource_args: object, resource_type: str = 
     """
 
     if isinstance(resource_args, pf.ParsedResource):
-        return _create_resource_from_resource(resource_self, resource_args)
+        return _create_resource_from_resource(
+            resource_self, resource_args, parent_name, arg_to_complete,
+        )
 
-    return _create_resource_from_args(resource_self, resource_type, resource_args)
+    return _create_resource_from_args(
+        resource_self, resource_type, parent_name, resource_args, arg_to_complete,
+    )
 
 
 def _create_resource_from_args(
-    resource_self, resource_type: str, input_args: list[pf.ParsedAttribute] | None,
+    resource_self, resource_type: str, parent_name: str,
+    input_args: list[pf.ParsedAttribute] | None, arg_to_complete: str = None,
 ):
     """Create a resource from a list of ParsedAttributes
 
@@ -312,8 +334,12 @@ def _create_resource_from_args(
         Terraform CDK stack that contains the resource
     resource_type : str, optional
         type of the resource to create, default None
+    parent_name : str
+        name of the parent resource
     input_args : list[ParsedAttribute]
         data source to create the resource
+    arg_to_complete: str
+        name of the argument that will get a value after parent resource creation
 
     Returns
     -------
@@ -323,22 +349,25 @@ def _create_resource_from_args(
     resource_class, resource_name, resource_args = _create_default_resource(
         resource_self,
         resource_type,
+        parent_name=parent_name,
         no_modif=False,
         no_dependencies=True,
+        arg_to_complete=arg_to_complete,
     )
     model = CDK._models[resource_type]
 
     # Process attributes
-    dependencies = copy.deepcopy(model.dependencies)
+    dependencies = _get_dependency_list(model, arg_to_complete)
 
     def attributes(attribute_list):
         for attribute in attribute_list:
-            if attribute.name and model.name_key:
+            if attribute.name == model.name_key:
                 resource_args[model.name_key] = attribute.name
-
-            _process_attribute(
-                resource_self, model, attribute, resource_args, dependencies,
-            )
+            else:
+                _process_attribute(
+                    resource_self, model,
+                    attribute, resource_args, dependencies, parent_name,
+                )
 
     attributes(input_args)
     attributes(CDK._inherited_attributes)
@@ -361,40 +390,68 @@ def _create_resource_from_args(
         resource_class, resource_name,
     )
 
-    if not model.name_key:
-        return resource_class(**resource_args)
-    return resource_class(resource_self, resource_name, **resource_args)
+    if not arg_to_complete:
+        if not model.name_key:
+            class_ = resource_class(**resource_args)
+        else:
+            class_ = resource_class(
+                resource_self, resource_name, **resource_args,
+            )
 
+        while len(CDK._resources_to_create) != 0:
+            to_create_class, to_create_name, to_create_args, to_create_complete = \
+                CDK._resources_to_create.pop()
+            to_create_args[to_create_complete] = class_.id
 
-def _create_resource_from_resource(resource_self, resource: pf.ParsedResource):
-    # Create resource with default values
-    resource_class, _, resource_args = _create_default_resource(
-        resource_self,
-        resource.resource_type,
-        no_modif=False,
-        no_dependencies=True,
+            to_create_class(
+                resource_self, to_create_name, **to_create_args,
+            )
+        return class_
+
+    CDK._resources_to_create.append(
+        (resource_class, resource_name, resource_args, arg_to_complete),
     )
+
+
+def _create_resource_from_resource(
+        resource_self, resource: pf.ParsedResource,
+        parent_name: str = None, arg_to_complete: str = None,
+):
     """Create a resource from a list of ParsedAttributes
 
     Parameters
     ----------
-    self : _ResourceStack
+    resource_self : _ResourceStack
         Terraform CDK stack that contains the resource
     resource : ParsedResource
         data source to create the resource
+    parent_name : str
+        name of the parent resource
+    arg_to_complete: str
+        name of the argument that will get a value after parent resource creation
 
     Returns
     -------
     object :
         the created resource
     """
+
+    # Create resource with default values
+    resource_class, _, resource_args = _create_default_resource(
+        resource_self,
+        resource.resource_type,
+        parent_name=parent_name,
+        no_modif=False,
+        no_dependencies=True,
+        arg_to_complete=arg_to_complete,
+    )
     model = CDK._models[resource.resource_type]
 
     if model.name_key:
         resource_args[model.name_key] = resource.name
 
     # Process attributes
-    dependencies = copy.deepcopy(model.dependencies)
+    dependencies = _get_dependency_list(model, arg_to_complete)
 
     def attributes(attribute_list):
         for attribute in attribute_list:
@@ -404,6 +461,7 @@ def _create_resource_from_resource(resource_self, resource: pf.ParsedResource):
                 attribute,
                 resource_args,
                 dependencies,
+                resource.name,
             )
 
     attributes(resource.attributes)
@@ -427,7 +485,28 @@ def _create_resource_from_resource(resource_self, resource: pf.ParsedResource):
         resource_class, resource.name,
     )
 
-    return resource_class(resource_self, resource.name, **resource_args)
+    if not arg_to_complete:
+        if not model.name_key:
+            class_ = resource_class(**resource_args)
+        else:
+            class_ = resource_class(
+                resource_self, resource.name, **resource_args,
+            )
+
+        while len(CDK._resources_to_create) != 0:
+            to_create_class, to_create_name, to_create_args, to_create_complete = \
+                CDK._resources_to_create.pop()
+            to_create_args[to_create_complete] = class_.id
+
+            to_create_class(
+                resource_self, to_create_name, **to_create_args,
+            )
+        return class_
+
+    CDK._resources_to_create.append(
+        (resource_class, resource.name, resource_args, arg_to_complete),
+    )
+    return True
 
 
 def _process_attribute(
@@ -436,12 +515,13 @@ def _process_attribute(
     attribute: pf.ParsedAttribute,
     resource_args: dict[str, object],
     dependencies: dict[str, dict[str, object]] | None,
+    parent_name: str,
 ):
     """Process an attribute
 
     Parameters
     ----------
-    self : _ResourceStack
+    resource_self : _ResourceStack
         Terraform CDK stack that contains the resource
     model : ResourceModel
         model of the resource that is being created
@@ -451,6 +531,8 @@ def _process_attribute(
         data source needed to create the resource
     dependencies : dict[str, dict[str, object]]
         dependencies needed to create the resource
+    parent_name : str
+        name of the parent resource
     """
     if attribute.name in dependencies:
         _check_explicit_dependency(
@@ -468,6 +550,7 @@ def _process_attribute(
             model.internal_objects[attribute.name],
             attribute.value,
             resource_args,
+            parent_name,
         )
         return
 
@@ -536,21 +619,23 @@ def _generate_default_dependencies(
                     model.internal_objects[internal_object_name],
                     default_args,
                     resource_args,
+                    resource_name,
                 )
 
 
 def _create_internal_object(
     resource_self,
     name: str,
-    internal_object_model,
+    internal_object_model: dict,
     internal_object_args,
     resource_args: dict,
+    parent_name: str,
 ):
     """Create an internal object in a resource
 
     Parameters
     ----------
-    self : _ResourceStack
+    resource_self : _ResourceStack
         Terraform CDK stack that contains the resource
     name : str
         name of the internal object
@@ -560,43 +645,62 @@ def _create_internal_object(
         data source to create the internal object
     resource_args : dict
         data source needed to create the resource
+    parent_name : str
+        name of the parent resource
     """
     internal_object_type = internal_object_model['var_type'] \
         if 'var_type' in internal_object_model else 'Unknown'
 
+    arg_to_complete = internal_object_model.get('arg_to_complete')
+
     if internal_object_type.startswith('list'):
-        if name not in resource_args:
+        if name not in resource_args and not arg_to_complete:
             resource_args[name] = []
 
         if isinstance(internal_object_args, list) \
                 and isinstance(internal_object_args[0], pf.ParsedDict):
 
-            for internalObject in internal_object_args:
+            for internal_object in internal_object_args:
                 res = _create_resource(
                     resource_self,
-                    internalObject.value,
+                    internal_object.value,
+                    parent_name,
                     internal_object_model['resource'],
+                    arg_to_complete=arg_to_complete,
                 )
-                resource_args[name] += [res]
-
-            return
+                if not arg_to_complete:
+                    resource_args[name] += [res]
+            return True
 
         res = _create_resource(
             resource_self,
             internal_object_args,
+            parent_name,
             internal_object_model['resource'],
+            arg_to_complete=arg_to_complete,
         )
-        resource_args[name] += [res]
-        return
+        if not arg_to_complete:
+            resource_args[name] += [res]
+        return True
 
     res = _create_resource(
         resource_self,
         internal_object_args,
+        parent_name,
         internal_object_model['resource'],
+        arg_to_complete=arg_to_complete,
     )
-    resource_args[name] = res
+    if not arg_to_complete:
+        resource_args[name] = res
 
-    return
+    return True
+
+
+def _get_dependency_list(model, arg_to_complete):
+    dependencies = copy.deepcopy(model.dependencies)
+    if arg_to_complete in dependencies.keys():
+        del dependencies[arg_to_complete]
+    return dependencies
 
 
 def _create_dependency(resource_self, dep_name, dep_value, resource_args, parent_name):

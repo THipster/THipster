@@ -1,6 +1,15 @@
 {
     "dependencies": {},
-    "internalObjects": {},
+    "internalObjects": {
+        "subnetwork": {
+            "resource": "subnetwork",
+            "optional": true,
+            "defaults": [
+            ],
+            "var_type": "list[ComputeSubnetwork]",
+            "arg_to_complete": "network"
+        }
+    },
     "attributes":{
         "auto_create_subnetworks": {
             "optional": true,

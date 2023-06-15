@@ -101,7 +101,7 @@ def test_lb(apply_output, authentication):
     _ = authentication
     function_name = get_function_name()
 
-    test_id = random.randint(0, 1000)
+    test_id = random.randint(0, 10000)
     clean_up = process_file(
         directory=function_name,
         file=f"""

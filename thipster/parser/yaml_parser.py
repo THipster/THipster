@@ -81,7 +81,7 @@ class YAMLParser(I_Parser):
         """
         try:
             files = cls.__getfiles(path)
-            parsedFile = pf.ParsedFile()
+            parsed_file = pf.ParsedFile()
 
             for file in files:
                 filedir, filename = os.path.split(file)
@@ -94,9 +94,9 @@ class YAMLParser(I_Parser):
                 rendered = template.render()
                 content = yaml.safe_load(rendered)
 
-                parsedFile.resources += cls.__convert(content)
+                parsed_file.resources += cls.__convert(content)
 
-            return parsedFile
+            return parsed_file
         except yaml.YAMLError as exc:
             raise exc
         except YAMLParserBaseException as e:
@@ -131,7 +131,7 @@ class YAMLParser(I_Parser):
 
                     resources.append(
                         cls.__get_resource(
-                            content=res, resourceType=key, name=name,
+                            content=res, resource_type=key, name=name,
                         ),
                     )
             elif type(val) == dict:
@@ -143,14 +143,14 @@ class YAMLParser(I_Parser):
 
                 resources.append(
                     cls.__get_resource(
-                        content=val, resourceType=key, name=name,
+                        content=val, resource_type=key, name=name,
                     ),
                 )
 
         return resources
 
     @classmethod
-    def __get_resource(cls, content: dict, resourceType: str, name: str)\
+    def __get_resource(cls, content: dict, resource_type: str, name: str)\
             -> pf.ParsedResource:
         """Converts a dict in a ParsedResource
 
@@ -174,7 +174,7 @@ class YAMLParser(I_Parser):
             attr.append(cls.__get__attr(key, val))
 
         return pf.ParsedResource(
-            type=resourceType,
+            type=resource_type,
             name=name,
             position=None,
             attributes=attr,
