@@ -29,7 +29,7 @@ class StringNode(Node):
         return self.token.position
 
     def accept(self, visitor):
-        return visitor.visitString(self)
+        return visitor.visit_string(self)
 
 
 class StringExprNode(Node):
@@ -50,7 +50,7 @@ class StringExprNode(Node):
         return self.values[0].position
 
     def accept(self, visitor):
-        return visitor.visitStringExpr(self)
+        return visitor.visit_string_expr(self)
 
 
 class VariableNode(Node):
@@ -70,7 +70,7 @@ class VariableNode(Node):
         return self.token.position
 
     def accept(self, visitor):
-        return visitor.visitVariable(self)
+        return visitor.visit_variable(self)
 
 
 class BoolNode(Node):
@@ -86,7 +86,7 @@ class BoolNode(Node):
         return self.token.position
 
     def accept(self, visitor):
-        return visitor.visitBool(self)
+        return visitor.visit_bool(self)
 
 
 class IntNode(Node):
@@ -102,7 +102,7 @@ class IntNode(Node):
         return self.token.position
 
     def accept(self, visitor):
-        return visitor.visitInt(self)
+        return visitor.visit_int(self)
 
 
 class FloatNode(Node):
@@ -118,7 +118,7 @@ class FloatNode(Node):
         return self.token.position
 
     def accept(self, visitor):
-        return visitor.visitFloat(self)
+        return visitor.visit_float(self)
 
 
 class VariableDefinitionNode(Node):
@@ -139,7 +139,7 @@ class VariableDefinitionNode(Node):
         return self.__name.position
 
     def accept(self, visitor):
-        return visitor.visitVariableDefinition(self)
+        return visitor.visit_variable_definition(self)
 
 
 class IfNode(Node):
@@ -156,7 +156,7 @@ class IfNode(Node):
         return self.if_case.position
 
     def accept(self, visitor):
-        return visitor.visitIf(self)
+        return visitor.visit_if(self)
 
 
 class IfElseNode(IfNode):
@@ -172,7 +172,7 @@ class IfElseNode(IfNode):
 {str(self.else_case)}>'
 
     def accept(self, visitor):
-        return visitor.visitIfElse(self)
+        return visitor.visit_ifelse(self)
 
 
 class AmountNode(Node):
@@ -199,7 +199,7 @@ class AmountNode(Node):
         self.__position = _value
 
     def accept(self, visitor):
-        return visitor.visitAmount(self)
+        return visitor.visit_amount(self)
 
 
 class ValueNode(Node, ABC):
@@ -220,7 +220,7 @@ class ParameterNode(Node):
         return self.name.position
 
     def accept(self, visitor):
-        return visitor.visitParameter(self)
+        return visitor.visit_parameter(self)
 
 
 class DictNode(ValueNode):
@@ -236,7 +236,7 @@ class DictNode(ValueNode):
         return self.values[0].position
 
     def accept(self, visitor):
-        return visitor.visitDict(self)
+        return visitor.visit_dict(self)
 
 
 class LiteralNode(ValueNode):
@@ -252,7 +252,7 @@ class LiteralNode(ValueNode):
         return self.value.position
 
     def accept(self, visitor):
-        return visitor.visitLiteral(self)
+        return visitor.visit_literal(self)
 
 
 class ListNode(ValueNode):
@@ -268,7 +268,7 @@ class ListNode(ValueNode):
         return self.values[0].position
 
     def accept(self, visitor):
-        return visitor.visitList(self)
+        return visitor.visit_list(self)
 
 
 class CompExprNode(Node):
@@ -285,7 +285,7 @@ class CompExprNode(Node):
         return self.left_value.position
 
     def accept(self, visitor):
-        return visitor.visitCompExpr(self)
+        return visitor.visit_comp_expr(self)
 
 
 class TermNode(Node):
@@ -301,7 +301,7 @@ class TermNode(Node):
         return self.factors[0].position
 
     def accept(self, visitor):
-        return visitor.visitTerm(self)
+        return visitor.visit_term(self)
 
 
 class ArithExprNode(Node):
@@ -317,7 +317,7 @@ class ArithExprNode(Node):
         return self.terms[0].position
 
     def accept(self, visitor):
-        return visitor.visitArithExpr(self)
+        return visitor.visit_arith_expr(self)
 
 
 class FactorNode(Node):
@@ -331,7 +331,7 @@ class FactorNode(Node):
         return self.factors[0].position
 
     def accept(self, visitor):
-        return visitor.visitFactor(self)
+        return visitor.visit_factor(self)
 
 
 class ResourceNode(Node):
@@ -355,7 +355,7 @@ name = {str(self.name)}, parameters = {str(self.parameters)}>'
         return self.type.position
 
     def accept(self, visitor):
-        return visitor.visitResource(self)
+        return visitor.visit_resource(self)
 
 
 class FileNode(Node):
@@ -374,4 +374,4 @@ class FileNode(Node):
         return self.resources[0].position
 
     def accept(self, visitor):
-        return visitor.visitFile(self)
+        return visitor.visit_file(self)

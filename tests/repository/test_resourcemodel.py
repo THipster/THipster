@@ -55,43 +55,43 @@ def test_create_resource_with_dependencies():
 
 
 def test_create_num_attr():
-    val = rm.Model_Literal(3)
+    val = rm.ModelLiteral(3)
 
-    attr = rm.Model_Attribute(
+    attr = rm.ModelAttribute(
         cdk_name='test_attr',
         default=val, optional=False,
     )
 
-    assert isinstance(attr, rm.Model_Attribute)
-    assert isinstance(attr._Model_Attribute__default, rm.Model_Literal)
+    assert isinstance(attr, rm.ModelAttribute)
+    assert isinstance(attr._ModelAttribute__default, rm.ModelLiteral)
     assert attr.default == 3
 
 
 def test_create_str_attr():
-    val = rm.Model_Literal('test_default')
+    val = rm.ModelLiteral('test_default')
 
-    attr = rm.Model_Attribute(
+    attr = rm.ModelAttribute(
         cdk_name='test_attr',
         default=val, optional=False,
     )
 
-    assert isinstance(attr, rm.Model_Attribute)
-    assert isinstance(attr._Model_Attribute__default, rm.Model_Literal)
+    assert isinstance(attr, rm.ModelAttribute)
+    assert isinstance(attr._ModelAttribute__default, rm.ModelLiteral)
     assert attr.default == 'test_default'
 
 
 def test_create_list_str_attr():
-    val = rm.Model_List(
-        [rm.Model_Literal('test_default_' + str(i)) for i in range(3)],
+    val = rm.ModelList(
+        [rm.ModelLiteral('test_default_' + str(i)) for i in range(3)],
     )
 
-    attr = rm.Model_Attribute(
+    attr = rm.ModelAttribute(
         cdk_name='test_attr',
         default=val, optional=False,
     )
 
-    assert isinstance(attr, rm.Model_Attribute)
-    assert isinstance(attr._Model_Attribute__default, rm.Model_List)
+    assert isinstance(attr, rm.ModelAttribute)
+    assert isinstance(attr._ModelAttribute__default, rm.ModelList)
 
     assert len(attr.default) == 3
     for val in attr.default:
@@ -99,17 +99,17 @@ def test_create_list_str_attr():
 
 
 def test_create_dict_str_attr():
-    val = rm.Model_Dict(
-        {rm.Model_Literal('test_default_' + str(i)) for i in range(3)},
+    val = rm.ModelDict(
+        {rm.ModelLiteral('test_default_' + str(i)) for i in range(3)},
     )
 
-    attr = rm.Model_Attribute(
+    attr = rm.ModelAttribute(
         cdk_name='test_attr',
         default=val, optional=False,
     )
 
-    assert isinstance(attr, rm.Model_Attribute)
-    assert isinstance(attr._Model_Attribute__default, rm.Model_Dict)
+    assert isinstance(attr, rm.ModelAttribute)
+    assert isinstance(attr._ModelAttribute__default, rm.ModelDict)
 
     assert len(attr.default) == 3
     for val in attr.default:
@@ -118,36 +118,36 @@ def test_create_dict_str_attr():
 
 def test_create_resource_with_attributes():
     attr = {
-        'attr_num': rm.Model_Attribute(
+        'attr_num': rm.ModelAttribute(
             cdk_name='attr_num',
-            default=rm.Model_Literal(3),
+            default=rm.ModelLiteral(3),
             optional=False,
         ),
-        'attr_str': rm.Model_Attribute(
+        'attr_str': rm.ModelAttribute(
             cdk_name='attr_str',
-            default=rm.Model_Literal('test'),
+            default=rm.ModelLiteral('test'),
             optional=False,
         ),
-        'attr_list': rm.Model_Attribute(
+        'attr_list': rm.ModelAttribute(
             cdk_name='attr_list',
-            default=rm.Model_List([
-                rm.Model_Literal('test_list_1'),
-                rm.Model_Literal('test_list_2'),
-                rm.Model_Literal('test_list_3'),
+            default=rm.ModelList([
+                rm.ModelLiteral('test_list_1'),
+                rm.ModelLiteral('test_list_2'),
+                rm.ModelLiteral('test_list_3'),
             ]),
             optional=False,
         ),
-        'attr_dict': rm.Model_Attribute(
+        'attr_dict': rm.ModelAttribute(
             cdk_name='attr_dict',
-            default=rm.Model_Dict([
-                rm.Model_Attribute(
+            default=rm.ModelDict([
+                rm.ModelAttribute(
                     'attr_dict_1',
-                    default=rm.Model_Literal('test'),
+                    default=rm.ModelLiteral('test'),
                     optional=False,
                 ),
-                rm.Model_Attribute(
+                rm.ModelAttribute(
                     'attr_dict_2',
-                    default=rm.Model_Literal('test'),
+                    default=rm.ModelLiteral('test'),
                     optional=False,
                 ),
             ]),
@@ -170,17 +170,17 @@ def test_create_resource_with_attributes():
     assert model.resource_type == 'test_type'
     assert isinstance(model.attributes, dict)
     for _, attribute in model.attributes.items():
-        assert isinstance(attribute, rm.Model_Attribute)
+        assert isinstance(attribute, rm.ModelAttribute)
         assert isinstance(
-            attribute._Model_Attribute__default, rm.I_Model_Value,
+            attribute._ModelAttribute__default, rm.ModelValue,
         )
-        if isinstance(attribute._Model_Attribute__default, rm.Model_Dict):
+        if isinstance(attribute._ModelAttribute__default, rm.ModelDict):
             for val in attribute.default:
-                assert isinstance(val, rm.Model_Attribute)
+                assert isinstance(val, rm.ModelAttribute)
 
-        elif isinstance(attribute._Model_Attribute__default, rm.Model_List):
+        elif isinstance(attribute._ModelAttribute__default, rm.ModelList):
             for val in attribute.default:
-                assert isinstance(val, rm.I_Model_Value)
+                assert isinstance(val, rm.ModelValue)
 
     assert model.dependencies is None
 

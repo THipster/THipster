@@ -5,11 +5,11 @@ import pytest
 import thipster.engine.parsed_file as pf
 from thipster.parser import DSLParser
 from thipster.parser.dsl_parser.exceptions import (
-    DSLArithmeticException,
-    DSLConditionException,
-    DSLParserPathNotFound,
-    DSLSyntaxException,
-    DSLUnexpectedEOF,
+    DSLArithmeticError,
+    DSLConditionError,
+    DSLParserPathNotFoundError,
+    DSLSyntaxError,
+    DSLUnexpectedEOFError,
 )
 from thipster.parser.dsl_parser.token import TOKENTYPES as TT
 
@@ -38,7 +38,7 @@ def test_get_files():
 
 
 def test_get_absent_files():
-    with pytest.raises(DSLParserPathNotFound):
+    with pytest.raises(DSLParserPathNotFoundError):
 
         parser = DSLParser
         parser._DSLParser__getfiles('inexistant_path')
@@ -414,10 +414,10 @@ def test_var_in_name():
 
 
 def test_comparisons():
-    def test_cmp(cmpExpr: str, result: str):
+    def test_cmp(cmp_expr: str, result: str):
         out = __test_file(
             file=f"""bucket my-bucket:
-\tregion: truCase if {cmpExpr} else falsCase
+\tregion: truCase if {cmp_expr} else falsCase
 """,
         )
 
@@ -547,7 +547,7 @@ def __test_syntax_error(
     expected: str, got: str,
 ):
 
-    exc_info = __test_parser_raises(mocker, input, DSLSyntaxException)
+    exc_info = __test_parser_raises(mocker, input, DSLSyntaxError)
 
     exp = str(' or '.join(list(map(str, expected))))\
         if isinstance(expected, list) else str(expected.value)
@@ -610,7 +610,7 @@ bucket my-bucket:
 
 """
     exc_info = __test_parser_raises(
-        mocker, input=input, exception=DSLUnexpectedEOF,
+        mocker, input=input, exception=DSLUnexpectedEOFError,
     )
 
     assert str(exc_info.value) == 'Unexpected EOF'
@@ -643,7 +643,7 @@ def test_syntax_error_if(mocker):
     input = """
 bucket my-bucket: if
 """
-    __test_parser_raises(mocker, input=input, exception=DSLConditionException)
+    __test_parser_raises(mocker, input=input, exception=DSLConditionError)
 
     # UNEXPECTED IF ELSE
     input = """
@@ -673,7 +673,7 @@ bucket my-bucket:
 \ttoto:
 \t\tfoo : bar if  else bbb
 """
-    __test_parser_raises(mocker, input=input, exception=DSLConditionException)
+    __test_parser_raises(mocker, input=input, exception=DSLConditionError)
 
 
 def test_syntax_error_unexpected_token(mocker):
@@ -694,4 +694,4 @@ def test_amount_error(mocker):
 bucket my-bucket: amount: 3/2
 \tregion: euw
 """
-    __test_parser_raises(mocker, input=input, exception=DSLArithmeticException)
+    __test_parser_raises(mocker, input=input, exception=DSLArithmeticError)

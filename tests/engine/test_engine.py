@@ -18,30 +18,30 @@ def logger(name: str):
     return wrapper
 
 
-class MockException(Exception):
+class MockError(Exception):
     def __init__(self, message):
         self.message = message
 
 
-class MockAuth(eng.I_Auth):
+class MockAuth(eng.AuthPort):
     @logger('- Authentifier')
     def authenticate(self):
         return (None, None)
 
 
-class MockParser(eng.I_Parser):
+class MockParser(eng.ParserPort):
     @logger('- Parser')
     def run(self, filename) -> str:
         return ParsedFile()
 
 
-class MockRepository(eng.I_Repository):
+class MockRepository(eng.RepositoryPort):
     @logger('- Repo')
-    def get(self, resourceNames: list[str]) -> dict[str, ResourceModel]:
+    def get(self, resource_names: list[str]) -> dict[str, ResourceModel]:
         return []
 
 
-class MockTerraform(eng.I_Terraform):
+class MockTerraform(eng.TerraformPort):
     @logger('- Terraform:apply')
     def apply(self):
         pass
@@ -97,12 +97,12 @@ def test_engine_calls():
 
 
 def test_parser_failure(mocker):
-    def parserFail(self, filename: str):
-        raise MockException('Parser failure')
+    def parser_fail(self, filename: str):
+        raise MockError('Parser failure')
 
     mocker.patch(
         'tests.engine.test_engine.MockParser.run',
-        parserFail,
+        parser_fail,
     )
 
     parser = MockParser()
@@ -110,18 +110,18 @@ def test_parser_failure(mocker):
     auth = MockAuth()
     terraform = MockTerraform()
 
-    with pytest.raises(MockException):
+    with pytest.raises(MockError):
         engine = eng.Engine(parser, repository, auth, terraform)
         engine.run('test.file')
 
 
 def test_repository_failure(mocker):
-    def repositoryFail(self, resourceNames: list[str]) -> dict[str, ResourceModel]:
-        raise MockException('Repository failure')
+    def repository_fail(self, resource_names: list[str]) -> dict[str, ResourceModel]:
+        raise MockError('Repository failure')
 
     mocker.patch(
         'tests.engine.test_engine.MockRepository.get',
-        repositoryFail,
+        repository_fail,
     )
 
     parser = MockParser()
@@ -129,6 +129,6 @@ def test_repository_failure(mocker):
     auth = MockAuth()
     terraform = MockTerraform()
 
-    with pytest.raises(MockException):
+    with pytest.raises(MockError):
         engine = eng.Engine(parser, repository, auth, terraform)
         engine.run('test.file')

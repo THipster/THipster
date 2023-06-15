@@ -1,6 +1,8 @@
+import os
+
 import thipster
 from thipster.auth import Google
-from thipster.engine import THipsterException
+from thipster.engine import THipsterError
 from thipster.parser import ParserFactory
 from thipster.repository import LocalRepo
 from thipster.terraform import Terraform
@@ -11,13 +13,14 @@ def demo():
     """
     file = input()
     engine = thipster.Engine(
-        ParserFactory(), LocalRepo('/home/rcattin/THipster/tests/resources/e2e/models'),
+        ParserFactory(),
+        LocalRepo(os.path.join(os.getcwd(), '/tests/resources/e2e/models')),
         Google, Terraform(),
     )
 
     try:
         print(engine.run(file))
-    except THipsterException as e:
+    except THipsterError as e:
         print(e)
     except Exception as e:
         print('Unhandled Exception', e.args)

@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 
 
-class THipsterException(Exception, ABC):
+class THipsterError(Exception, ABC):
     @property
     @abstractmethod
     def message():

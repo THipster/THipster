@@ -4,19 +4,19 @@
 from abc import ABC
 
 
-class I_Model_Value(ABC):
+class ModelValue(ABC):
     """Model Attribute Value Interface
     """
     value = None
 
 
-class Model_Attribute():
+class ModelAttribute():
     """Represents a Resource Model attribute
     """
 
     def __init__(
             self, cdk_name: str,
-            default: I_Model_Value | None = None,
+            default: ModelValue | None = None,
             optional: bool = True,
             is_list: bool = False,
     ):
@@ -25,7 +25,7 @@ class Model_Attribute():
         ----------
         name : str
             Attribute name
-        default : I_Model_Value, optional
+        default : ModelValue, optional
             Default Attribute value if there is one, by default None
         optional : bool, optional
             Is attribute optional ?, by default True
@@ -46,11 +46,11 @@ class Model_Attribute():
         self.__default = value
 
 
-class Model_List(I_Model_Value):
+class ModelList(ModelValue):
     """Represents a List of values for a Resource Model attribute
     """
 
-    def __init__(self, value: list[I_Model_Value | None] | None):
+    def __init__(self, value: list[ModelValue | None] | None):
         super().__init__()
         self.value = value
 
@@ -70,7 +70,7 @@ class Model_List(I_Model_Value):
         return ret
 
 
-class Model_Literal(I_Model_Value):
+class ModelLiteral(ModelValue):
     """Represents a literal value for a Resource Model attribute
     """
 
@@ -79,11 +79,11 @@ class Model_Literal(I_Model_Value):
         self.value = value
 
 
-class Model_Dict(I_Model_Value):
+class ModelDict(ModelValue):
     """Represents a dictionary value for a Resource Model attribute
     """
 
-    def __init__(self, value: dict[str, Model_Attribute] | None):
+    def __init__(self, value: dict[str, ModelAttribute] | None):
         super().__init__()
         self.value = value
 
@@ -110,7 +110,7 @@ class ResourceModel():
     def __init__(
             self,
             resource_type: str,
-            attributes: dict[str, Model_Attribute] | None,
+            attributes: dict[str, ModelAttribute] | None,
             dependencies: dict[str, dict[str, object]] | None,
             internal_objects: dict[str, dict[str, object]] | None,
             name_key: str | None,

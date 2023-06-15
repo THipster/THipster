@@ -3,9 +3,10 @@ from abc import ABC, abstractclassmethod
 from thipster.engine.parsed_file import ParsedFile
 
 
-class I_Parser(ABC):
+class ParserPort(ABC):
     """Parser module interface
     """
+    @classmethod
     @abstractclassmethod
     def run(cls, path: str) -> ParsedFile:
         """Abstract run method

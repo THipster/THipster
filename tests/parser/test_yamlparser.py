@@ -2,7 +2,7 @@ import pytest
 
 import thipster.engine.parsed_file as pf
 from thipster.parser import YAMLParser
-from thipster.parser.yaml_parser import YAMLParserNoName
+from thipster.parser.yaml_parser import YAMLParserNoNameError
 
 from ..test_tools import create_dir
 
@@ -190,4 +190,4 @@ def test_syntax_error_no_name(mocker):
     - aaa
     - bbb
 """
-    __test_parser_raises(mocker, input, YAMLParserNoName)
+    __test_parser_raises(mocker, input, YAMLParserNoNameError)

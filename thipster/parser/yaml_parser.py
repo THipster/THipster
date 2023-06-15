@@ -4,25 +4,25 @@ import yaml
 from jinja2 import Environment, FileSystemLoader
 
 import thipster.engine.parsed_file as pf
-from thipster.engine import I_Parser, THipsterException
+from thipster.engine import ParserPort, THipsterError
 
 
-class YAMLParserBaseException(THipsterException):
+class YAMLParserBaseError(THipsterError):
     def __init__(self, *args: object) -> None:
         super().__init__(*args)
 
 
-class YAMLParserPathNotFound(YAMLParserBaseException):
+class YAMLParserPathNotFoundError(YAMLParserBaseError):
     def __init__(self, file, *args: object) -> None:
         super().__init__(*args)
         self.file = file
 
     @property
     def message(self) -> str:
-        return f'Path not found : {self.file}',
+        return f'Path not found : {self.file}'
 
 
-class YAMLParserNoName(YAMLParserBaseException):
+class YAMLParserNoNameError(YAMLParserBaseError):
     def __init__(self, resource, *args: object) -> None:
         super().__init__(*args)
         self.resource = resource
@@ -32,7 +32,7 @@ class YAMLParserNoName(YAMLParserBaseException):
         return f'No name for resource : {self.resource}'
 
 
-class YAMLParser(I_Parser):
+class YAMLParser(ParserPort):
     @classmethod
     def __getfiles(cls, path: str) -> list[str]:
         """Recursively get all files names in the requested directory and its\
@@ -52,7 +52,7 @@ class YAMLParser(I_Parser):
         path = os.path.abspath(path)
 
         if not os.path.exists(path):
-            raise YAMLParserPathNotFound(path)
+            raise YAMLParserPathNotFoundError(path)
 
         files = []
 
@@ -99,7 +99,7 @@ class YAMLParser(I_Parser):
             return parsed_file
         except yaml.YAMLError as exc:
             raise exc
-        except YAMLParserBaseException as e:
+        except YAMLParserBaseError as e:
             raise e
         except Exception as e:
             raise e
@@ -127,7 +127,7 @@ class YAMLParser(I_Parser):
                         name = res['name']
                         del res['name']
                     else:
-                        raise YAMLParserNoName(key)
+                        raise YAMLParserNoNameError(key)
 
                     resources.append(
                         cls.__get_resource(
@@ -139,7 +139,7 @@ class YAMLParser(I_Parser):
                     name = val['name']
                     del val['name']
                 else:
-                    raise YAMLParserNoName(key)
+                    raise YAMLParserNoNameError(key)
 
                 resources.append(
                     cls.__get_resource(

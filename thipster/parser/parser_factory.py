@@ -1,32 +1,33 @@
 import os
 
-from thipster.engine import I_Parser, THipsterException
+from thipster.engine import ParserPort, THipsterError
 from thipster.engine.parsed_file import ParsedFile
 
 from .dsl_parser import DSLParser
 from .yaml_parser import YAMLParser
 
 
-def _noParser(pathExtension):
-    class noParser():
-        def run(path):
-            raise Exception(f'{pathExtension} files can\'t be parsed')
+def _no_parser(path_extension):
+    class NoParser(ParserPort):
+        @classmethod
+        def run(cls, path):
+            raise Exception(f'{path_extension} files can\'t be parsed')
 
-    return noParser
+    return NoParser
 
 
-class ParserPathNotFound(THipsterException):
-    def __init__(cls, path, *args: object) -> None:
+class ParserPathNotFoundError(THipsterError):
+    def __init__(self, path, *args: object) -> None:
         super().__init__(*args)
 
-        cls.__path = path
+        self.__path = path
 
     @property
-    def message(cls) -> str:
-        return f'Path not found : {cls.__path}'
+    def message(self) -> str:
+        return f'Path not found : {self.__path}'
 
 
-class ParserFactory(I_Parser):
+class ParserFactory(ParserPort):
 
     __parsers = {
         '.yaml': YAMLParser,
@@ -36,7 +37,7 @@ class ParserFactory(I_Parser):
     }
 
     @classmethod
-    def addParser(cls, parser: I_Parser, extensions: list[str]):
+    def add_parser(cls, parser: ParserPort, extensions: list[str]):
         cls.__parsers.update({e: parser for e in extensions})
 
     @classmethod
@@ -59,7 +60,7 @@ class ParserFactory(I_Parser):
         path = os.path.abspath(path)
 
         if not os.path.exists(path):
-            raise ParserPathNotFound(path)
+            raise ParserPathNotFoundError(path)
 
         files = []
 
@@ -90,16 +91,16 @@ class ParserFactory(I_Parser):
 
         res = ParsedFile()
         for file in files:
-            parsedFile = cls.__getParser(file).run(file)
-            res.resources += parsedFile.resources
+            parsed_file = cls.__get_parser(file).run(file)
+            res.resources += parsed_file.resources
 
         return res
 
     @classmethod
-    def __getParser(cls, path) -> I_Parser:
+    def __get_parser(cls, path) -> ParserPort:
 
-        _, pathExtension = os.path.splitext(path)
+        _, path_extension = os.path.splitext(path)
 
         return cls.__parsers.get(
-            pathExtension, _noParser(pathExtension),
+            path_extension, _no_parser(path_extension),
         )

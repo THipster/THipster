@@ -4,7 +4,7 @@
 from abc import ABC
 
 
-class I_ParsedValue(ABC):
+class ParsedValue(ABC):
     """Parsed Value Interface
     """
 
@@ -78,13 +78,13 @@ class ParsedAttribute():
     """Class reprensenting a Parsed Attribute Object
     """
 
-    def __init__(self, name: str, position: Position | None, value: I_ParsedValue):
+    def __init__(self, name: str, position: Position | None, value: ParsedValue):
         """
         Parameters
         ----------
         name : str
         position : Position
-        value : I_parsed_Value
+        value : ParsedValue
         """
 
         self.name: str = name
@@ -99,19 +99,19 @@ class ParsedAttribute():
         return self.__value.value
 
 
-class ParsedList(I_ParsedValue):
+class ParsedList(ParsedValue):
     """Class representing a Parsed List Object
     """
 
-    def __init__(self, value: list[I_ParsedValue]):
+    def __init__(self, value: list[ParsedValue]):
         """
         Parameters
         ----------
-        value : list[I_Parsed_Value]
+        value : list[ParsedValue]
         """
 
         super().__init__()
-        self.value: list[I_ParsedValue] = value
+        self.value: list[ParsedValue] = value
 
     def __iter__(self):
         self.i = 0
@@ -127,7 +127,7 @@ class ParsedList(I_ParsedValue):
         return ret
 
 
-class ParsedLiteral(I_ParsedValue):
+class ParsedLiteral(ParsedValue):
     """Class representing a Parsed Literal Object
     """
 
@@ -142,7 +142,7 @@ class ParsedLiteral(I_ParsedValue):
         self.value: bool | int | float | str = value
 
 
-class ParsedDict(I_ParsedValue):
+class ParsedDict(ParsedValue):
     """Class representing a Parsed Dictionnary Object
     """
 
@@ -150,7 +150,7 @@ class ParsedDict(I_ParsedValue):
         """
         Parameters
         ----------
-        value : list[Parsed_Attribute]
+        value : list[ParsedAttribute]
         """
 
         super().__init__()
@@ -176,7 +176,7 @@ class ParsedResource():
             name of the resource
         position : Position
             position of the resource in its origin file
-        attributes : list[Parsed_Attribute]
+        attributes : list[ParsedAttribute]
             list of attributes of the resource
         """
 

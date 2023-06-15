@@ -1,7 +1,7 @@
-from thipster.engine import THipsterException
+from thipster.engine import THipsterError
 
 
-class ModelNotFoundError(THipsterException):
+class ModelNotFoundError(THipsterError):
     def __init__(self, model: str, *args) -> None:
         super().__init__(*args)
         self.model = model

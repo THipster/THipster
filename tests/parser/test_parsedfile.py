@@ -136,7 +136,7 @@ def test_create_composite_attr():
         assert isinstance(attribute, pf.ParsedAttribute)
         assert isinstance(
             attribute._ParsedAttribute__value,
-            pf.I_ParsedValue,
+            pf.ParsedValue,
         )
         if isinstance(attribute._ParsedAttribute__value, pf.ParsedDict):
             for val in attribute.value:
@@ -144,7 +144,7 @@ def test_create_composite_attr():
 
         elif isinstance(attribute._ParsedAttribute__value, pf.ParsedList):
             for val in attribute.value:
-                assert isinstance(val, pf.I_ParsedValue)
+                assert isinstance(val, pf.ParsedValue)
 
 
 def test_add_resource():

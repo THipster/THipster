@@ -5,11 +5,11 @@ import json
 from abc import ABC, abstractmethod
 
 import thipster.engine.resource_model as rm
-from thipster.engine import I_Repository
+from thipster.engine import RepositoryPort
 
 
-class JSONRepo(I_Repository, ABC):
-    _parentStack = []
+class JSONRepo(RepositoryPort, ABC):
+    _parent_stack = []
     """Class representing a JSON resources Repository
 
     JSON Models of resources and services offered by supported cloud providers are
@@ -24,7 +24,7 @@ class JSONRepo(I_Repository, ABC):
     def get_json(self, name: str) -> str | bytes | bytearray:
         raise Exception()
 
-    def get(self, resourceNames: list[str]) -> dict[str, rm.ResourceModel]:
+    def get(self, resource_names: list[str]) -> dict[str, rm.ResourceModel]:
         """Get the corresponding resource Models from a list of names
 
         Parameters
@@ -37,12 +37,12 @@ class JSONRepo(I_Repository, ABC):
         dict[str, rm.ResourceModel]
             Dictionnary of the corresponding resource models
         """
-        for resource in resourceNames:
+        for resource in resource_names:
             self.__add_model(resource)
 
         return self.model_list
 
-    def __create_value(self, val: object | None) -> rm.I_Model_Value | None:
+    def __create_value(self, val: object | None) -> rm.ModelValue | None:
         """Creates the right Model value implementation from the raw JSON
 
         Parameters
@@ -52,20 +52,20 @@ class JSONRepo(I_Repository, ABC):
 
         Returns
         -------
-        I_Model_Value | None
-            Value of the attribute, implementation of I_Model_Value : Model_Dict,
-            Model_List, Model_Literal or None
+        ModelValue | None
+            Value of the attribute, implementation of ModelValue : ModelDict,
+            ModelList, ModelLiteral or None
         """
         if val is None:
             return None
         elif isinstance(val, dict):
-            return rm.Model_Dict(None)
+            return rm.ModelDict(None)
         elif isinstance(val, list):
-            return rm.Model_List([self.__create_value(i) for i in val])
+            return rm.ModelList([self.__create_value(i) for i in val])
 
-        return rm.Model_Literal(val)
+        return rm.ModelLiteral(val)
 
-    def __create_attribute(self, raw: dict[str, str]) -> list[rm.Model_Attribute]:
+    def __create_attribute(self, raw: dict[str, str]) -> list[rm.ModelAttribute]:
         """Creates a model's attributes from the raw JSON input
 
         Parameters
@@ -75,7 +75,7 @@ class JSONRepo(I_Repository, ABC):
 
         Returns
         -------
-        list[Model_Attribute]
+        list[ModelAttribute]
             Attributes of the resource model
         """
 
@@ -93,7 +93,7 @@ class JSONRepo(I_Repository, ABC):
 
             default = self.__create_value(value)
 
-            attributes[name] = rm.Model_Attribute(
+            attributes[name] = rm.ModelAttribute(
                 attr['cdk_key'],
                 default=default,
                 optional=optional,
@@ -124,9 +124,9 @@ class JSONRepo(I_Repository, ABC):
             if dep['resource'] not in self.model_list.keys():
                 self.__add_model(dep['resource'])
 
-        for _, intObj in json_model['internalObjects'].items():
-            if intObj['resource'] not in self.model_list.keys():
-                self.__add_model(intObj['resource'])
+        for _, internal_object in json_model['internalObjects'].items():
+            if internal_object['resource'] not in self.model_list.keys():
+                self.__add_model(internal_object['resource'])
 
         res = rm.ResourceModel(
             name,
