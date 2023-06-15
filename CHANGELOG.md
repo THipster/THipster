@@ -2,6 +2,16 @@
 
 <!--next-version-placeholder-->
 
+## v0.17.1 (2023-06-15)
+
+### :bug:
+
+* :bug: fix: no crash on non-parsable files ([#160](https://github.com/THipster/THipster/issues/160)) ([`60c74b4`](https://github.com/THipster/THipster/commit/60c74b40408305061277d0d8707fe6a5261b3fe2))
+
+### Other
+
+* :memo: docs: add pep8-naming rule ([#159](https://github.com/THipster/THipster/issues/159)) ([`db70608`](https://github.com/THipster/THipster/commit/db70608c059e384a612419de34a4cddf8dfe9fe2))
+
 ## v0.17.0 (2023-06-15)
 
 ### :sparkles:
