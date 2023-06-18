@@ -49,7 +49,7 @@ simplified format, using either YAML (with JINJA) or the dedicated Thipster DSL.
             'pytest==7.3.1',
             'pytest-mock==3.10.0',
             'tftest==1.8.4',
-            'cdktf-cdktf-provider-google==7.0.10',
+            'cdktf-cdktf-provider-google==8.0.0',
             'google-auth==2.19.1',
         ],
         'dev': [
@@ -64,7 +64,7 @@ simplified format, using either YAML (with JINJA) or the dedicated Thipster DSL.
             'Sphinx==6.2.1',
         ],
         'google': [
-            'cdktf-cdktf-provider-google==7.0.10',
+            'cdktf-cdktf-provider-google==8.0.0',
             'google-auth==2.19.1',
         ],
     },
