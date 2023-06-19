@@ -1,5 +1,7 @@
+"""YAML Parser module."""
 import os
 from abc import ABC
+from pathlib import Path
 
 import yaml
 from jinja2 import Environment, FileSystemLoader
@@ -11,56 +13,64 @@ from .exceptions import ParserPathNotFoundError
 
 
 class YAMLParserBaseError(THipsterError, ABC):
+    """Base error for YAMLParser."""
+
     def __init__(self, *args: object) -> None:
         super().__init__(*args)
 
 
 class YAMLParserNoNameError(YAMLParserBaseError):
+    """Error raised when a resource has no name."""
+
     def __init__(self, resource, *args: object) -> None:
         super().__init__(*args)
         self.resource = resource
 
     @property
     def message(self) -> str:
+        """Return the error message."""
         return f'No name for resource : {self.resource}'
 
 
 class YAMLParser(ParserPort):
+    """YAMLParser class, used to parse YAML files."""
+
     @classmethod
     def __getfiles(cls, path: str) -> list[str]:
-        """Recursively get all files names in the requested directory and its\
-              sudirectories
-        Can be run on a path file aswell
+        """Get the file(s) on the requested path.
+
+        Recursively get all files names in the requested directory and its
+        sudirectories. Can be run on a path file as well.
 
         Parameters
         ----------
         path: str
-            Path to run this function into
+            Path to run this function onto
 
         Returns
         -------
         list[str]
             A list of all the filenames
         """
-        path = os.path.abspath(path)
+        path = Path(path).resolve().as_posix()
 
-        if not os.path.exists(path):
+        if not Path(path).exists():
             raise ParserPathNotFoundError(path)
 
         files = []
 
-        if os.path.isdir(path):
+        if Path(path).is_dir():
             for content in os.listdir(path):
                 files += cls.__getfiles(f'{path}/{content}')
 
-        if os.path.isfile(path):
+        if Path(path).is_file():
             return [path]
 
         return files
 
     @classmethod
     def run(cls, path: str) -> pf.ParsedFile:
-        """Run the YAMLParser
+        """Run the YAMLParser.
 
         Parameters
         ----------
@@ -99,7 +109,7 @@ class YAMLParser(ParserPort):
 
     @classmethod
     def __convert(cls, file: dict) -> list[pf.ParsedResource]:
-        """Converts a dictionnary into a list of ParsedResources
+        """Convert a dictionnary into a list of ParsedResources.
 
         Parameters
         ----------
@@ -116,11 +126,11 @@ class YAMLParser(ParserPort):
         for key, val in file.items():
             if type(val) == list:
                 for res in val:
-                    if 'name' in res:
-                        name = res['name']
-                        del res['name']
-                    else:
+                    if 'name' not in res:
                         raise YAMLParserNoNameError(key)
+
+                    name = res['name']
+                    del res['name']
 
                     resources.append(
                         cls.__get_resource(
@@ -128,11 +138,11 @@ class YAMLParser(ParserPort):
                         ),
                     )
             elif type(val) == dict:
-                if 'name' in val:
-                    name = val['name']
-                    del val['name']
-                else:
+                if 'name' not in val:
                     raise YAMLParserNoNameError(key)
+
+                name = val['name']
+                del val['name']
 
                 resources.append(
                     cls.__get_resource(
@@ -145,7 +155,7 @@ class YAMLParser(ParserPort):
     @classmethod
     def __get_resource(cls, content: dict, resource_type: str, name: str)\
             -> pf.ParsedResource:
-        """Converts a dict in a ParsedResource
+        """Convert a dict in a ParsedResource.
 
         Parameters
         ----------
@@ -167,7 +177,7 @@ class YAMLParser(ParserPort):
             attr.append(cls.__get__attr(key, val))
 
         return pf.ParsedResource(
-            type=resource_type,
+            parsed_resource_type=resource_type,
             name=name,
             position=None,
             attributes=attr,
@@ -175,7 +185,7 @@ class YAMLParser(ParserPort):
 
     @classmethod
     def __get__attr(cls, name: str, value: object) -> pf.ParsedAttribute:
-        """Converts an object in a ParsedAttribute
+        """Convert an object in a ParsedAttribute.
 
         Parameters
         ----------
@@ -203,12 +213,12 @@ class YAMLParser(ParserPort):
         )
 
     @classmethod
-    def __get_dict(cls, input: dict) -> pf.ParsedDict:
-        """Converts a dict into a list of ParsedDict
+    def __get_dict(cls, input_dict: dict) -> pf.ParsedDict:
+        """Convert a dict into a list of ParsedDict.
 
         Parameters
         ----------
-        input: dict
+        input_dict: dict
             Dict to convert
 
         Returns
@@ -218,18 +228,18 @@ class YAMLParser(ParserPort):
         """
         attr = []
 
-        for key, val in input.items():
+        for key, val in input_dict.items():
             attr.append(cls.__get__attr(key, val))
 
         return pf.ParsedDict(attr)
 
     @classmethod
-    def __get_list(cls, input: list) -> pf.ParsedList:
-        """Converts a dictionnary into a ParsedList
+    def __get_list(cls, input_list: list) -> pf.ParsedList:
+        """Convert a dictionnary into a ParsedList.
 
         Parameters
         ----------
-        input: list
+        input_list: list
             List to convert
 
         Returns
@@ -239,7 +249,7 @@ class YAMLParser(ParserPort):
         """
         attr = []
 
-        for val in input:
+        for val in input_list:
             if isinstance(val, dict):
                 attr.append(cls.__get_dict(val))
             else:

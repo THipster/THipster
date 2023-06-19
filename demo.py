@@ -1,4 +1,5 @@
-import os
+"""Demo script to launch the thipster package."""
+from pathlib import Path
 
 import thipster
 from thipster.auth import Google
@@ -9,17 +10,16 @@ from thipster.terraform import Terraform
 
 
 def demo():
-    """Script to launch the sprint demo
-    """
-    file = input()
+    """Script to launch the sprint demo."""
+    input_file_path = input()
     engine = thipster.Engine(
         ParserFactory(),
-        LocalRepo(os.path.join(os.getcwd(), '/tests/resources/e2e/models')),
+        LocalRepo(Path(Path.cwd(), '/tests/resources/e2e/models').as_posix()),
         Google, Terraform(),
     )
 
     try:
-        print(engine.run(file))
+        print(engine.run(input_file_path))
     except THipsterError as e:
         print(e)
     except Exception as e:

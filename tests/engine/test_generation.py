@@ -1,23 +1,24 @@
+"""Test the generation of Terraform files."""
 import uuid
 
 import pytest
 
-from thipster.terraform.exceptions import (
-    CDKCyclicDependenciesError,
-    CDKDependencyNotDeclaredError,
-    CDKMissingAttributeInDependencyError,
-)
-
-from ..test_tools import (
+from tests.test_tools import (
     assert_number_of_resource_type_is,
     assert_resource_created,
     get_function_name,
     get_resource_parameter,
     process_file,
 )
+from thipster.terraform.exceptions import (
+    CDKCyclicDependenciesError,
+    CDKDependencyNotDeclaredError,
+    CDKMissingAttributeInDependencyError,
+)
 
 
 def test_empty_bucket():
+    """Test the generation of an empty bucket."""
     function_name = get_function_name()
 
     bucket_name = f'empty-bucket-{uuid.uuid4().int}'
@@ -38,6 +39,7 @@ bucket {bucket_name}:
 
 
 def test_empty_bucket_two():
+    """Test the generation of two empty buckets."""
     function_name = get_function_name()
 
     empty_bucket_name = f'empty-bucket-{uuid.uuid4().int}'
@@ -62,6 +64,7 @@ bucket {bucket_name}:
 
 
 def test_dep_with_no_options():
+    """Test the generation of a bucket with a missing attribute in its dependency."""
     function_name = get_function_name()
 
     with pytest.raises(CDKMissingAttributeInDependencyError):
@@ -78,6 +81,7 @@ bucket_bad_dep_parent my-bucket:
 
 
 def test_cyclic_deps():
+    """Test the generation of a bucket with a cyclic dependency."""
     function_name = get_function_name()
 
     with pytest.raises(CDKCyclicDependenciesError):
@@ -94,6 +98,7 @@ bucket_bad_dep_cyclic my-bucket:
 
 
 def test_default_internal_object():
+    """Test the generation of a firewall with default internal objects."""
     function_name = get_function_name()
 
     clean_up = process_file(
@@ -109,6 +114,7 @@ firewall testparent:
 
 
 def test_explicit_internal_object():
+    """Test the generation of a firewall with explicit internal objects."""
     function_name = get_function_name()
     clean_up = process_file(
         directory=function_name,
@@ -126,6 +132,7 @@ firewall testparent:
 
 
 def test_missing_explicit_dependency():
+    """Test the generation of a subnetwork with a missing explicit dependency."""
     function_name = get_function_name()
 
     with pytest.raises(CDKDependencyNotDeclaredError):
@@ -144,6 +151,7 @@ subnetwork lb-subnet:
 
 
 def test_explicit_dependency():
+    """Test the generation of a subnetwork with an explicit dependency."""
     function_name = get_function_name()
 
     clean_up = process_file(
@@ -163,6 +171,7 @@ subnetwork lb-subnet:
 
 
 def test_bucket_cors():
+    """Test the generation of a bucket with cors."""
     function_name = get_function_name()
 
     bucket_name = f'cors-bucket-{uuid.uuid4().int}'
@@ -190,6 +199,7 @@ bucket {bucket_name}:
 
 
 def test_bucket_two_cors():
+    """Test the generation of a bucket with two cors."""
     function_name = get_function_name()
 
     bucket_name = f'cors-bucket-{uuid.uuid4().int}'
@@ -229,6 +239,7 @@ bucket:
 
 
 def test_subnetwork_in_network():
+    """Test the generation of multiple subnetworks in a network."""
     function_name = get_function_name()
 
     network_name = f'network-{uuid.uuid4().int}'

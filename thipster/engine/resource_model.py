@@ -1,18 +1,16 @@
-"""ResourceModel.py module.
-"""
+"""ResourceModel.py module."""
 
 from abc import ABC
 
 
 class ModelValue(ABC):
-    """Model Attribute Value Interface
-    """
+    """Model Attribute Value Interface."""
+
     value = None
 
 
 class ModelAttribute:
-    """Represents a Resource Model attribute
-    """
+    """Represents a Resource Model attribute."""
 
     def __init__(
             self, cdk_name: str,
@@ -21,6 +19,8 @@ class ModelAttribute:
             is_list: bool = False,
     ):
         """
+        Initialize a ModelAttribute object.
+
         Parameters
         ----------
         name : str
@@ -39,6 +39,7 @@ class ModelAttribute:
 
     @property
     def default(self):
+        """Default value of the attribute."""
         return self.__default.value if self.__default else None
 
     @default.setter
@@ -47,32 +48,32 @@ class ModelAttribute:
 
 
 class ModelList(ModelValue):
-    """Represents a List of values for a Resource Model attribute
-    """
+    """Represents a List of values for a Resource Model attribute."""
 
     def __init__(self, value: list[ModelValue | None] | None):
         super().__init__()
         self.value = value
 
     def __iter__(self):
+        """Iterate over the list."""
         self.i = 0
         return self
 
     def __next__(self):
+        """Return the next value of the iterator."""
         if not self.value:
             return None
         ret = self.value[self.i]
         if self.i > len(self.value):
             raise StopIteration
-        else:
-            self.i += 1
+
+        self.i += 1
 
         return ret
 
 
 class ModelLiteral(ModelValue):
-    """Represents a literal value for a Resource Model attribute
-    """
+    """Represents a literal value for a Resource Model attribute."""
 
     def __init__(self, value):
         super().__init__()
@@ -80,32 +81,32 @@ class ModelLiteral(ModelValue):
 
 
 class ModelDict(ModelValue):
-    """Represents a dictionary value for a Resource Model attribute
-    """
+    """Represents a dictionary value for a Resource Model attribute."""
 
     def __init__(self, value: dict[str, ModelAttribute] | None):
         super().__init__()
         self.value = value
 
     def __iter__(self):
+        """Iterate over the dictionary."""
         self.i = 0
         return self
 
     def __next__(self):
+        """Return the next value of the iterator."""
         if not self.value:
             return None
         ret = self.value[self.i]
         if self.i > len(self.value):
             raise StopIteration
-        else:
-            self.i += 1
+
+        self.i += 1
 
         return ret
 
 
 class ResourceModel:
-    """Represents a Resource Model
-    """
+    """Represents a Resource Model."""
 
     def __init__(
             self,

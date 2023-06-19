@@ -1,9 +1,11 @@
+"""Test the AST of the DSL parser."""
 import thipster.parser.dsl_parser.ast as ast
 from thipster.engine.parsed_file import Position
 from thipster.parser.dsl_parser.token import Token
 
 
 def test_create_ast():
+    """Test the creation of an AST."""
     # bucket nom-#test \n\t toto: tata
     tree = ast.FileNode()
 

@@ -1,17 +1,20 @@
+"""Test the YAMLParser class."""
 import pytest
 
 import thipster.engine.parsed_file as pf
+from tests.test_tools import create_dir
 from thipster.parser import YAMLParser
 from thipster.parser.yaml_parser import YAMLParserNoNameError
 
-from ..test_tools import create_dir
 
-
-def __test_parser_raises(mocker, input: str, exception: Exception)\
-        -> pytest.ExceptionInfo:
+def __test_parser_raises(
+    mocker,  # noqa ARG01
+    input_file: str,
+    exception: Exception,
+) -> pytest.ExceptionInfo:
     with pytest.raises(exception) as exc_info:
         __test_file(
-            file=input,
+            file=input_file,
         )
 
     return exc_info
@@ -41,6 +44,7 @@ def __test_file(file: str):
 
 
 def test_parse_simple_file():
+    """Test the parser with a simple yaml file."""
     out = __test_file(
         file="""bucket:
   name: my-bucket
@@ -61,6 +65,7 @@ def test_parse_simple_file():
 
 
 def test_parse_simple_jinja_file():
+    """Test the parser with a simple file with jinja variables."""
     out = __test_file(
         file="""
 {% set name = "test_name" %}
@@ -84,6 +89,7 @@ bucket:
 
 
 def test_parse_two_resources():
+    """Test the parser with a list of two resources."""
     out = __test_file(
         file="""bucket:
   - name: my-bucket1
@@ -104,6 +110,7 @@ def test_parse_two_resources():
 
 
 def test_parse_dict_in_dict():
+    """Test the parser with a dict in a dict."""
     out = __test_file(
         file="""bucket:
   name: my-bucket
@@ -130,6 +137,7 @@ def test_parse_dict_in_dict():
 
 
 def test_parse_list():
+    """Test the parser with a list."""
     out = __test_file(
         file="""bucket:
   name: my-bucket
@@ -155,6 +163,7 @@ def test_parse_list():
 
 
 def test_parse_dict_in_list():
+    """Test the parser with a dict in a list."""
     out = __test_file(
         file="""bucket:
   name: my-bucket
@@ -185,9 +194,10 @@ def test_parse_dict_in_list():
 
 
 def test_syntax_error_no_name(mocker):
-    input = """bucket:
+    """Test the parser with a missing resource name."""
+    input_file = """bucket:
   toto:
     - aaa
     - bbb
 """
-    __test_parser_raises(mocker, input, YAMLParserNoNameError)
+    __test_parser_raises(mocker, input_file, YAMLParserNoNameError)

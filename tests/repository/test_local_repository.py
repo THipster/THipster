@@ -1,35 +1,14 @@
-import os
+"""Local models repository tests."""
+from pathlib import Path
 
 import pytest
 
+from tests.test_tools import create_dir
 from thipster.engine.resource_model import ResourceModel
 from thipster.repository import LocalRepo
 from thipster.repository.exceptions import ModelNotFoundError
 
-
-def create_dir(dirname: str, files: dict[str, str]):
-    if not os.path.isdir(dirname):
-        os.mkdir(dirname)
-
-    dirname = os.path.abspath(dirname)
-    for name, content in files.items():
-        create_file(name, content, dirname)
-
-    def destroy_files():
-        for content in os.listdir(dirname):
-            os.remove(f'{dirname}/{content}')
-        os.rmdir(dirname)
-
-    return destroy_files
-
-
-def create_file(filename: str, content: str, dirname: str = 'test'):
-    if not os.path.isdir(dirname):
-        os.mkdir(dirname)
-    dirname = os.path.abspath(dirname)
-
-    with open(f'{dirname}/{filename}', 'w') as f:
-        f.write(content)
+test_bucket = 'test/bucket'
 
 
 def __setup_local(models: dict[str, str]):
@@ -41,6 +20,7 @@ def __setup_local(models: dict[str, str]):
 
 
 def test_get_bucket():
+    """Test get bucket model."""
     _destroy_dir = __setup_local({
         'bucket.json':
             """
@@ -63,8 +43,8 @@ def test_get_bucket():
 }
 """,
     })
-    resources = ['test/bucket']
-    repo = LocalRepo(os.getcwd())
+    resources = [test_bucket]
+    repo = LocalRepo(Path.cwd().as_posix())
 
     models = repo.get(resources)
     _destroy_dir()
@@ -72,17 +52,18 @@ def test_get_bucket():
     assert isinstance(models, dict)
     assert len(models) == 1
 
-    assert 'test/bucket' in models.keys()
-    assert isinstance(models['test/bucket'], ResourceModel)
+    assert test_bucket in models
+    assert isinstance(models[test_bucket], ResourceModel)
 
-    bucket = models['test/bucket']
+    bucket = models[test_bucket]
 
     assert len(bucket.attributes) == 1
     assert len(bucket.dependencies) == 0
-    assert bucket.resource_type == 'test/bucket'
+    assert bucket.resource_type == test_bucket
 
 
 def test_get_bucket_with_cors():
+    """Test get bucket model with cors."""
     _destroy_dir = __setup_local({
         'bucket.json':
             """
@@ -144,8 +125,8 @@ def test_get_bucket_with_cors():
 }
 """,
     })
-    resources = ['test/bucket']
-    repo = LocalRepo(os.getcwd())
+    resources = [test_bucket]
+    repo = LocalRepo(Path.cwd().as_posix())
 
     models = repo.get(resources)
     _destroy_dir()
@@ -153,18 +134,21 @@ def test_get_bucket_with_cors():
     assert isinstance(models, dict)
     assert len(models) == 2
 
-    assert 'test/bucket' in models.keys()
-    assert isinstance(models['test/bucket'], ResourceModel)
+    assert test_bucket in models
+    assert isinstance(models[test_bucket], ResourceModel)
 
-    bucket = models['test/bucket']
+    bucket = models[test_bucket]
 
     assert len(bucket.attributes) == 1
     assert len(bucket.dependencies) == 0
     assert len(bucket.internal_objects) == 1
-    assert bucket.resource_type == 'test/bucket'
+    assert bucket.resource_type == test_bucket
 
 
 def test_get_vm():
+    """Test get vm model."""
+    test_vm = 'test/vm'
+    test_network = 'test/network'
     _destroy_dir = __setup_local({
         'network.json':
             """
@@ -216,9 +200,9 @@ def test_get_vm():
 }
 """,
     })
-    resources = ['test/vm']
+    resources = [test_vm]
 
-    repo = LocalRepo(os.getcwd())
+    repo = LocalRepo(Path.cwd().as_posix())
 
     models = repo.get(resources)
     _destroy_dir()
@@ -226,26 +210,28 @@ def test_get_vm():
     assert isinstance(models, dict)
     assert len(models) == 2
 
-    assert 'test/vm' in models.keys()
-    assert isinstance(models['test/vm'], ResourceModel)
+    assert test_vm in models
+    assert isinstance(models[test_vm], ResourceModel)
 
-    vm = models['test/vm']
+    vm = models[test_vm]
 
-    assert vm.resource_type == 'test/vm'
+    assert vm.resource_type == test_vm
     assert len(vm.attributes) == 2
     assert len(vm.dependencies) == 1
 
-    assert 'test/network' in models.keys()
-    assert isinstance(models['test/network'], ResourceModel)
+    assert test_network in models
+    assert isinstance(models[test_network], ResourceModel)
 
-    network = models['test/network']
+    network = models[test_network]
 
-    assert network.resource_type == 'test/network'
+    assert network.resource_type == test_network
     assert len(network.attributes) == 1
     assert len(network.dependencies) == 0
 
 
 def test_cyclic_import():
+    """Test erroneous cyclic import."""
+    test_cyclic = 'test/cyclic'
     _destroy_dir = __setup_local({
         'cyclic.json':
             """
@@ -272,8 +258,8 @@ def test_cyclic_import():
 }
 """,
     })
-    resources = ['test/cyclic']
-    repo = LocalRepo(os.getcwd())
+    resources = [test_cyclic]
+    repo = LocalRepo(Path.cwd().as_posix())
 
     models = repo.get(resources)
     _destroy_dir()
@@ -281,11 +267,12 @@ def test_cyclic_import():
     assert isinstance(models, dict)
     assert len(models) == 1
 
-    assert 'test/cyclic' in models.keys()
-    assert isinstance(models['test/cyclic'], ResourceModel)
+    assert test_cyclic in models
+    assert isinstance(models[test_cyclic], ResourceModel)
 
 
 def test_model_not_found():
+    """Test non existing model."""
     resources = ['not_an_existing_model']
 
     repo = LocalRepo('THipster/models')

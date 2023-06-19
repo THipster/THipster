@@ -1,13 +1,13 @@
+"""Authentification module interface."""
 from abc import ABC, abstractmethod
 
 
 class AuthPort(ABC):
-    """Authentification module interface
-    """
+    """Authentification module interface."""
 
     @abstractmethod
     def authenticate(self):
-        """Abstract method used for authentication
+        """Abstract method used for authentication.
 
         Raises
         ------
@@ -15,4 +15,5 @@ class AuthPort(ABC):
             If method is not implemented in inheriting classes
 
         """
-        raise NotImplementedError('Should implement authenticate()')
+        msg = 'Should implement authenticate()'
+        raise NotImplementedError(msg)

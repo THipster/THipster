@@ -1,9 +1,12 @@
+"""Module containing the Token class and the TOKENTYPES enum."""
 from enum import Enum
 
 from thipster.engine.parsed_file import Position
 
 
 class TOKENTYPES(Enum):
+    """Enum containing all the possible token types."""
+
     AMOUNT = 'AMOUNT'
     AND = 'AND'
     BOOLEAN = 'BOOLEAN'
@@ -42,18 +45,19 @@ class TOKENTYPES(Enum):
     GTE = 'GTE'
 
     def __str__(self) -> str:
+        """Return the string representation of the token type."""
         return self.value
 
 
 class Token():
-    """Class representing a Token
-    """
+    """Class representing a Token."""
 
     def __init__(
         self, position: Position,
         token_type: TOKENTYPES, value: str | None = None,
     ):
         """
+        Initialize a Token.
 
         Parameters
         ----------
@@ -69,17 +73,20 @@ class Token():
         self.value = value
 
     def __eq__(self, __value: object) -> bool:
-        if isinstance(__value, Token):
-            return (
-                self.position == __value.position and
-                self.token_type == __value.token_type and
-                self.value == __value.value
-            )
-        else:
-            raise TypeError('Value must be a Token')
+        """Check if two tokens are equal."""
+        if not isinstance(__value, Token):
+            msg = 'Value must be a Token'
+            raise TypeError(msg)
+
+        return (
+            self.position == __value.position and
+            self.token_type == __value.token_type and
+            self.value == __value.value
+        )
 
     def __repr__(self) -> str:
-        token_string = f'(Type: {str(self.token_type)}, Position: {str(self.position)}'
+        """Return the string representation of the token."""
+        token_string = f'(Type: {self.token_type!s}, Position: {self.position!s}'
         if self.value:
             token_string += f', Value: {self.value}'
         token_string += ')'
@@ -87,4 +94,5 @@ class Token():
         return token_string
 
     def __str__(self) -> str:
+        """Return the string value of the token."""
         return f'({self.token_type} {self.value})'

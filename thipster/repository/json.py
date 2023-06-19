@@ -1,5 +1,4 @@
-"""JSONRepo.py module.
-"""
+"""JSONRepo.py module."""
 
 import json
 from abc import ABC, abstractmethod
@@ -9,12 +8,13 @@ from thipster.engine import RepositoryPort
 
 
 class JSONRepo(RepositoryPort, ABC):
-    _parent_stack = []
-    """Class representing a JSON resources Repository
+    """Class representing a JSON resources Repository.
 
     JSON Models of resources and services offered by supported cloud providers are
     stored in a repository.
     """
+
+    _parent_stack = []
 
     def __init__(self) -> None:
         super().__init__()
@@ -22,10 +22,11 @@ class JSONRepo(RepositoryPort, ABC):
 
     @abstractmethod
     def get_json(self, name: str) -> str | bytes | bytearray:
-        raise Exception()
+        """Get the JSON file corresponding to the name given."""
+        raise Exception
 
     def get(self, resource_names: list[str]) -> dict[str, rm.ResourceModel]:
-        """Get the corresponding resource Models from a list of names
+        """Get the corresponding resource Models from a list of names.
 
         Parameters
         ----------
@@ -43,7 +44,7 @@ class JSONRepo(RepositoryPort, ABC):
         return self.model_list
 
     def __create_value(self, val: object | None) -> rm.ModelValue | None:
-        """Creates the right Model value implementation from the raw JSON
+        """Create the right Model value implementation from the raw JSON.
 
         Parameters
         ----------
@@ -58,15 +59,15 @@ class JSONRepo(RepositoryPort, ABC):
         """
         if val is None:
             return None
-        elif isinstance(val, dict):
+        if isinstance(val, dict):
             return rm.ModelDict(None)
-        elif isinstance(val, list):
+        if isinstance(val, list):
             return rm.ModelList([self.__create_value(i) for i in val])
 
         return rm.ModelLiteral(val)
 
     def __create_attribute(self, raw: dict[str, str]) -> list[rm.ModelAttribute]:
-        """Creates a model's attributes from the raw JSON input
+        """Create a model's attributes from the raw JSON input.
 
         Parameters
         ----------
@@ -78,18 +79,14 @@ class JSONRepo(RepositoryPort, ABC):
         list[ModelAttribute]
             Attributes of the resource model
         """
-
         attributes = {}
 
         for name, attr in raw.items():
-            optional = attr['optional'] if 'optional' in attr.keys(
-            ) else True
+            optional = attr['optional'] if 'optional' in attr else True
 
-            value = attr['default'] if 'default' in attr.keys(
-            ) else None
+            value = attr['default'] if 'default' in attr else None
 
-            is_list = 'list' in attr['var_type'] if 'var_type' in attr.keys(
-            ) else False
+            is_list = 'list' in attr['var_type'] if 'var_type' in attr else False
 
             default = self.__create_value(value)
 
@@ -103,7 +100,7 @@ class JSONRepo(RepositoryPort, ABC):
         return attributes
 
     def __create_model(self, name: str) -> rm.ResourceModel:
-        """Get's the json file and creates a Resource Model
+        """Get the json file and create a Resource Model.
 
         Parameters
         ----------
@@ -115,7 +112,6 @@ class JSONRepo(RepositoryPort, ABC):
         ResourceModel
             Resource model corresponding to the name given
         """
-
         model = self.get_json(name)
 
         json_model = json.loads(model)
@@ -128,7 +124,7 @@ class JSONRepo(RepositoryPort, ABC):
             if internal_object['resource'] not in self.model_list.keys():
                 self.__add_model(internal_object['resource'])
 
-        res = rm.ResourceModel(
+        return rm.ResourceModel(
             name,
             attributes=self.__create_attribute(json_model['attributes']),
             dependencies=json_model['dependencies'],
@@ -140,10 +136,8 @@ class JSONRepo(RepositoryPort, ABC):
             cdk_name=json_model['cdk_class'],
         )
 
-        return res
-
     def __add_model(self, model: str) -> rm.ResourceModel:
-        """Add a model to the list
+        """Add a model to the list.
 
         Parameters
         ----------
@@ -155,7 +149,6 @@ class JSONRepo(RepositoryPort, ABC):
         ResourceModel
             Resource model corresponding to the name given
         """
-
         if model not in self.model_list.keys():
             self.model_list[model] = None
             self.model_list[model] = self.__create_model(model)

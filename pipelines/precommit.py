@@ -1,3 +1,4 @@
+"""Step to run pre-commit in the pipeline."""
 import sys
 
 import anyio
@@ -6,8 +7,7 @@ import dagger
 
 
 async def pre_commit(version: str):
-    """Runs pre-commit on all project files
-    """
+    """Run pre-commit on all project files."""
     async with dagger.Connection(dagger.Config(log_output=sys.stderr)) as client:
 
         src = client.host().directory('.')

@@ -38,4 +38,30 @@ select = [
     "UP",
     "C90",
     "N",
+    "D",
+    "A",
+    "C4",
+    "EM",
+    "EXE",
+    "ISC",
+    "ICN",
+    "INP",
+    "PYI",
+    "PTH",
+    "Q",
+    "RSE",
+    "RET",
+    "SIM",
+    "TID",
+    "ARG",
+    "RUF",
 ]
+
+[tool.ruff.pydocstyle]
+# Use Google-style docstrings.
+convention = "numpy"
+
+[tool.ruff.flake8-quotes]
+docstring-quotes = "double"
+inline-quotes = "single"
+multiline-quotes = "double"

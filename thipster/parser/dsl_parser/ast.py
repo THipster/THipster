@@ -1,3 +1,4 @@
+"""THipster's DSL AST (Abstract Syntax Tree) module."""
 from abc import ABC, abstractmethod
 
 from thipster.engine.parsed_file import Position
@@ -6,33 +7,43 @@ from .token import Token
 
 
 class Node(ABC):
+    """Abstract class for all AST nodes."""
 
     @abstractmethod
     def accept(self, visitor):
-        raise NotImplementedError()
+        """Accept visitor method."""
+        raise NotImplementedError
 
     @property
     def position(self):
-        raise NotImplementedError()
+        """Return node's position in the file."""
+        raise NotImplementedError
 
 
 class StringNode(Node):
+    """String node class."""
+
     def __init__(self, token: Token) -> None:
         super().__init__()
         self.token = token
 
     def __str__(self) -> str:
+        """Return string representation of the node."""
         return f'<STRING {self.token}>'
 
     @property
     def position(self) -> Position:
+        """Return node's position in the file."""
         return self.token.position
 
     def accept(self, visitor):
+        """Accept visitor method."""
         return visitor.visit_string(self)
 
 
 class StringExprNode(Node):
+    """String expression node class."""
+
     def __init__(self, *values: Node | list[Node]) -> None:
         super().__init__()
         self.values: list[Node] = []
@@ -43,123 +54,160 @@ class StringExprNode(Node):
                 self.values.append(v)
 
     def __str__(self) -> str:
+        """Return string representation of the node."""
         return f"<STRING-EXPR {' '.join(list(map(str, self.values)))}>"
 
     @property
     def position(self) -> Token:
+        """Return node's position in the file."""
         return self.values[0].position
 
     def accept(self, visitor):
+        """Accept visitor method."""
         return visitor.visit_string_expr(self)
 
 
 class VariableNode(Node):
+    """Variable node class."""
+
     def __init__(self, token: Token) -> None:
         super().__init__()
         self.token = token
 
     def __str__(self) -> str:
+        """Return string representation of the node."""
         return f'<VAR {self.token}>'
 
     @property
     def name(self):
+        """Return variable's name."""
         return self.token.value
 
     @property
     def position(self) -> Position:
+        """Return node's position in the file."""
         return self.token.position
 
     def accept(self, visitor):
+        """Accept visitor method."""
         return visitor.visit_variable(self)
 
 
 class BoolNode(Node):
+    """Boolean node class."""
+
     def __init__(self, token: Token) -> None:
         super().__init__()
         self.token = token
 
     def __str__(self) -> str:
+        """Return string representation of the node."""
         return f'<BOOL {self.token}>'
 
     @property
     def position(self) -> Position:
+        """Return node's position in the file."""
         return self.token.position
 
     def accept(self, visitor):
+        """Accept visitor method."""
         return visitor.visit_bool(self)
 
 
 class IntNode(Node):
+    """Integer node class."""
+
     def __init__(self, token: Token) -> None:
         super().__init__()
         self.token = token
 
     def __str__(self) -> str:
+        """Return string representation of the node."""
         return f'<INT {self.token}>'
 
     @property
     def position(self) -> Position:
+        """Return node's position in the file."""
         return self.token.position
 
     def accept(self, visitor):
+        """Accept visitor method."""
         return visitor.visit_int(self)
 
 
 class FloatNode(Node):
+    """Float node class."""
+
     def __init__(self, token: Token) -> None:
         super().__init__()
         self.token = token
 
     def __str__(self) -> str:
+        """Return string representation of the node."""
         return f'<FLOAT {self.token}>'
 
     @property
     def position(self) -> Position:
+        """Return node's position in the file."""
         return self.token.position
 
     def accept(self, visitor):
+        """Accept visitor method."""
         return visitor.visit_float(self)
 
 
 class VariableDefinitionNode(Node):
+    """Variable definition node class."""
+
     def __init__(self, name: Token, value: IntNode) -> None:
         super().__init__()
         self.__name = name
         self.value = value
 
     def __str__(self) -> str:
+        """Return string representation of the node."""
         return f'<VARDEF {self.__name} = {self.value}>'
 
     @property
     def name(self):
+        """Return variable's name."""
         return self.__name.value
 
     @property
     def position(self) -> Position:
+        """Return node's position in the file."""
         return self.__name.position
 
     def accept(self, visitor):
+        """Accept visitor method."""
         return visitor.visit_variable_definition(self)
 
 
 class IfNode(Node):
+    """If node class."""
+
     def __init__(self, condition: StringNode, if_case: Node) -> None:
         super().__init__()
         self.condition = condition
         self.if_case = if_case
 
     def __str__(self) -> str:
+        """Return string representation of the node."""
         return f'<IF {self.condition}: {self.if_case}>'
 
     @property
     def position(self) -> Position:
+        """Return node's position in the file."""
         return self.if_case.position
 
     def accept(self, visitor):
+        """Accept visitor method."""
         return visitor.visit_if(self)
 
 
 class IfElseNode(IfNode):
+    """If-else node class."""
+
     def __init__(
         self, condition: StringNode, if_case: Node,
         else_case: Node | None,
@@ -168,14 +216,18 @@ class IfElseNode(IfNode):
         self.else_case = else_case
 
     def __str__(self) -> str:
-        return f'<IF_E {str(self.condition)}: {str(self.if_case)}, ELSE : \
-{str(self.else_case)}>'
+        """Return string representation of the node."""
+        return f'<IF_E {self.condition!s}: {self.if_case!s}, ELSE : \
+{self.else_case!s}>'
 
     def accept(self, visitor):
+        """Accept visitor method."""
         return visitor.visit_ifelse(self)
 
 
 class AmountNode(Node):
+    """Amount node class."""
+
     def __init__(
         self, position: Token,
         amount: Node, variable: VariableDefinitionNode | None, node: Node | None,
@@ -188,10 +240,12 @@ class AmountNode(Node):
         self.variable = variable
 
     def __str__(self) -> str:
+        """Return string representation of the node."""
         return f'<AMOUNT {self.amount} #{self.variable}: {self.node}>'
 
     @property
     def position(self) -> Position:
+        """Return node's position in the file."""
         return self.__position
 
     @position.setter
@@ -199,79 +253,104 @@ class AmountNode(Node):
         self.__position = _value
 
     def accept(self, visitor):
+        """Accept visitor method."""
         return visitor.visit_amount(self)
 
 
 class ValueNode(Node, ABC):
+    """Abstract class for all value nodes."""
+
     pass
 
 
 class ParameterNode(Node):
+    """Parameter node class."""
+
     def __init__(self, name: StringNode, value: ValueNode) -> None:
         super().__init__()
         self.name = name
         self.value = value
 
     def __str__(self) -> str:
-        return f'<PARAMETER name = {str(self.name)}, value = {str(self.value)}>'
+        """Return string representation of the node."""
+        return f'<PARAMETER name = {self.name!s}, value = {self.value!s}>'
 
     @property
     def position(self) -> Position:
+        """Return node's position in the file."""
         return self.name.position
 
     def accept(self, visitor):
+        """Accept visitor method."""
         return visitor.visit_parameter(self)
 
 
 class DictNode(ValueNode):
+    """Dictionary node class."""
+
     def __init__(self, values: list[ParameterNode]) -> None:
         super().__init__()
         self.values = values
 
     def __str__(self) -> str:
+        """Return string representation of the node."""
         return f"<DICT {' '.join(list(map(str, self.values)))}>"
 
     @property
     def position(self) -> Position:
+        """Return node's position in the file."""
         return self.values[0].position
 
     def accept(self, visitor):
+        """Accept visitor method."""
         return visitor.visit_dict(self)
 
 
 class LiteralNode(ValueNode):
+    """Literal node class."""
+
     def __init__(self, values: Node) -> None:
         super().__init__()
         self.value = values
 
     def __str__(self) -> str:
-        return f'<LITERAL {str(self.value)}>'
+        """Return string representation of the node."""
+        return f'<LITERAL {self.value!s}>'
 
     @property
     def position(self) -> Position:
+        """Return node's position in the file."""
         return self.value.position
 
     def accept(self, visitor):
+        """Accept visitor method."""
         return visitor.visit_literal(self)
 
 
 class ListNode(ValueNode):
+    """List node class."""
+
     def __init__(self, values: list[ValueNode]) -> None:
         super().__init__()
         self.values = values
 
     def __str__(self) -> str:
+        """Return string representation of the node."""
         return f"<LIST {' '.join(list(map(str, self.values)))}>"
 
     @property
     def position(self) -> Position:
+        """Return node's position in the file."""
         return self.values[0].position
 
     def accept(self, visitor):
+        """Accept visitor method."""
         return visitor.visit_list(self)
 
 
 class CompExprNode(Node):
+    """Comparison expression node class."""
+
     def __init__(
             self, left_value: Node, operation, right_value: Node | None = None,
     ) -> None:
@@ -282,13 +361,17 @@ class CompExprNode(Node):
 
     @property
     def position(self) -> Position:
+        """Return node's position in the file."""
         return self.left_value.position
 
     def accept(self, visitor):
+        """Accept visitor method."""
         return visitor.visit_comp_expr(self)
 
 
 class TermNode(Node):
+    """Term node class."""
+
     def __init__(self, factors, operation) -> None:
         super().__init__()
         if len(factors) != len(operation) + 1:
@@ -298,13 +381,17 @@ class TermNode(Node):
 
     @property
     def position(self) -> Position:
+        """Return node's position in the file."""
         return self.factors[0].position
 
     def accept(self, visitor):
+        """Accept visitor method."""
         return visitor.visit_term(self)
 
 
 class ArithExprNode(Node):
+    """Arithmetic expression node class."""
+
     def __init__(self, terms: list[TermNode], operations) -> None:
         super().__init__()
         if len(terms) != len(operations) + 1:
@@ -314,13 +401,17 @@ class ArithExprNode(Node):
 
     @property
     def position(self) -> Position:
+        """Return node's position in the file."""
         return self.terms[0].position
 
     def accept(self, visitor):
+        """Accept visitor method."""
         return visitor.visit_arith_expr(self)
 
 
 class FactorNode(Node):
+    """Factor node class."""
+
     def __init__(self, factors: list[Node], operation) -> None:
         super().__init__()
         self.factors = factors
@@ -328,13 +419,17 @@ class FactorNode(Node):
 
     @property
     def position(self) -> Position:
+        """Return node's position in the file."""
         return self.factors[0].position
 
     def accept(self, visitor):
+        """Accept visitor method."""
         return visitor.visit_factor(self)
 
 
 class ResourceNode(Node):
+    """Resource node class."""
+
     def __init__(
         self,
         resource_type: StringNode,
@@ -347,31 +442,40 @@ class ResourceNode(Node):
         self.parameters = parameters
 
     def __str__(self) -> str:
-        return f'<RESOURCE type = {str(self.type)}, \
-name = {str(self.name)}, parameters = {str(self.parameters)}>'
+        """Return string representation of the node."""
+        return f'<RESOURCE type = {self.type!s}, \
+name = {self.name!s}, parameters = {self.parameters!s}>'
 
     @property
     def position(self) -> Position:
+        """Return node's position in the file."""
         return self.type.position
 
     def accept(self, visitor):
+        """Accept visitor method."""
         return visitor.visit_resource(self)
 
 
 class FileNode(Node):
+    """File node class."""
+
     def __init__(self) -> None:
         super().__init__()
         self.resources: list[ResourceNode | IfNode | AmountNode] = []
 
     def add(self, item: ResourceNode | IfNode | AmountNode) -> None:
+        """Add item to the node."""
         self.resources.append(item)
 
     def __str__(self) -> str:
+        """Return string representation of the node."""
         return '\n'.join(list(map(str, self.resources)))
 
     @property
     def position(self) -> Position:
+        """Return node's position in the file."""
         return self.resources[0].position
 
     def accept(self, visitor):
+        """Accept visitor method."""
         return visitor.visit_file(self)

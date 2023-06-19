@@ -1,8 +1,9 @@
+"""Base containers for the CI pipeline."""
 import dagger
 
 
 def python_base(client: dagger.Client, version: str) -> dagger.Container:
-    """Returns a dagger pipeline container with the python base image
+    """Return a dagger pipeline container with the python base image.
 
     Parameters
     ----------
@@ -16,18 +17,15 @@ def python_base(client: dagger.Client, version: str) -> dagger.Container:
     Container
         Returns a container with the python base image
     """
-
-    python = (
+    return (
         client.container()
         .from_(f'python:{version}-alpine3.18')
         .with_exec(['apk', 'upgrade', '--no-cache'])
     )
 
-    return python
-
 
 def thipster_base(client: dagger.Client, version: str) -> dagger.Container:
-    """Returns a dagger pipeline container with the python base image
+    """Return a dagger pipeline container with the python base image for thipster.
 
     Parameters
     ----------
@@ -39,11 +37,13 @@ def thipster_base(client: dagger.Client, version: str) -> dagger.Container:
     Returns
     -------
     Container
-        Returns a container with all thipster dependencies
+        Returns a container with all thipster dependencies, including nodejs and
+        terraform
     """
     src = client.host().directory('.')
+    requirements = 'requirements.txt'
 
-    thips = (
+    return (
         python_base(client, version)
         # Install Terraform CLI
         .with_exec(['wget', 'https://releases.hashicorp.com/terraform/1.4.6/terraform_1.4.6_linux_amd64.zip'])
@@ -52,7 +52,6 @@ def thipster_base(client: dagger.Client, version: str) -> dagger.Container:
         # Install NodeJS
         .with_exec(['apk', 'add', 'nodejs', 'npm'])
         # Install THipster dependencies
-        .with_file('requirements.txt', src.file('requirements.txt'))
-        .with_exec(['pip', 'install', '-r', 'requirements.txt'])
+        .with_file(requirements, src.file(requirements))
+        .with_exec(['pip', 'install', '-r', requirements])
     )
-    return thips

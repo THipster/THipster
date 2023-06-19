@@ -1,5 +1,4 @@
-"""_Engine.py module.
-"""
+"""Engine.py module."""
 
 import thipster.engine.parsed_file as pf
 
@@ -11,7 +10,7 @@ from .resource_model import ResourceModel
 
 
 class Engine():
-    """The engine of thipster
+    """The engine of thipster.
 
     The core of the application, it is used to call and link all
     interfaces together.
@@ -24,6 +23,8 @@ class Engine():
             terraform:  TerraformPort,
     ):
         """
+        Initialize the Engine.
+
         Parameters
         ----------
         parser : ParserPort
@@ -34,7 +35,6 @@ class Engine():
             Instance of an Auth class
         terraform : TerraformPort
             Instance of a Terraform class
-
         """
         self.__parser = parser
         self.__repository = repository
@@ -43,50 +43,54 @@ class Engine():
 
     @property
     def parser(self):
+        """Get the parser."""
         return self.__parser
 
     @parser.setter
     def parser(self, value):
         if not isinstance(value, ParserPort):
-            raise Exception()
+            raise Exception
 
         self.__parser = value
 
     @property
     def repository(self):
+        """Get the repository."""
         return self.__repository
 
     @repository.setter
     def repository(self, value):
         if not isinstance(value, RepositoryPort):
-            raise Exception()
+            raise Exception
 
         self.__repository = value
 
     @property
     def auth(self):
+        """Get the authentification module."""
         return self.__auth
 
     @auth.setter
     def auth(self, value):
         if not isinstance(value, AuthPort):
-            raise Exception()
+            raise Exception
 
         self.__auth = value
 
     @property
     def terraform(self):
+        """Get the Terraform module."""
         return self.__terraform
 
     @terraform.setter
     def terraform(self, value):
         if not isinstance(value, TerraformPort):
-            raise Exception()
+            raise Exception
 
         self.__terraform = value
 
     def run(self, path: str) -> tuple[list[str], str]:
-        """Returns json Terraform files from the input file name
+        """Return json Terraform files from the input file name.
 
         Calls the different run methods of the parser, repository,
         auth and terraform modules.
@@ -117,7 +121,7 @@ class Engine():
         return self.__terraform.plan()
 
     def _parse_files(self, path: str) -> pf.ParsedFile:
-        """Parse the input file or directory
+        """Parse the input file or directory.
 
         Parameters
         ----------
@@ -137,7 +141,7 @@ class Engine():
     def _get_models(
         self, file: pf.ParsedFile,
     ) -> dict[str, ResourceModel]:
-        """Get the models from the repository
+        """Get the models from the repository.
 
         Parameters
         ----------
@@ -150,14 +154,12 @@ class Engine():
             The dictionary of models
         """
         types = [r.resource_type for r in file.resources]
-        models = self.__repository.get(types)
-
-        return models
+        return self.__repository.get(types)
 
     def _generate_tf_files(
         self, file: pf.ParsedFile, models: dict[str, ResourceModel],
-    ) -> list[str]:
-        """Generate Terraform files
+    ) -> None:
+        """Generate Terraform files.
 
         Parameters
         ----------
@@ -174,30 +176,25 @@ class Engine():
         self.__terraform.generate(file, models, self.__auth)
 
     def _init_terraform(self) -> None:
-        """Initialize Terraform
-        """
+        """Initialize Terraform."""
         self.__terraform.init()
 
     def _plan_terraform(self) -> str:
-        """Plan Terraform
+        """Plan Terraform.
 
         Returns
         -------
         str
             The results of the Terraform plan
         """
-        results = self.__terraform.plan()
-
-        return results
+        return self.__terraform.plan()
 
     def _apply_terraform(self) -> str:
-        """Apply Terraform
+        """Apply Terraform.
 
         Returns
         -------
         str
             The results of the Terraform apply
         """
-        results = self.__terraform.apply()
-
-        return results
+        return self.__terraform.apply()
