@@ -1,10 +1,5 @@
 {
-    "dependencies": {
-        "":{
-            "resource" : "firewall",
-            "default" : {}
-        }
-    },
+    "dependencies": {},
     "internalObjects": {
         "backend":{
             "resource" : "backend",

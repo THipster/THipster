@@ -5,8 +5,7 @@ class THipsterError(Exception, ABC):
     @property
     @abstractmethod
     def message():
-        raise NotImplementedError()
+        raise NotImplementedError
 
-    @abstractmethod
     def __str__(self) -> str:
         return self.message
