@@ -13,7 +13,7 @@ sys.path.insert(0, Path('../..').resolve().as_posix())
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
 
 project = 'Thipster'
-# copyright = '2023'
+copyright = '2023'  # noqa: A001
 author = ''
 
 # -- General configuration ---------------------------------------------------
