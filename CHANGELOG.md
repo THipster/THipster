@@ -2,6 +2,12 @@
 
 <!--next-version-placeholder-->
 
+## v0.17.4 (2023-06-21)
+
+### :bug:
+
+* :bug: fix: allow None in default optional values ([#172](https://github.com/THipster/THipster/issues/172)) ([`7cd5a3c`](https://github.com/THipster/THipster/commit/7cd5a3c34da49e83672e6000dc3f2d297678fe27))
+
 ## v0.17.3 (2023-06-21)
 
 ### :goal_net:
