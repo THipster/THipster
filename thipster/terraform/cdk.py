@@ -293,8 +293,13 @@ def _create_default_resource(ctx: ResourceCreationContext):
 
     # Checks that all attributes have a default value
     if ctx.no_modif and not all(x.default is not None for x in attributes.values()):
+        missing_atributes = [
+            k for k, v in attributes.items() if v.default is None
+        ]
+
         raise cdk_exceptions.CDKMissingAttributeInDependencyError(
             ctx.resource_type,
+            missing_atributes,
         )
 
     # Import package and class

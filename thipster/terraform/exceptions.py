@@ -17,13 +17,20 @@ class CDKInvalidAttributeError(CDKError):
 
 
 class CDKMissingAttributeError(CDKError):
+    def __init__(self, resource: str, attributes: list[str], **args: object) -> None:
+        super().__init__(**args)
+        self.__resource = resource
+        self.__attributes = attributes
+
     @property
     def message(self) -> str:
-        return 'Missing an attribute'
+        attr_str = ', '.join(self.__attributes)
+        return f'Missing {attr_str} in {self.__resource}'
 
 
 class CDKMissingAttributeInDependencyError(CDKMissingAttributeError):
-    pass
+    def __init__(self, resource: str, attributes: list[str], **args: object) -> None:
+        super().__init__(resource, attributes, **args)
 
 
 class CDKDependencyNotDeclaredError(CDKError):
