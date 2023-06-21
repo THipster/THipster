@@ -17,6 +17,10 @@ class Interpreter():
     """
 
     def __init__(self) -> None:
+        """Interpreter class for the DSL Parser.
+
+        Implements a visitor design pattern on the AST nodes
+        """
         super().__init__()
 
         self.__variables = dict[str, int]()

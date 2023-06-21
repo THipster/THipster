@@ -12,8 +12,7 @@ class Lexer():
     """Lexer class for the DSL Parser."""
 
     def __init__(self, files: dict[str, str]):
-        """
-        Initialize the Lexer.
+        """Lexer class for the DSL Parser.
 
         Parameters
         ----------

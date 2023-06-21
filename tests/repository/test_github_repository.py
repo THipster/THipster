@@ -30,7 +30,7 @@ def test_get_bucket():
 
 
 def test_get_vm():
-    """Test get vm model."""
+    """Test get vm model and its dependencies."""
     gcp_network = 'gcp/network'
     gcp_vm = 'gcp/vm'
     resources = [gcp_vm]

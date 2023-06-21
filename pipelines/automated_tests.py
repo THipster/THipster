@@ -1,4 +1,4 @@
-"""Step to run automated tests in the pipeline."""
+"""Step that runs automated tests in a pipeline."""
 import sys
 
 import anyio

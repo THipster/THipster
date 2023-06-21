@@ -14,6 +14,13 @@ class TokenParser():
     """Class to parse the tokens into an AST."""
 
     def __init__(self, tokens: list[Token]) -> None:
+        """Class to parse the tokens into an AST.
+
+        Parameters
+        ----------
+        tokens : list[Token]
+            The list of tokens to parse.
+        """
         self.__tokens = tokens
 
     def run(self) -> ast.FileNode:

@@ -63,7 +63,7 @@ def test_get_bucket():
 
 
 def test_get_bucket_with_cors():
-    """Test get bucket model with cors."""
+    """Test get bucket model with 'cors' internal object."""
     _destroy_dir = __setup_local({
         'bucket.json':
             """
@@ -146,7 +146,7 @@ def test_get_bucket_with_cors():
 
 
 def test_get_vm():
-    """Test get vm model."""
+    """Test get vm model and its dependencies."""
     test_vm = 'test/vm'
     test_network = 'test/network'
     _destroy_dir = __setup_local({

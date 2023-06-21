@@ -35,6 +35,31 @@ class ResourceCreationContext:
         no_modif: bool = True,
         no_dependencies: bool = False,
     ):
+        """Context from which a resource is created.
+
+        Parameters
+        ----------
+        stack_self : TerraformStack
+            Stack in which the resource is created
+        resource_name : str, optional
+            Name of the resource, default None
+        resource_type : str, optional
+            Type of the resource, default None
+        resource_class : type, optional
+            Class of the resource (Python CDK), default None
+        parent_name : str, optional
+            Name of the parent resource, default None
+        parent_type : str, optional
+            Type of the parent resource, default None
+        parent_args : dict, optional
+            Arguments of the parent resource, default {}
+        arg_to_complete : str, optional
+            Name of the argument to complete, default None
+        no_modif : bool, optional
+            If the resource is created with default values, default True
+        no_dependencies : bool, optional
+            If the resource is created without dependencies, default False
+        """
         self.stack_self = stack_self
 
         self.model: rm.ResourceModel = None

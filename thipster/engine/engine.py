@@ -10,7 +10,7 @@ from .resource_model import ResourceModel
 
 
 class Engine():
-    """The engine of thipster.
+    """THipster's Engine.
 
     The core of the application, it is used to call and link all
     interfaces together.
@@ -22,8 +22,10 @@ class Engine():
             auth: AuthPort,
             terraform:  TerraformPort,
     ):
-        """
-        Initialize the Engine.
+        """THipster's Engine.
+
+        The core of the application, it is used to call and link all
+        interfaces together.
 
         Parameters
         ----------
@@ -108,19 +110,19 @@ class Engine():
             files and a string with the results of the Terraform plan
         """
         # Parse file or directory
-        parsed_file = self._parse_files(path)
+        parsed_file = self.parse_files(path)
 
         # Get needed models
-        models = self._get_models(parsed_file)
+        models = self.get_models(parsed_file)
 
         # Generate Terraform files
-        self._generate_tf_files(parsed_file, models)
+        self.generate_tf_files(parsed_file, models)
 
         self.__terraform.init()
 
         return self.__terraform.plan()
 
-    def _parse_files(self, path: str) -> pf.ParsedFile:
+    def parse_files(self, path: str) -> pf.ParsedFile:
         """Parse the input file or directory.
 
         Parameters
@@ -138,7 +140,7 @@ class Engine():
 
         return parsed_file
 
-    def _get_models(
+    def get_models(
         self, file: pf.ParsedFile,
     ) -> dict[str, ResourceModel]:
         """Get the models from the repository.
@@ -156,7 +158,7 @@ class Engine():
         types = [r.resource_type for r in file.resources]
         return self.__repository.get(types)
 
-    def _generate_tf_files(
+    def generate_tf_files(
         self, file: pf.ParsedFile, models: dict[str, ResourceModel],
     ) -> None:
         """Generate Terraform files.
@@ -167,19 +169,14 @@ class Engine():
             The ParsedFile object containing the resources defined in the input file
         models : dict[str, ResourceModel]
             The dictionary of models
-
-        Returns
-        -------
-        list[str]
-            A list of directories containing the Terraform json files
         """
         self.__terraform.generate(file, models, self.__auth)
 
-    def _init_terraform(self) -> None:
+    def init_terraform(self) -> None:
         """Initialize Terraform."""
         self.__terraform.init()
 
-    def _plan_terraform(self) -> str:
+    def plan_terraform(self) -> str:
         """Plan Terraform.
 
         Returns
@@ -189,7 +186,7 @@ class Engine():
         """
         return self.__terraform.plan()
 
-    def _apply_terraform(self) -> str:
+    def apply_terraform(self) -> str:
         """Apply Terraform.
 
         Returns

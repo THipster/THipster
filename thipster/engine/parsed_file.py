@@ -17,8 +17,11 @@ class Position():
     """
 
     def __init__(self, filename: str, ln: int, col: int):
-        """
-        Initialize a Position object.
+        """Class representing the position of a token.
+
+        Indicates the initial position of a token, resource or character in the input
+        files.
+        It includes the file name, line and column numbers of the designated element.
 
         Parameters
         ----------
@@ -61,15 +64,15 @@ class Position():
         TypeError
             If '__value' is not a Position
         """
-        if isinstance(__value, Position):
-            return (
-                self.filename == __value.filename and
-                self.ln == __value.ln and
-                self.col == __value.col
-            )
+        if not isinstance(__value, Position):
+            msg = 'Value must be a Position'
+            raise TypeError(msg)
 
-        msg = 'Value must be a Position'
-        raise TypeError(msg)
+        return (
+            self.filename == __value.filename and
+            self.ln == __value.ln and
+            self.col == __value.col
+        )
 
 
 class ParsedAttribute():

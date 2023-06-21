@@ -18,8 +18,7 @@ class ModelAttribute:
             optional: bool = True,
             is_list: bool = False,
     ):
-        """
-        Initialize a ModelAttribute object.
+        """Represent a Resource Model attribute.
 
         Parameters
         ----------
@@ -48,9 +47,10 @@ class ModelAttribute:
 
 
 class ModelList(ModelValue):
-    """Represents a List of values for a Resource Model attribute."""
+    """Represent a List of values for a Resource Model attribute."""
 
     def __init__(self, value: list[ModelValue | None] | None):
+        """Represent a List of values for a Resource Model attribute."""
         super().__init__()
         self.value = value
 
@@ -73,17 +73,19 @@ class ModelList(ModelValue):
 
 
 class ModelLiteral(ModelValue):
-    """Represents a literal value for a Resource Model attribute."""
+    """Represent a literal value for a Resource Model attribute."""
 
     def __init__(self, value):
+        """Represent a literal value for a Resource Model attribute."""
         super().__init__()
         self.value = value
 
 
 class ModelDict(ModelValue):
-    """Represents a dictionary value for a Resource Model attribute."""
+    """Represent a dictionary value for a Resource Model attribute."""
 
     def __init__(self, value: dict[str, ModelAttribute] | None):
+        """Represent a dictionary value for a Resource Model attribute."""
         super().__init__()
         self.value = value
 
@@ -119,6 +121,7 @@ class ResourceModel:
             cdk_module: str,
             cdk_name: str,
     ):
+        """Represent a Resource Model."""
         self.resource_type = resource_type
         self.attributes = attributes
         self.dependencies = dependencies

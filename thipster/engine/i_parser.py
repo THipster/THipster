@@ -5,7 +5,7 @@ from thipster.engine.parsed_file import ParsedFile
 
 
 class ParserPort(ABC):
-    """Parser module interface."""
+    """Parser port."""
 
     @classmethod
     @abstractclassmethod

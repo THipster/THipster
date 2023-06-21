@@ -1,4 +1,4 @@
-"""Module contains the DSLParser class."""
+"""Module that contains the DSLParser class."""
 import os
 from pathlib import Path
 
@@ -12,7 +12,7 @@ from .token_parser import TokenParser
 
 
 class DSLParser(ParserPort):
-    """Class to run the DSLParser."""
+    """Class used to run the DSLParser."""
 
     @classmethod
     def __getfiles(cls, path: str) -> dict[str, str]:

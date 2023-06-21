@@ -1,4 +1,4 @@
-"""Tests for the ."""
+"""Tests for the ParsedFile object."""
 import thipster.engine.parsed_file as pf
 
 

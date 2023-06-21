@@ -14,6 +14,12 @@ class LocalRepo(JSONRepo):
     """
 
     def __init__(self, path: str) -> None:
+        """Class representing a local resources Repository.
+
+        JSON Models of resources and services offered by supported cloud providers are
+        stored in a repository.
+        This class is used to access those models if they are stored locally.
+        """
         super().__init__()
         self.__repo = path
 

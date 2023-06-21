@@ -16,6 +16,7 @@ class YAMLParserBaseError(THipsterError, ABC):
     """Base error for YAMLParser."""
 
     def __init__(self, *args: object) -> None:
+        """Shared base exception for the YAML parser class."""
         super().__init__(*args)
 
 
@@ -23,6 +24,13 @@ class YAMLParserNoNameError(YAMLParserBaseError):
     """Error raised when a resource has no name."""
 
     def __init__(self, resource, *args: object) -> None:
+        """Error raised when a resource has no name.
+
+        Parameters
+        ----------
+        resource
+            The resource that has no name.
+        """
         super().__init__(*args)
         self.resource = resource
 

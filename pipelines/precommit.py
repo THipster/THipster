@@ -1,4 +1,4 @@
-"""Step to run pre-commit in the pipeline."""
+"""Step that runs pre-commit in a pipeline."""
 import sys
 
 import anyio

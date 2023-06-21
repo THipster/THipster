@@ -1,4 +1,4 @@
-"""Base containers for the CI pipeline."""
+"""Base containers for the CI pipelines."""
 import dagger
 
 

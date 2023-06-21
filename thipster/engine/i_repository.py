@@ -5,7 +5,7 @@ from thipster.engine.resource_model import ResourceModel
 
 
 class RepositoryPort(ABC):
-    """Repository module interface."""
+    """Repository port."""
 
     @abstractmethod
     def get(self, resource_names: list[str]) -> dict[str, ResourceModel]:

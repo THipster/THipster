@@ -15,8 +15,11 @@ class GithubRepo(JSONRepo):
     """
 
     def __init__(self, repo: str, branch: str = 'main') -> None:
-        """
-        Initialize a GitHub repository.
+        """Class representing a GitHub resources Repository.
+
+        JSON Models of resources and services offered by supported cloud providers are
+        stored in a repository.
+        This class is used to access those models if they are located in a GitHub repo.
 
         Parameters
         ----------

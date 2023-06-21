@@ -57,7 +57,7 @@ class Token():
         token_type: TOKENTYPES, value: str | None = None,
     ):
         """
-        Initialize a Token.
+        Class representing a Token.
 
         Parameters
         ----------

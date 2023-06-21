@@ -167,7 +167,7 @@ def assert_resource_parameters_are(resource_data: tuple, parameters: list[str]):
 
 
 def get_resource_parameter(resource_data: tuple, parameter: str):
-    """Get a resource parameters."""
+    """Get a resource parameter."""
     resource = __get_resource(
         inspect.currentframe().f_back.f_code.co_name, resource_data,
     )

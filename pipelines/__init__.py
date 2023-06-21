@@ -1,1 +1,1 @@
-"""Dagger.io CI/CD Pipeline."""
+"""Dagger.io CI/CD Pipelines."""

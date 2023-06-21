@@ -39,7 +39,7 @@ bucket {bucket_name}:
 
 
 def test_empty_bucket_two():
-    """Test the generation of two empty buckets."""
+    """Test the generation of two buckets (one is empty)."""
     function_name = get_function_name()
 
     empty_bucket_name = f'empty-bucket-{uuid.uuid4().int}'

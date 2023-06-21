@@ -3,7 +3,7 @@ from abc import ABC, abstractmethod
 
 
 class AuthPort(ABC):
-    """Authentification module interface."""
+    """Authentification port."""
 
     @abstractmethod
     def authenticate(self):

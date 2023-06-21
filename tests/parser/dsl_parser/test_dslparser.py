@@ -211,7 +211,7 @@ def test_parse_list():
 
 
 def test_parse_dict_list_in_dict():
-    """Test the parsing of a list of dict in a dict."""
+    """Test the parsing of a list and dict in a dict."""
     out = __test_file(
         file="""bucket my-bucket:
 \ttoto:
@@ -723,7 +723,7 @@ bucket if:
 
 
 def test_amount_error(mocker):
-    """Test the syntax error with an unexpected 'amount' as token name."""
+    """Test the syntax error with an unexpected 'amount' value : 3/2 isn't an int."""
     # RESERVED TOKEN NAME
     input_file = """
 bucket my-bucket: amount: 3/2

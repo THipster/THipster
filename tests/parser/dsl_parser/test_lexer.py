@@ -62,7 +62,7 @@ def test_create_lexer():
 
 
 def test_lex_single_tokens():
-    """Test the lexing of single tokens."""
+    """Test the lexing of single characters."""
     for input_char, output in {
         ':': TT.COLON,
         ',': TT.COMMA,
@@ -160,7 +160,7 @@ def test_lex_quoted_string():
 
 
 def test_lex_quoted_string_error():
-    """Test string with no ending quotes."""
+    """Test lexing of string with no ending quotes."""
     input_file = {
         'file': 'bucket nom-8: "amount: 5 \n\t',
     }
@@ -283,27 +283,27 @@ def test_lex_amount():
 
 
 def test_lex_and():
-    """Test the lexing of an 'and' condition."""
+    """Test the lexing of an 'and' string."""
     __single_token_test('and', TT.AND)
 
 
 def test_lex_if():
-    """Test the lexing of an 'if' condition."""
+    """Test the lexing of an 'if' string."""
     __single_token_test('if', TT.IF)
 
 
 def test_lex_elif():
-    """Test the lexing of an 'elif' condition."""
+    """Test the lexing of an 'elif' string."""
     __single_token_test('elif', TT.ELIF)
 
 
 def test_lex_else():
-    """Test the lexing of an 'else' condition."""
+    """Test the lexing of an 'else' string."""
     __single_token_test('else', TT.ELSE)
 
 
 def test_lex_if_else():
-    """Test the lexing of an 'if else' condition."""
+    """Test the lexing of an 'if else' string."""
     input_string = 'if condition else something'
     expected_output = [
         __get_token_string('file', 1, 1, TT.IF),
@@ -326,7 +326,7 @@ def test_lex_if_else():
 
 
 def test_lex_or():
-    """Test the lexing of an 'or' condition."""
+    """Test the lexing of an 'or' string."""
     __single_token_test('or', TT.OR)
 
 

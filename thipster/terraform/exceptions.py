@@ -12,6 +12,15 @@ class CDKInvalidAttributeError(CDKError):
     """Exception raised when an attribute is invalid."""
 
     def __init__(self, attr: str, model_type: str, **args: object) -> None:
+        """Exception raised when an attribute is invalid.
+
+        Parameters
+        ----------
+        attr: str
+            The attribute that is invalid
+        model_type: str
+            The model type that contains the attribute
+        """
         super().__init__(*args)
         self.__attr = attr
         self.__modelType = model_type
@@ -51,6 +60,15 @@ class CDKDependencyNotDeclaredError(CDKError):
     def __init__(
             self, dependency_type: str, dependency_name: str, **args: object,
     ) -> None:
+        """Exception raised when a dependency is used but not declared.
+
+        Parameters
+        ----------
+        dependency_type: str
+            The type of the dependency
+        dependency_name: str
+            The name of the dependency
+        """
         super().__init__(*args)
         self.__name = dependency_name
         self.__type = dependency_type
@@ -66,6 +84,13 @@ class CDKCyclicDependenciesError(CDKError):
     """Exception raised when cyclic dependencies are detected."""
 
     def __init__(self, stack: list[str], **args: object) -> None:
+        """Exception raised when cyclic dependencies are detected.
+
+        Parameters
+        ----------
+        stack: list[str]
+            The stack of dependencies that are cyclic
+        """
         super().__init__(*args)
         self.__stack = stack
 

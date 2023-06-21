@@ -1,4 +1,4 @@
-"""Interface for Terraform module."""
+"""Terraform module interface."""
 from abc import ABC, abstractclassmethod
 
 import thipster.engine.parsed_file as pf

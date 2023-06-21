@@ -17,6 +17,11 @@ class JSONRepo(RepositoryPort, ABC):
     _parent_stack = []
 
     def __init__(self) -> None:
+        """Class representing a JSON resources Repository.
+
+        JSON Models of resources and services offered by supported cloud providers are
+        stored in a repository.
+        """
         super().__init__()
         self.model_list = {}
 

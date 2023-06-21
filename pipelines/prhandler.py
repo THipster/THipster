@@ -1,4 +1,4 @@
-"""Pull request pipeline."""
+"""Pull request handler pipeline."""
 import anyio
 import precommit
 from automated_tests import test

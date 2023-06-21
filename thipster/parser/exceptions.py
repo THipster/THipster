@@ -5,7 +5,14 @@ from thipster.engine import THipsterError
 class ParserPathNotFoundError(THipsterError):
     """Exception raised when the parser cannot find the path."""
 
-    def __init__(self, path, *args: object) -> None:
+    def __init__(self, path: str, *args: object) -> None:
+        """Exception raised when the parser cannot find the path.
+
+        Parameters
+        ----------
+        path : str
+            The path that was not found.
+        """
         super().__init__(*args)
 
         self.__path = path
@@ -19,7 +26,14 @@ class ParserPathNotFoundError(THipsterError):
 class NoFileFoundError(THipsterError):
     """Exception raised when the parser cannot find any files to parse."""
 
-    def __init__(self, path, *args: object) -> None:
+    def __init__(self, path: str, *args: object) -> None:
+        """Exception raised when the parser cannot find any files to parse.
+
+        Parameters
+        ----------
+        path : str
+            The path where no files were found.
+        """
         super().__init__(*args)
 
         self.__path = path
