@@ -18,7 +18,7 @@ from thipster.engine import AuthPort, TerraformPort
 from thipster.helpers import create_logger
 
 
-class ResourceCreationContext():
+class ResourceCreationContext:
     def __init__(
         self,
         stack_self: TerraformStack,
@@ -292,9 +292,11 @@ def _create_default_resource(ctx: ResourceCreationContext):
             )
 
     # Checks that all attributes have a default value
-    if ctx.no_modif and not all(x.default is not None for x in attributes.values()):
+    if ctx.no_modif and not all(
+        x.optional or (x.default is not None) for x in attributes.values()
+    ):
         missing_atributes = [
-            k for k, v in attributes.items() if v.default is None
+            k for k, v in attributes.items() if not v.optional and v.default is None
         ]
 
         raise cdk_exceptions.CDKMissingAttributeInDependencyError(
