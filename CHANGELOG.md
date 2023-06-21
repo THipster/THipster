@@ -2,6 +2,12 @@
 
 <!--next-version-placeholder-->
 
+## v0.17.5 (2023-06-21)
+
+### :bug:
+
+* :bug: fix: resource args to cdk ctx init ([#173](https://github.com/THipster/THipster/issues/173)) ([`bf5b25b`](https://github.com/THipster/THipster/commit/bf5b25b22eb15e62dfa1677933cb7beb769855ea))
+
 ## v0.17.4 (2023-06-21)
 
 ### :bug:
