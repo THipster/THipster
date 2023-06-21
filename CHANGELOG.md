@@ -2,6 +2,12 @@
 
 <!--next-version-placeholder-->
 
+## v0.17.3 (2023-06-21)
+
+### :goal_net:
+
+* :goal_net: fix: improve missing attribute error ([#171](https://github.com/THipster/THipster/issues/171)) ([`a0f3846`](https://github.com/THipster/THipster/commit/a0f3846fef5856f24b17840220d5a2298938d7be))
+
 ## v0.17.2 (2023-06-19)
 
 
