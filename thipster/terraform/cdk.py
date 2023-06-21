@@ -680,9 +680,9 @@ def _check_explicit_dependency(
 
         dep_ctx = ResourceCreationContext.from_parent(
             ctx,
-            resource_args=attribute_value,
             resource_type=dependency_type,
         )
+        dep_ctx.resource_args = attribute_value
 
         # Creates explicit dependency
         ctx.resource_args[attribute_name] = _create_dependency(dep_ctx)

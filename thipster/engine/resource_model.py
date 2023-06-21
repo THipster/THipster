@@ -10,7 +10,7 @@ class ModelValue(ABC):
     value = None
 
 
-class ModelAttribute():
+class ModelAttribute:
     """Represents a Resource Model attribute
     """
 
@@ -103,7 +103,7 @@ class ModelDict(ModelValue):
         return ret
 
 
-class ResourceModel():
+class ResourceModel:
     """Represents a Resource Model
     """
 
