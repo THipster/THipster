@@ -51,6 +51,15 @@ class CDKMissingAttributeInDependencyError(CDKMissingAttributeError):
     """Exception raised when an attribute is missing in a dependency."""
 
     def __init__(self, resource: str, attributes: list[str], **args: object) -> None:
+        """Exception raised when an attribute is missing in a dependency.
+
+        Parameters
+        ----------
+        resource: str
+            The resource where the attribute(s) is missing
+        attributes: list[str]
+            list of attributes that are missing
+        """
         super().__init__(resource, attributes, **args)
 
 
