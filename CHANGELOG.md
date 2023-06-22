@@ -2,6 +2,12 @@
 
 <!--next-version-placeholder-->
 
+## v0.17.10 (2023-06-22)
+
+### :bug:
+
+* :bug: fix: correct name when provided via attribute ([#179](https://github.com/THipster/THipster/issues/179)) ([`aa77885`](https://github.com/THipster/THipster/commit/aa778851d1ed277cf0208ee2b26209e12fdeb25c))
+
 ## v0.17.9 (2023-06-22)
 
 ### :arrow_up:
