@@ -732,5 +732,7 @@ def _check_explicit_dependency(
         ctx.resource_args[attribute_name] = _create_dependency(
             dep_ctx, attribute_value,
         )
+        return True
 
     ctx.resource_args[attribute_name] = CDK._created_resources[created_name]
+    return True
