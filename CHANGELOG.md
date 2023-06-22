@@ -2,6 +2,12 @@
 
 <!--next-version-placeholder-->
 
+## v0.17.9 (2023-06-22)
+
+### :arrow_up:
+
+* :arrow_up: chore(bump): Upgrade dependencies ([#178](https://github.com/THipster/THipster/issues/178)) ([`36210d6`](https://github.com/THipster/THipster/commit/36210d6c7f464b2c1a52f1485b08aababefcecdf))
+
 ## v0.17.8 (2023-06-22)
 
 ### :bug:
