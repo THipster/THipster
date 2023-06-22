@@ -8,6 +8,8 @@ from .i_repository import RepositoryPort
 from .i_terraform import TerraformPort
 from .resource_model import ResourceModel
 
+terraform_plan_file = 'thipster.tfplan'
+
 
 class Engine():
     """THipster's Engine.
@@ -120,7 +122,7 @@ class Engine():
 
         self.__terraform.init()
 
-        return self.__terraform.plan()
+        return self.__terraform.plan(terraform_plan_file)
 
     def parse_files(self, path: str) -> pf.ParsedFile:
         """Parse the input file or directory.
@@ -176,22 +178,32 @@ class Engine():
         """Initialize Terraform."""
         self.__terraform.init()
 
-    def plan_terraform(self) -> str:
+    def plan_terraform(self, plan_file_path: str = terraform_plan_file) -> str:
         """Plan Terraform.
+
+        Parameters
+        ----------
+        plan_file_path : str, optional
+            The path of the plan file, by default thipster.tfplan
 
         Returns
         -------
         str
             The results of the Terraform plan
         """
-        return self.__terraform.plan()
+        return self.__terraform.plan(plan_file_path)
 
-    def apply_terraform(self) -> str:
+    def apply_terraform(self, plan_file_path: str = terraform_plan_file) -> str:
         """Apply Terraform.
+
+        Parameters
+        ----------
+        plan_file_path : str, optional
+            The path of the plan file, by default thipster.tfplan
 
         Returns
         -------
         str
             The results of the Terraform apply
         """
-        return self.__terraform.apply()
+        return self.__terraform.apply(plan_file_path)
