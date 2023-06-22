@@ -150,7 +150,7 @@ class CDK(TerraformPort):
             Terraform apply output
         """
         output = subprocess.run(
-            f'terraform apply "{plan_file_path}"',
+            ['terrraform', 'apply', plan_file_path],
             shell=True,
             capture_output=True,
             encoding='utf-8',
