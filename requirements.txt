@@ -1,4 +1,4 @@
-cdktf==0.16.3
+cdktf==0.17.0
 Jinja2==3.1.2
 python-terraform==0.10.1
 PyYAML==6.0
