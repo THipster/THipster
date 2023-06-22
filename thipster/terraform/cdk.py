@@ -351,15 +351,13 @@ def _create_default_resource(ctx: ResourceCreationContext):
         ctx.resource_args[ctx.model.name_key] = ctx.resource_name
 
     for attribute_name, attribute_value in attributes.items():
-        if not ctx.no_dependencies and attribute_name in ctx.dependencies:
-            _check_explicit_dependency(
-                ctx, attribute_name, attribute_value.default,
-            )
-
-            del ctx.dependencies[attribute_name]
-
-        if attribute_name in ctx.model.attributes:
-            ctx.resource_args[attribute_value.cdk_name] = attribute_value.default
+        _process_attribute(
+            ctx, pf.ParsedAttribute(
+                name=attribute_name,
+                position=None,
+                value=pf.ParsedLiteral(attribute_value.default),
+            ),
+        )
 
     # Create default defendencies if needed
     if not ctx.no_dependencies:
@@ -460,33 +458,7 @@ def _create_resource_from_resource(
     ctx.resource_name = resource.name
     ctx.resource_type = resource.resource_type
 
-    ctx.no_modif = False
-    ctx.no_dependencies = True
-
-    # Create resource with default values
-    _create_default_resource(ctx)
-    ctx.no_modif = True
-    ctx.no_dependencies = False
-
-    if ctx.model.name_key:
-        ctx.resource_args[ctx.model.name_key] = ctx.resource_name
-
-    def attributes(attribute_list):
-        for attribute in attribute_list:
-            _process_attribute(ctx, attribute)
-
-    attributes(resource.attributes)
-    attributes(CDK._inherited_attributes)
-
-    CDK._inherited_attributes += resource.attributes
-    _generate_default_dependencies(ctx)
-    CDK._inherited_attributes = CDK._inherited_attributes[
-        :-len(
-            resource.attributes,
-        )
-    ]
-
-    return _instantiate_class(ctx)
+    return _create_resource_from_args(ctx, resource.attributes)
 
 
 def _instantiate_class(ctx: ResourceCreationContext):
