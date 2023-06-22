@@ -2,10 +2,12 @@
     "dependencies": {},
     "internalObjects": {
         "backend":{
+            "optional": true,
             "resource" : "backend",
             "defaults" : []
         },
         "health_checks":{
+            "optional": true,
             "resource" : "health_check",
             "defaults" : []
         }
