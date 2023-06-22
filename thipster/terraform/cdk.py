@@ -645,6 +645,8 @@ def _create_dependency(
     ----------
     ctx: ResourceCreationContext
         Context from which the resource is created
+    dependency_attributes: list[pf.ParsedAttribute]
+        list of attributes to pass to the dependency creation. Defaults to None
     """
     if dependency_attributes:
         ctx.no_modif = False
