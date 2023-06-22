@@ -50,7 +50,13 @@ class ModelList(ModelValue):
     """Represent a List of values for a Resource Model attribute."""
 
     def __init__(self, value: list[ModelValue | None] | None):
-        """Represent a List of values for a Resource Model attribute."""
+        """Represent a List of values for a Resource Model attribute.
+
+        Parameters
+        ----------
+        value : list[ModelValue | None] | None
+            List of values
+        """
         super().__init__()
         self.value = value
 
@@ -76,7 +82,13 @@ class ModelLiteral(ModelValue):
     """Represent a literal value for a Resource Model attribute."""
 
     def __init__(self, value):
-        """Represent a literal value for a Resource Model attribute."""
+        """Represent a literal value for a Resource Model attribute.
+
+        Parameters
+        ----------
+        value : bool | int | float | str
+            Literal value
+        """
         super().__init__()
         self.value = value
 
@@ -85,7 +97,13 @@ class ModelDict(ModelValue):
     """Represent a dictionary value for a Resource Model attribute."""
 
     def __init__(self, value: dict[str, ModelAttribute] | None):
-        """Represent a dictionary value for a Resource Model attribute."""
+        """Represent a dictionary value for a Resource Model attribute.
+
+        Parameters
+        ----------
+        value : dict[str, ModelAttribute] | None
+            Dictionary value
+        """
         super().__init__()
         self.value = value
 
@@ -121,7 +139,27 @@ class ResourceModel:
             cdk_module: str,
             cdk_name: str,
     ):
-        """Represent a Resource Model."""
+        """Represent a Resource Model.
+
+        Parameters
+        ----------
+        resource_type : str
+            Resource type
+        attributes : dict[str, ModelAttribute] | None
+            Resource attributes
+        dependencies : dict[str, dict[str, object]] | None
+            Resource dependencies
+        internal_objects : dict[str, dict[str, object]] | None
+            Resource internal objects
+        name_key : str | None
+            Key to declare the resource 'name' (if any) in the Terraform Python CDK
+        cdk_provider : str
+            Terraform Python CDK provider
+        cdk_module : str
+            Terraform Python CDK module
+        cdk_name : str
+            Resource name in the Terraform Python CDK
+        """
         self.resource_type = resource_type
         self.attributes = attributes
         self.dependencies = dependencies

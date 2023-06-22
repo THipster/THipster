@@ -5,7 +5,7 @@ from thipster.engine.parsed_file import Position
 
 
 class TOKENTYPES(Enum):
-    """Enum containing all the possible token types."""
+    """Contains all the possible token types."""
 
     AMOUNT = 'AMOUNT'
     AND = 'AND'
@@ -50,14 +50,14 @@ class TOKENTYPES(Enum):
 
 
 class Token():
-    """Class representing a Token."""
+    """Represents a Token of the THipster DSL."""
 
     def __init__(
         self, position: Position,
         token_type: TOKENTYPES, value: str | None = None,
     ):
         """
-        Class representing a Token.
+        Represent a Token.
 
         Parameters
         ----------

@@ -16,7 +16,7 @@ class YAMLParserBaseError(THipsterError, ABC):
     """Base error for YAMLParser."""
 
     def __init__(self, *args: object) -> None:
-        """Shared base exception for the YAML parser class."""
+        """Shared base exception for the YAML parser."""
         super().__init__(*args)
 
 

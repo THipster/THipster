@@ -11,10 +11,10 @@ from .token import Token
 
 
 class TokenParser():
-    """Class to parse the tokens into an AST."""
+    """Parse the tokens into an AST (Abstract Syntax Tree)."""
 
     def __init__(self, tokens: list[Token]) -> None:
-        """Class to parse the tokens into an AST.
+        """Parse the tokens into an AST (Abstract Syntax Tree).
 
         Parameters
         ----------

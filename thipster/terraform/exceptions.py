@@ -3,7 +3,7 @@ from thipster.engine import THipsterError
 
 
 class CDKError(THipsterError):
-    """Base class for all exceptions in the Terraform CDK module."""
+    """Shared base Exception for the Terraform CDK module."""
 
     pass
 

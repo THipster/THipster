@@ -10,14 +10,14 @@ class ParsedValue(ABC):
 
 
 class Position():
-    """Class representing the position of a token.
+    """Represents the position of a token.
 
     Indicates the initial position of a token, resource or character in the input files.
     It includes the file name, line and column numbers of the designated element.
     """
 
     def __init__(self, filename: str, ln: int, col: int):
-        """Class representing the position of a token.
+        """Represent the position of a token.
 
         Indicates the initial position of a token, resource or character in the input
         files.
@@ -76,17 +76,20 @@ class Position():
 
 
 class ParsedAttribute():
-    """Class reprensenting a Parsed Attribute Object."""
+    """Reprensents a Parsed Attribute Object."""
 
     def __init__(self, name: str, position: Position | None, value: ParsedValue):
         """
-        Initialize a ParsedAttribute object.
+        Represent a Parsed Attribute Object.
 
         Parameters
         ----------
         name : str
-        position : Position
+            name of the attribute
+        position : Position | None
+            position of the attribute in its origin file
         value : ParsedValue
+            value of the attribute
         """
         self.name: str = name
         self.position: Position | None = position
@@ -99,15 +102,16 @@ class ParsedAttribute():
 
 
 class ParsedList(ParsedValue):
-    """Class representing a Parsed List Object."""
+    """Represents a Parsed List Object."""
 
     def __init__(self, value: list[ParsedValue]):
         """
-        Initialize a ParsedList object.
+        Represent a Parsed List Object.
 
         Parameters
         ----------
         value : list[ParsedValue]
+            value of the parsed list
         """
         super().__init__()
         self.value: list[ParsedValue] = value
@@ -127,37 +131,39 @@ class ParsedList(ParsedValue):
 
 
 class ParsedLiteral(ParsedValue):
-    """Class representing a Parsed Literal Object."""
+    """Represents a Parsed Literal Object."""
 
     def __init__(self, value: bool | int | float | str):
         """
-        Initialize a ParsedLiteral object.
+        Represent a Parsed Literal Object.
 
         Parameters
         ----------
         value : Literal
+            value of the parsed literal
         """
         super().__init__()
         self.value: bool | int | float | str = value
 
 
 class ParsedDict(ParsedValue):
-    """Class representing a Parsed Dictionnary Object."""
+    """Represents a Parsed Dictionnary Object."""
 
     def __init__(self, value: list[ParsedAttribute]):
         """
-        Initialize a ParsedDict object.
+        Represent a Parsed Dictionnary Object.
 
         Parameters
         ----------
         value : list[ParsedAttribute]
+            value of the parsed dictionnary
         """
         super().__init__()
         self.value: list[ParsedAttribute] = value
 
 
 class ParsedResource():
-    """Class representing a Parsed Resource."""
+    """Represents a Parsed Resource."""
 
     def __init__(
             self,
@@ -167,7 +173,7 @@ class ParsedResource():
             attributes: list[ParsedAttribute],
     ):
         """
-        Initialize a ParsedResource object.
+        Represent a Parsed Resource.
 
         Parameters
         ----------
@@ -186,11 +192,11 @@ class ParsedResource():
 
 
 class ParsedFile():
-    """Class representing a Parsed File.
+    """Represents a Parsed File.
 
     Object containing a list of parsed resources making up a file.
-
     """
 
     def __init__(self):
+        """Represent a Parsed File."""
         self.resources: list[ParsedResource] = []

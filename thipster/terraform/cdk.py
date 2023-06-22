@@ -122,7 +122,10 @@ class ResourceCreationContext:
 
 
 class CDK(TerraformPort):
-    """Terraform CDK class."""
+    """Terraform code generation and usage.
+
+    Works using the CDK for Terraform in python, and the python_terraform library.
+    """
 
     _models = []
     _parent_resources_stack = []

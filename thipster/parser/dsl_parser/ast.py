@@ -7,7 +7,7 @@ from .token import Token
 
 
 class Node(ABC):
-    """Abstract class for all AST nodes."""
+    """Abstract base AST node."""
 
     @abstractmethod
     def accept(self, visitor):
@@ -21,7 +21,7 @@ class Node(ABC):
 
 
 class StringNode(Node):
-    """String node class."""
+    """String node."""
 
     def __init__(self, token: Token) -> None:
         super().__init__()
@@ -42,7 +42,7 @@ class StringNode(Node):
 
 
 class StringExprNode(Node):
-    """String expression node class."""
+    """String expression node."""
 
     def __init__(self, *values: Node | list[Node]) -> None:
         super().__init__()
@@ -68,7 +68,7 @@ class StringExprNode(Node):
 
 
 class VariableNode(Node):
-    """Variable node class."""
+    """Variable node."""
 
     def __init__(self, token: Token) -> None:
         super().__init__()
@@ -94,7 +94,7 @@ class VariableNode(Node):
 
 
 class BoolNode(Node):
-    """Boolean node class."""
+    """Boolean node."""
 
     def __init__(self, token: Token) -> None:
         super().__init__()
@@ -115,7 +115,7 @@ class BoolNode(Node):
 
 
 class IntNode(Node):
-    """Integer node class."""
+    """Integer node."""
 
     def __init__(self, token: Token) -> None:
         super().__init__()
@@ -136,7 +136,7 @@ class IntNode(Node):
 
 
 class FloatNode(Node):
-    """Float node class."""
+    """Float node."""
 
     def __init__(self, token: Token) -> None:
         super().__init__()
@@ -157,7 +157,7 @@ class FloatNode(Node):
 
 
 class VariableDefinitionNode(Node):
-    """Variable definition node class."""
+    """Variable definition node."""
 
     def __init__(self, name: Token, value: IntNode) -> None:
         super().__init__()
@@ -184,7 +184,7 @@ class VariableDefinitionNode(Node):
 
 
 class IfNode(Node):
-    """If node class."""
+    """If node."""
 
     def __init__(self, condition: StringNode, if_case: Node) -> None:
         super().__init__()
@@ -206,7 +206,7 @@ class IfNode(Node):
 
 
 class IfElseNode(IfNode):
-    """If-else node class."""
+    """If-else node."""
 
     def __init__(
         self, condition: StringNode, if_case: Node,
@@ -226,7 +226,7 @@ class IfElseNode(IfNode):
 
 
 class AmountNode(Node):
-    """Amount node class."""
+    """Amount node."""
 
     def __init__(
         self, position: Token,
@@ -258,13 +258,13 @@ class AmountNode(Node):
 
 
 class ValueNode(Node, ABC):
-    """Abstract class for all value nodes."""
+    """Abstract base value node."""
 
     pass
 
 
 class ParameterNode(Node):
-    """Parameter node class."""
+    """Parameter node."""
 
     def __init__(self, name: StringNode, value: ValueNode) -> None:
         super().__init__()
@@ -286,7 +286,7 @@ class ParameterNode(Node):
 
 
 class DictNode(ValueNode):
-    """Dictionary node class."""
+    """Dictionary node."""
 
     def __init__(self, values: list[ParameterNode]) -> None:
         super().__init__()
@@ -307,7 +307,7 @@ class DictNode(ValueNode):
 
 
 class LiteralNode(ValueNode):
-    """Literal node class."""
+    """Literal node."""
 
     def __init__(self, values: Node) -> None:
         super().__init__()
@@ -328,7 +328,7 @@ class LiteralNode(ValueNode):
 
 
 class ListNode(ValueNode):
-    """List node class."""
+    """List node."""
 
     def __init__(self, values: list[ValueNode]) -> None:
         super().__init__()
@@ -349,7 +349,7 @@ class ListNode(ValueNode):
 
 
 class CompExprNode(Node):
-    """Comparison expression node class."""
+    """Comparison expression node."""
 
     def __init__(
             self, left_value: Node, operation, right_value: Node | None = None,
@@ -370,7 +370,7 @@ class CompExprNode(Node):
 
 
 class TermNode(Node):
-    """Term node class."""
+    """Term node."""
 
     def __init__(self, factors, operation) -> None:
         super().__init__()
@@ -390,7 +390,7 @@ class TermNode(Node):
 
 
 class ArithExprNode(Node):
-    """Arithmetic expression node class."""
+    """Arithmetic expression node."""
 
     def __init__(self, terms: list[TermNode], operations) -> None:
         super().__init__()
@@ -410,7 +410,7 @@ class ArithExprNode(Node):
 
 
 class FactorNode(Node):
-    """Factor node class."""
+    """Factor node."""
 
     def __init__(self, factors: list[Node], operation) -> None:
         super().__init__()
@@ -428,7 +428,7 @@ class FactorNode(Node):
 
 
 class ResourceNode(Node):
-    """Resource node class."""
+    """Resource node."""
 
     def __init__(
         self,
@@ -457,7 +457,7 @@ name = {self.name!s}, parameters = {self.parameters!s}>'
 
 
 class FileNode(Node):
-    """File node class."""
+    """File node."""
 
     def __init__(self) -> None:
         super().__init__()

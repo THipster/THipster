@@ -8,7 +8,7 @@ from thipster.engine import RepositoryPort
 
 
 class JSONRepo(RepositoryPort, ABC):
-    """Class representing a JSON resources Repository.
+    """Represents a JSON resources Repository.
 
     JSON Models of resources and services offered by supported cloud providers are
     stored in a repository.
@@ -17,7 +17,7 @@ class JSONRepo(RepositoryPort, ABC):
     _parent_stack = []
 
     def __init__(self) -> None:
-        """Class representing a JSON resources Repository.
+        """Represent a JSON resources Repository.
 
         JSON Models of resources and services offered by supported cloud providers are
         stored in a repository.

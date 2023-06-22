@@ -7,7 +7,7 @@ from .json import JSONRepo
 
 
 class GithubRepo(JSONRepo):
-    """Class representing a GitHub resources Repository.
+    """Represents a GitHub resources Repository.
 
     JSON Models of resources and services offered by supported cloud providers are
     stored in a repository.
@@ -15,7 +15,7 @@ class GithubRepo(JSONRepo):
     """
 
     def __init__(self, repo: str, branch: str = 'main') -> None:
-        """Class representing a GitHub resources Repository.
+        """Represent a GitHub resources Repository.
 
         JSON Models of resources and services offered by supported cloud providers are
         stored in a repository.

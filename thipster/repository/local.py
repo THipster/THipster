@@ -6,7 +6,7 @@ from .json import JSONRepo
 
 
 class LocalRepo(JSONRepo):
-    """Class representing a local resources Repository.
+    """Represents a local resources Repository.
 
     JSON Models of resources and services offered by supported cloud providers are
     stored in a repository.
@@ -14,7 +14,7 @@ class LocalRepo(JSONRepo):
     """
 
     def __init__(self, path: str) -> None:
-        """Class representing a local resources Repository.
+        """Represent a local resources Repository.
 
         JSON Models of resources and services offered by supported cloud providers are
         stored in a repository.

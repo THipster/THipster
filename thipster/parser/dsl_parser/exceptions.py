@@ -7,10 +7,10 @@ from .token import Token
 
 
 class DSLParserBaseError(THipsterError):
-    """Base class for DSL parser exceptions."""
+    """Shared base exception for the DSL parser."""
 
     def __init__(self, *args: object) -> None:
-        """Shared base exception for the DSL parser class."""
+        """Shared base exception for the DSL parser."""
         super().__init__(*args)
 
 

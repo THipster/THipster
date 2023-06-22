@@ -14,7 +14,7 @@ from .yaml_parser import YAMLParser
 
 
 class NoParser(ParserPort):
-    """NoParser class, used when no parser is found for a file extension."""
+    """Used when no parser is found for a file extension."""
 
     @classmethod
     def run(cls, path) -> ParsedFile:  # noqa: ARG003
@@ -23,7 +23,7 @@ class NoParser(ParserPort):
 
 
 class ParserFactory(ParserPort):
-    """ParserFactory class, used to run the right parser on the right file."""
+    """Parser factory, used to run the right parser on the right file."""
 
     __parsers = {
         '.yaml': YAMLParser,

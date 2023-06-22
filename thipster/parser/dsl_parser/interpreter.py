@@ -41,11 +41,11 @@ class Interpreter():
         return tree.accept(self)
 
     def visit_comp_expr(self, element: ast.CompExprNode) -> bool:
-        """Visitor for a StringNode.
+        """Visitor for a CompExprNode.
 
         Parameters
         ----------
-        element: StringNode
+        element: CompExprNode
             The visited node
 
         Returns
@@ -106,11 +106,11 @@ class Interpreter():
                 )
 
     def visit_arith_expr(self, element: ast.ArithExprNode) -> int | float:
-        """Visitor for a StringNode.
+        """Visitor for an ArithExprNode.
 
         Parameters
         ----------
-        element: StringNode
+        element: ArithExprNode
             The visited node
 
         Returns
@@ -139,11 +139,11 @@ class Interpreter():
         return pf.ParsedLiteral(total)
 
     def visit_term(self, element: ast.TermNode) -> int | float:
-        """Visitor for a StringNode.
+        """Visitor for a TermNode.
 
         Parameters
         ----------
-        element: StringNode
+        element: TermNode
             The visited node
 
         Returns
@@ -172,11 +172,11 @@ class Interpreter():
         return total
 
     def visit_factor(self, element: ast.FactorNode) -> int | float:
-        """Visitor for a StringNode.
+        """Visitor for a Factor node.
 
         Parameters
         ----------
-        element: StringNode
+        element: FactorNode
             The visited node
 
         Returns
@@ -358,7 +358,7 @@ class Interpreter():
         -------
         object | None
             The value of the "if" child node if the condition is true, else the value\
-                  of the "else" child node
+            of the "else" child node
         """
         return element.if_case.accept(self) if element.condition.accept(self).value\
             else element.else_case.accept(self)
@@ -391,7 +391,7 @@ class Interpreter():
         return res
 
     def visit_parameter(self, element: ast.ParameterNode) -> pf.ParsedAttribute:
-        """Visitor for an ParameterNode.
+        """Visitor for a ParameterNode.
 
         Parameters
         ----------
@@ -411,7 +411,7 @@ class Interpreter():
         )
 
     def visit_dict(self, element: ast.DictNode) -> pf.ParsedDict:
-        """Visitor for an DictNode.
+        """Visitor for a DictNode.
 
         Parameters
         ----------
@@ -426,7 +426,7 @@ class Interpreter():
         return pf.ParsedDict([v.accept(self) for v in element.values])
 
     def visit_literal(self, element: ast.LiteralNode) -> pf.ParsedLiteral:
-        """Visitor for an LiteralNode.
+        """Visitor for a LiteralNode.
 
         Parameters
         ----------
@@ -441,7 +441,7 @@ class Interpreter():
         return pf.ParsedLiteral(element.value.accept(self))
 
     def visit_list(self, element: ast.ListNode) -> pf.ParsedList:
-        """Visitor for an ListNode.
+        """Visitor for a ListNode.
 
         Parameters
         ----------
@@ -456,7 +456,7 @@ class Interpreter():
         return pf.ParsedList([v.accept(self) for v in element.values])
 
     def visit_resource(self, element: ast.ResourceNode) -> list[pf.ParsedResource]:
-        """Visitor for an ResourceNode.
+        """Visitor for a ResourceNode.
 
         Parameters
         ----------
@@ -478,7 +478,7 @@ class Interpreter():
         ]
 
     def visit_file(self, element: ast.FileNode):
-        """Visitor for an FileNode.
+        """Visitor for a FileNode.
 
         Parameters
         ----------

@@ -3,13 +3,13 @@ from thipster.engine.parsed_file import Position
 
 
 class LexerPosition():
-    """Class that represents the state and position of the DSL lexer."""
+    """Represents the state and position of the DSL lexer."""
 
     def __init__(
         self,
         filename: str = '',
     ) -> None:
-        """Class that represents the state and position of the DSL lexer.
+        """Represent the state and position of the DSL lexer.
 
         Parameters
         ----------
