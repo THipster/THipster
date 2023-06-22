@@ -2,6 +2,12 @@
 
 <!--next-version-placeholder-->
 
+## v0.17.8 (2023-06-22)
+
+### :bug:
+
+* :bug: fix: created resources list ([#177](https://github.com/THipster/THipster/issues/177)) ([`f36c2ff`](https://github.com/THipster/THipster/commit/f36c2ff653ea6fea008f6581edc0201ba9235c5a))
+
 ## v0.17.7 (2023-06-22)
 
 ### :bug:
