@@ -2,6 +2,16 @@
 
 <!--next-version-placeholder-->
 
+## v0.17.7 (2023-06-22)
+
+### :bug:
+
+* :bug: fix: non optional internal objects ([#176](https://github.com/THipster/THipster/issues/176)) ([`5f45191`](https://github.com/THipster/THipster/commit/5f45191f71074d98546c8da5365003a9c1a86046))
+
+### Other
+
+* :art: fix: Update ruff linter rules and change files accordingly ([#169](https://github.com/THipster/THipster/issues/169)) ([`ba14ab8`](https://github.com/THipster/THipster/commit/ba14ab8fc6aa8bcfa7e1e9bd53bb44fee44d6345))
+
 ## v0.17.6 (2023-06-22)
 
 ### :bug:
