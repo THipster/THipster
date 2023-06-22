@@ -31,7 +31,15 @@ class MockAuth(AuthPort):
 
 
 def create_dir(dirname: str, files: dict[str, str]):
-    """Create a directory with files."""
+    """Create a directory with files.
+
+    Parameters
+    ----------
+    dirname : str
+        The name of the directory to create.
+    files : dict[str, str]
+        A dictionary of file names and contents.
+    """
     if not Path(dirname).is_dir():
         Path(dirname).mkdir()
 
@@ -51,7 +59,17 @@ def create_dir(dirname: str, files: dict[str, str]):
 
 
 def create_file(filename: str, content: str, dirname: str = 'test'):
-    """Create a file with content in the designated directory."""
+    """Create a file with content in the designated directory.
+
+    Parameters
+    ----------
+    filename : str
+        The name of the file to create.
+    content : str
+        The content of the file to create.
+    dirname : str
+        The name of the directory in which to create the file.
+    """
     if not Path(dirname).is_dir():
         Path(dirname).mkdir()
     dirname = Path(dirname).resolve().as_posix()
@@ -65,7 +83,21 @@ def process_file(
         local_repo: str = LOCAL_REPO, file_type: str = 'thips',
         mock_auth=False,
 ):
-    """Handle the file creation, engine run and clean up for the test."""
+    """Handle the file creation, engine run and clean up for the test.
+
+    Parameters
+    ----------
+    directory : str
+        The name of the directory to create.
+    file : str
+        The content of the file to create.
+    local_repo : str
+        The path to the local repository.
+    file_type : str
+        The type of file to create (thips or yaml). Defaults to 'thips'.
+    mock_auth : bool
+        Whether to mock the authentication to GCP. Defaults to False.
+    """
     if not Path('test').is_dir():
         Path('test').mkdir()
 
@@ -130,7 +162,15 @@ def assert_resource_created(
     resource_type: str,
     resource_name: str,
 ):
-    """Assert that a resource was created."""
+    """Assert that a resource was created.
+
+    Parameters
+    ----------
+    resource_type : str
+        The type of resource to check for.
+    resource_name : str
+        The name of the resource to check for.
+    """
     output = __get_output(inspect.currentframe().f_back.f_code.co_name)
     assert output.get('resource') is not None
     resources = output.get('resource')
@@ -147,7 +187,15 @@ def assert_number_of_resource_type_is(
     resource_type: str,
     amount: str,
 ):
-    """Assert that a type of resource was created the right number of times."""
+    """Assert that a type of resource was created the right number of times.
+
+    Parameters
+    ----------
+    resource_type : str
+        The type of resource to check for.
+    amount : str
+        The number of resources to check for.
+    """
     output = __get_output(inspect.currentframe().f_back.f_code.co_name)
     assert output.get('resource') is not None
     resources = output.get('resource')
@@ -157,7 +205,15 @@ def assert_number_of_resource_type_is(
 
 
 def assert_resource_parameters_are(resource_data: tuple, parameters: list[str]):
-    """Assert that a resource has the right parameters."""
+    """Assert that a resource has the right parameters.
+
+    Parameters
+    ----------
+    resource_data : tuple
+        The type and name of the resource to check for.
+    parameters : list[str]
+        The parameters to check for.
+    """
     resource = __get_resource(
         inspect.currentframe().f_back.f_code.co_name, resource_data,
     )
@@ -167,7 +223,15 @@ def assert_resource_parameters_are(resource_data: tuple, parameters: list[str]):
 
 
 def get_resource_parameter(resource_data: tuple, parameter: str):
-    """Get a resource parameter."""
+    """Get a resource parameter.
+
+    Parameters
+    ----------
+    resource_data : tuple
+        The type and name of the resource to check for.
+    parameter : str
+        The parameter to get.
+    """
     resource = __get_resource(
         inspect.currentframe().f_back.f_code.co_name, resource_data,
     )
