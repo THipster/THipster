@@ -136,22 +136,26 @@ class CDK(TerraformPort):
     _logger = create_logger(__name__)
 
     @classmethod
-    def apply(cls, plan_file_path: str | None = None):
+    def apply(cls, plan_file_path: str):
         """Apply generated Terraform plan.
 
         Parameters
         ----------
-        plan_file_path : str, optional
-            Path to the plan file, default None
+        plan_file_path : str
+            Path to the plan file
 
         Returns
         -------
         str
             Terraform apply output
         """
-        t = Terraform()
-        _, stdout, stderr = t.apply(plan_file_path)
-        return stdout + stderr
+        output = subprocess.run(
+            f'terraform apply "{plan_file_path}"',
+            shell=True,
+            capture_output=True,
+            encoding='utf-8',
+        )
+        return output.stdout + output.stderr
 
     @classmethod
     def generate(
@@ -245,12 +249,17 @@ class CDK(TerraformPort):
             Terraform init output
         """
         t = Terraform()
-        _, stdout, stderr = t.init()
+        _, stdout, stderr = t.init(upgrade=True)
         return stdout + stderr
 
     @classmethod
-    def plan(cls):
+    def plan(cls, plan_file_path: str):
         """Get plan from generated terraform code.
+
+        Parameters
+        ----------
+        plan_file_path : str
+            Path and name of the plan file
 
         Returns
         -------
@@ -258,7 +267,7 @@ class CDK(TerraformPort):
             Terraform plan output
         """
         t = Terraform()
-        _, stdout, stderr = t.plan(out='thipster.tfplan')
+        _, stdout, stderr = t.plan(out=plan_file_path)
         return stdout + stderr
 
     @classmethod

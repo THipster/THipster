@@ -62,7 +62,7 @@ class MockTerraform(eng.TerraformPort):
     """Mock engine terraform port."""
 
     @logger('- Terraform:apply')
-    def apply(self):
+    def apply(self, a):
         """Mock the terraform apply method."""
         pass
 
@@ -77,7 +77,7 @@ class MockTerraform(eng.TerraformPort):
         pass
 
     @logger('- Terraform:plan')
-    def plan(self):
+    def plan(self, a):
         """Mock the terraform plan method."""
         pass
 
