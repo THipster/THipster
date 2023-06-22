@@ -1,9 +1,10 @@
+"""Helper functions for thipster."""
 import logging
 
 
 def create_logger(class_name: str) -> logging.Logger:
-    logger = logging.getLogger(class_name)
-    return logger
+    """Create a logger for the given class."""
+    return logging.getLogger(class_name)
 
 
 def set_logging_config(
@@ -11,7 +12,7 @@ def set_logging_config(
     filename: str | None = None,
     filemode: str = 'w',
 ) -> None:
-    """Set logging configuration
+    """Set logging configuration.
 
     Parameters
     ----------

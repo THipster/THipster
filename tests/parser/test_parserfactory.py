@@ -1,10 +1,10 @@
+"""Tests for the parser factory."""
 import pytest
 
+from tests.test_tools import create_dir
 from thipster.engine.parsed_file import ParsedFile
 from thipster.parser import ParserFactory
 from thipster.parser.exceptions import NoFileFoundError
-
-from ..test_tools import create_dir
 
 
 def __test_file(files: str):
@@ -28,6 +28,7 @@ def __test_file(files: str):
 
 
 def test_yaml_file():
+    """Test the parser with .YAML and .YML files."""
     # .YAML
     out = __test_file(
         {
@@ -72,6 +73,7 @@ def test_yaml_file():
 
 
 def test_thips_file():
+    """Test the parser with .THIPS files."""
     out = __test_file(
         {
             'test_file.thips':
@@ -93,6 +95,7 @@ def test_thips_file():
 
 
 def test_two_types_of_file():
+    """Test the parser with both .THIPS and .YAML files."""
     out = __test_file(
         {
             'test_file.thips':
@@ -119,6 +122,7 @@ def test_two_types_of_file():
 
 
 def test_no_parsable_file():
+    """Test the parser with no parsable files."""
     with pytest.raises(NoFileFoundError):
         __test_file(
             {
@@ -131,6 +135,7 @@ def test_no_parsable_file():
 
 
 def test_one_parsable_file():
+    """Test the parser with one parsable file and one non-parsable file."""
     out = __test_file(
         {
             'test_file.thips':

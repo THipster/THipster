@@ -1,0 +1,2 @@
+cdktf-cdktf-provider-google==7.0.10
+google-auth==2.19.1

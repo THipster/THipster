@@ -1,3 +1,4 @@
+"""Test the THipster DSL token parser."""
 from thipster.engine.parsed_file import Position
 from thipster.parser.dsl_parser.token import TOKENTYPES as TT
 from thipster.parser.dsl_parser.token import Token
@@ -5,7 +6,8 @@ from thipster.parser.dsl_parser.token_parser import TokenParser
 
 
 def test_simple_file():
-    input = [
+    """Test the correct parsing of a simple tokenized file."""
+    tokenized_input = [
         Token(Position('file', 1, 1), TT.STRING, 'bucket'),
         Token(Position('file', 1, 7), TT.WHITESPACE),
         Token(Position('file', 1, 8), TT.STRING, 'nom'),
@@ -21,7 +23,7 @@ def test_simple_file():
         Token(Position('file', 2, 4), TT.EOF),
     ]
 
-    parser = TokenParser(input)
+    parser = TokenParser(tokenized_input)
     output = parser.run()
 
     assert str(output) == '<RESOURCE \
@@ -32,7 +34,8 @@ value = <STRING-EXPR <STRING (STRING euw)>>>>>'
 
 
 def test_newline_remover():
-    input = [
+    """Test the correct parsing of a tokenized file with multiple newlines."""
+    tokenized_input = [
         Token(Position('file', 1, 14), TT.NEWLINE),
         Token(Position('file', 1, 14), TT.NEWLINE),
         Token(Position('file', 1, 1), TT.STRING, 'bucket'),
@@ -64,7 +67,7 @@ def test_newline_remover():
         Token(Position('file', 1, 14), TT.NEWLINE),
         Token(Position('file', 2, 4), TT.EOF),
     ]
-    parser = TokenParser(input)
+    parser = TokenParser(tokenized_input)
     output = parser.run()
 
     assert str(output) == '<RESOURCE \

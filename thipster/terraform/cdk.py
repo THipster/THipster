@@ -1,3 +1,4 @@
+"""THipster's Terraform CDK module."""
 import copy
 import importlib
 import os
@@ -19,6 +20,8 @@ from thipster.helpers import create_logger
 
 
 class ResourceCreationContext:
+    """Context from which a resource is created."""
+
     def __init__(
         self,
         stack_self: TerraformStack,
@@ -32,6 +35,31 @@ class ResourceCreationContext:
         no_modif: bool = True,
         no_dependencies: bool = False,
     ):
+        """Context from which a resource is created.
+
+        Parameters
+        ----------
+        stack_self : TerraformStack
+            Stack in which the resource is created
+        resource_name : str, optional
+            Name of the resource, default None
+        resource_type : str, optional
+            Type of the resource, default None
+        resource_class : type, optional
+            Class of the resource (Python CDK), default None
+        parent_name : str, optional
+            Name of the parent resource, default None
+        parent_type : str, optional
+            Type of the parent resource, default None
+        parent_args : dict, optional
+            Arguments of the parent resource, default {}
+        arg_to_complete : str, optional
+            Name of the argument to complete, default None
+        no_modif : bool, optional
+            If the resource is created with default values, default True
+        no_dependencies : bool, optional
+            If the resource is created without dependencies, default False
+        """
         self.stack_self = stack_self
 
         self.model: rm.ResourceModel = None
@@ -73,11 +101,13 @@ class ResourceCreationContext:
         )
 
     def regenerate(self):
+        """Regenerate resource name."""
         self.resource_name = f'{self.parent_name}-{uuid.uuid4().hex[:8]}'
         return self
 
     @property
     def resource_type(self):
+        """Return resource type."""
         return self.__resource_type
 
     @resource_type.setter
@@ -92,6 +122,11 @@ class ResourceCreationContext:
 
 
 class CDK(TerraformPort):
+    """Terraform code generation and usage.
+
+    Works using the CDK for Terraform in python, and the python_terraform library.
+    """
+
     _models = []
     _parent_resources_stack = []
     _resources_to_create: list[ResourceCreationContext] = []
@@ -102,7 +137,7 @@ class CDK(TerraformPort):
 
     @classmethod
     def apply(cls, plan_file_path: str | None = None):
-        """Applies generated Terraform plan.
+        """Apply generated Terraform plan.
 
         Parameters
         ----------
@@ -183,18 +218,22 @@ class CDK(TerraformPort):
         # Move files
         for dirname in output_directories:
             shutil.move(
-                os.path.join(os.getcwd(), dirname, 'cdk.tf.json'),
-                os.path.join(os.getcwd(), 'thipster.tf.json'),
+                Path(Path.cwd(), dirname, 'cdk.tf.json'),
+                Path(Path.cwd(), 'thipster.tf.json'),
             )
 
         # Delete cdktf.out directory
-            for content in os.listdir(os.path.join(os.getcwd(), dirname)):
-                os.remove(f'{dirname}/{content}')
-            os.rmdir(dirname)
-        for content in os.listdir(os.path.join(os.getcwd(), 'cdktf.out')):
+            for content in os.listdir(Path(Path.cwd(), dirname)):
+                if Path(f'{dirname}/{content}').is_dir():
+                    shutil.rmtree(f'{dirname}/{content}')
+                    continue
+
+                Path(f'{dirname}/{content}').unlink()
+            Path(dirname).rmdir()
+        for content in os.listdir(Path(Path.cwd(), 'cdktf.out')):
             d = f'cdktf.out/{content}'
-            os.rmdir(d) if os.path.isdir(d) else os.remove(d)
-        os.rmdir('cdktf.out')
+            Path(d).rmdir() if Path(d).is_dir() else Path(d).unlink()
+        Path('cdktf.out').rmdir()
 
     @classmethod
     def init(cls):
@@ -255,9 +294,7 @@ class CDK(TerraformPort):
             the imported class
         """
         module = importlib.import_module(f'{package_name}.{module_name}')
-        class_ = getattr(module, class_name)
-
-        return class_
+        return getattr(module, class_name)
 
 
 def _create_default_resource(ctx: ResourceCreationContext):
@@ -453,7 +490,7 @@ def _create_resource_from_resource(
 
 
 def _instantiate_class(ctx: ResourceCreationContext):
-    """Instantiates a class.
+    """Instantiate a class.
 
     Parameters
     ----------
@@ -677,8 +714,9 @@ def _create_dependency(
 def _check_explicit_dependency(
     ctx: ResourceCreationContext, attribute_name: str, attribute_value: str | dict,
 ):
-    """Check if a dependency attribute was explicited before.\
-    Create the dependency if it wasn't.
+    """Check if a dependency attribute was explicited before.
+
+    If it wasn't : create a default dependency.
 
     Parameters
     ----------

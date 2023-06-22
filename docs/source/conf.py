@@ -1,7 +1,8 @@
-import os
+"""Sphinx configuration file."""
 import sys
+from pathlib import Path
 
-sys.path.insert(0, os.path.abspath('../..'))
+sys.path.insert(0, Path('../..').resolve().as_posix())
 
 # Configuration file for the Sphinx documentation builder.
 #
@@ -12,7 +13,7 @@ sys.path.insert(0, os.path.abspath('../..'))
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
 
 project = 'Thipster'
-copyright = '2023'
+copyright = '2023'  # noqa: A001
 author = ''
 
 # -- General configuration ---------------------------------------------------

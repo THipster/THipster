@@ -1,3 +1,4 @@
+"""Step that runs automated tests in a pipeline."""
 import sys
 
 import anyio
@@ -6,8 +7,7 @@ import dagger
 
 
 async def test(version: str):
-    """Runs all the automated tests
-    """
+    """Run all the automated tests."""
     async with dagger.Connection(dagger.Config(log_output=sys.stderr)) as client:
 
         gcp_credentials_content = (

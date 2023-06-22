@@ -1,7 +1,9 @@
+"""Tests for the ResourceModel class."""
 import thipster.engine.resource_model as rm
 
 
 def test_create_empty_resource():
+    """Test creating a resource with no attributes or dependencies."""
     model = rm.ResourceModel(
         'test_type',
         attributes=None,
@@ -21,6 +23,7 @@ def test_create_empty_resource():
 
 
 def test_create_resource_with_dependencies():
+    """Test creating a resource with dependencies."""
     dependencies = [
         rm.ResourceModel(
             'dependency_'+str(i),
@@ -55,6 +58,7 @@ def test_create_resource_with_dependencies():
 
 
 def test_create_num_attr():
+    """Test creating a resource with a numeric attribute."""
     val = rm.ModelLiteral(3)
 
     attr = rm.ModelAttribute(
@@ -68,6 +72,7 @@ def test_create_num_attr():
 
 
 def test_create_str_attr():
+    """Test creating a string attribute."""
     val = rm.ModelLiteral('test_default')
 
     attr = rm.ModelAttribute(
@@ -81,6 +86,7 @@ def test_create_str_attr():
 
 
 def test_create_list_str_attr():
+    """Test creating a list of strings attribute."""
     val = rm.ModelList(
         [rm.ModelLiteral('test_default_' + str(i)) for i in range(3)],
     )
@@ -99,6 +105,7 @@ def test_create_list_str_attr():
 
 
 def test_create_dict_str_attr():
+    """Test creating a dict of strings attribute."""
     val = rm.ModelDict(
         {rm.ModelLiteral('test_default_' + str(i)) for i in range(3)},
     )
@@ -117,6 +124,7 @@ def test_create_dict_str_attr():
 
 
 def test_create_resource_with_attributes():
+    """Test creating a resource with attributes."""
     attr = {
         'attr_num': rm.ModelAttribute(
             cdk_name='attr_num',
@@ -186,6 +194,7 @@ def test_create_resource_with_attributes():
 
 
 def test_create_internal_object():
+    """Test creating an internal object."""
     model = rm.ResourceModel(
         'test_type',
         attributes=None,

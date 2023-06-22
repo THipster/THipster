@@ -1,3 +1,4 @@
+"""THipster DSL token parser module."""
 import thipster.parser.dsl_parser.ast as ast
 
 from .exceptions import (
@@ -10,10 +11,20 @@ from .token import Token
 
 
 class TokenParser():
+    """Parse the tokens into an AST (Abstract Syntax Tree)."""
+
     def __init__(self, tokens: list[Token]) -> None:
+        """Parse the tokens into an AST (Abstract Syntax Tree).
+
+        Parameters
+        ----------
+        tokens : list[Token]
+            The list of tokens to parse.
+        """
         self.__tokens = tokens
 
     def run(self) -> ast.FileNode:
+        """Run the parser."""
         self.__rm_empty_lines()
         tree = ast.FileNode()
         try:
@@ -29,7 +40,18 @@ class TokenParser():
         return tree
 
     def __next(self, expected: TT | list[TT] | None = None) -> Token:
-        """Get next token and pop it from the list"""
+        """Get next token and pop it from the list.
+
+        Parameters
+        ----------
+        expected : TT | list[TT] | None
+            Expected token type(s), by default None
+
+        Returns
+        -------
+        Token
+            The next token
+        """
         next_token_type = self.__get_next_type()
 
         if expected:
@@ -41,16 +63,42 @@ class TokenParser():
         return self.__tokens.pop(0)
 
     def __check(self, expected: TT, index: int = 0) -> Token | None:
-        """Check if the type of the next token is equal to the expected parameter. \
-        Pop it from the list in that case"""
+        """Check if the next token is the expected one.
+
+        If the type of the next token is equal to the expected parameter, it is popped
+        from the list.
+
+        Parameters
+        ----------
+        expected : TT
+            Expected token type
+        index : int, optional
+            Index of the token to check, by default 0
+
+        Returns
+        -------
+        Token | None
+            The next token if it is the expected one, None otherwise
+        """
         token = self.__get_next_type(index=index)
         if token != expected:
             return None
 
         return self.__next(expected)
 
-    def __get_next_type(self, index: int = 0):
-        """Get the type of the next token"""
+    def __get_next_type(self, index: int = 0) -> TT:
+        """Get the type of the next token.
+
+        Parameters
+        ----------
+        index : int, optional
+            Index of the token to get, by default 0
+
+        Returns
+        -------
+        TT
+            The type of the next token
+        """
         if len(self.__tokens) <= index:
             raise DSLUnexpectedEOFError
 
@@ -85,20 +133,24 @@ class TokenParser():
             pass
 
     def __get_tabs(self, indent: int) -> bool:
-        """Check if the number of tabs is correct/ if it is the end of the block"""
-
+        """Check if the number of tabs is correct/ if it is the end of the block."""
         if self.__get_next_type() == TT.EOF:
             return False
-        elif self.__get_next_type(indent-1) == TT.TAB:
+        if self.__get_next_type(indent-1) == TT.TAB:
             for _ in range(indent):
                 self.__next(TT.TAB)
             return True
         return False
 
-    def __create_resource(self, indent=0) \
-            -> ast.ResourceNode | ast.IfNode | ast.AmountNode:
-        """type, name, ":", [amt_ctrl], [if_ctrl] ,"\\n"
-                                (list | dict | {parameter, "\\n"})"""
+    def __create_resource(
+        self,
+        indent=0,
+    ) -> ast.ResourceNode | ast.IfNode | ast.AmountNode:
+        r"""Create an AST Resouce, If or Amount node.
+
+        Format: type, name, ":", [amt_ctrl], [if_ctrl] ,"\\n"
+        (list | dict | {parameter, "\\n"}).
+        """
         try:
             for _ in range(indent):
                 self.__next(TT.TAB)
@@ -139,7 +191,10 @@ class TokenParser():
         return resource
 
     def __get_parameter(self, indent: int) -> ast.ParameterNode:
-        """name, ":", (value, [if_else_ctrl] | [if_ctrl], "\\n", (list | dict))"""
+        r"""Create an AST Parameter node.
+
+        Format: name, ":", (value, [if_else_ctrl] | [if_ctrl], "\\n", (list | dict)).
+        """
         try:
             name = self.__next(TT.STRING)
             self.__get_whitespaces()
@@ -201,7 +256,9 @@ class TokenParser():
         return parameter
 
     def __get_properties(self, indent: int) -> list[ast.ParameterNode]:
-        """(list | dict)
+        """Create a list of AST Parameter nodes.
+
+        Format: (list | dict).
         """
         i = indent
         try:
@@ -231,7 +288,10 @@ class TokenParser():
         return props
 
     def __get_list(self, indent: int) -> ast.ListNode:
-        """{ "-", value, [amt_ctrl], [if_else_ctrl], "\\n"}"""
+        r"""Create an AST List node.
+
+        Format: { "-", value, [amt_ctrl], [if_else_ctrl], "\\n"}.
+        """
         list_items = []
 
         try:
@@ -301,7 +361,9 @@ class TokenParser():
         return ast.ListNode(list_items)
 
     def __get_dict(self, indent: int) -> ast.DictNode:
-        """{ parameter, "\\n" }
+        r"""Create an AST Dict node.
+
+        Format: { parameter, "\\n" }.
         """
         parameters = []
 
@@ -324,8 +386,10 @@ class TokenParser():
         return ast.DictNode(parameters)
 
     def __get_nb_ctrl(self) -> ast.AmountNode | None:
-        """"amount", ":", int, ["#", var]"""
+        """Create an AST Amount node.
 
+        Format: "amount", ":", int, ["#", var].
+        """
         try:
             amount_token = self.__check(TT.AMOUNT)
             if not amount_token:
@@ -354,8 +418,10 @@ class TokenParser():
         )
 
     def __get_if_ctrl(self) -> ast.IfNode | None:
-        """"if", condition"""
+        """Create an AST If node.
 
+        Format: "if", condition.
+        """
         condition = self.__check(TT.IF)
         if not condition:
             return None
@@ -373,7 +439,10 @@ class TokenParser():
         )
 
     def __get_if_else_ctrl(self) -> ast.IfElseNode | None:
-        """if_ctrl, ["else" , valeur]"""
+        """Create an AST IfElse node.
+
+        Format: if_ctrl, ["else" , value].
+        """
         if_ctrl = self.__get_if_ctrl()
         self.__get_whitespaces()
         if not if_ctrl:

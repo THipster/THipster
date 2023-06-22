@@ -1,3 +1,4 @@
+"""Tests for the THipster DSL lexer module."""
 import pytest
 
 from thipster.parser.dsl_parser.exceptions import DSLParserNoEndingQuotesError
@@ -21,24 +22,24 @@ def __get_token_string(
 
 
 def __single_token_test(
-    input: str,
+    input_string: str,
     token: str,
     token_value: str | None = None,
     is_newline: bool = False,
 ):
-
-    line_value, column_value = 1, len(input)+1
+    test_file_name = 'test_file.thips'
+    line_value, column_value = 1, len(input_string)+1
     if is_newline:
         line_value, column_value = 2, 1
     expected_output = [
-        __get_token_string('test_file.thips', 1, 1, token, token_value),
+        __get_token_string(test_file_name, 1, 1, token, token_value),
         __get_token_string(
-            'test_file.thips', line_value,
+            test_file_name, line_value,
             column_value, TT.NEWLINE,
         ),
-        __get_token_string('test_file.thips', line_value+1, 1, TT.EOF),
+        __get_token_string(test_file_name, line_value+1, 1, TT.EOF),
     ]
-    lexer = Lexer({'test_file.thips': input})
+    lexer = Lexer({test_file_name: input_string})
     lexer.run()
     output = lexer.tokenList
 
@@ -48,6 +49,7 @@ def __single_token_test(
 
 
 def test_create_lexer():
+    """Test the creation of a Lexer object."""
     files = {
         'file_name_1': 'file_content_1',
         'file_name_2': 'file_content_2',
@@ -60,7 +62,8 @@ def test_create_lexer():
 
 
 def test_lex_single_tokens():
-    for input, output in {
+    """Test the lexing of single characters."""
+    for input_char, output in {
         ':': TT.COLON,
         ',': TT.COMMA,
         '+': TT.PLUS,
@@ -73,12 +76,13 @@ def test_lex_single_tokens():
         '>': TT.GT,
         '^': TT.POW,
     }.items():
-        __single_token_test(input, output)
+        __single_token_test(input_char, output)
 
 
 def test_lex_brackets():
+    """Test the lexing of brackets."""
     lexer = Lexer({'': ''})
-    input = '[toto]'
+    input_string = '[toto]'
     expected_output = [
         __get_token_string('file', 1, 1, TT.BRACKETS_START),
         __get_token_string('file', 1, 2, TT.STRING, 'toto'),
@@ -86,7 +90,7 @@ def test_lex_brackets():
         __get_token_string('file', 1, 7, TT.NEWLINE),
         __get_token_string('file', 2, 1, TT.EOF),
     ]
-    lexer.lex('file', input)
+    lexer.lex('file', input_string)
     output = lexer.tokenList
 
     assert len(output) == len(expected_output)
@@ -95,16 +99,17 @@ def test_lex_brackets():
 
 
 def test_lex_quoted_string():
+    """Test the lexing of quoted strings."""
     lexer = Lexer({'': ''})
 
-    input = '"bucket number 21""bucket number 22"'
+    input_string = '"bucket number 21""bucket number 22"'
     expected_output = [
         __get_token_string('file', 1, 2, TT.STRING, 'bucket number 21'),
         __get_token_string('file', 1, 20, TT.STRING, 'bucket number 22'),
         __get_token_string('file', 1, 37, TT.NEWLINE),
         __get_token_string('file', 2, 1, TT.EOF),
     ]
-    lexer.lex('file', input)
+    lexer.lex('file', input_string)
     output = lexer.tokenList
 
     assert len(output) == len(expected_output)
@@ -112,13 +117,13 @@ def test_lex_quoted_string():
         assert repr(output[i]) == expected_output[i]
 
     lexer = Lexer({'': ''})
-    input = "'bucket number 21'"
+    input_string = "'bucket number 21'"
     expected_output = [
         __get_token_string('file', 1, 2, TT.STRING, 'bucket number 21'),
         __get_token_string('file', 1, 19, TT.NEWLINE),
         __get_token_string('file', 2, 1, TT.EOF),
     ]
-    lexer.lex('file', input)
+    lexer.lex('file', input_string)
     output = lexer.tokenList
 
     assert len(output) == len(expected_output)
@@ -126,13 +131,13 @@ def test_lex_quoted_string():
         assert repr(output[i]) == expected_output[i]
 
     lexer = Lexer({'': ''})
-    input = "'bucket number \"21\"'"
+    input_string = "'bucket number \"21\"'"
     expected_output = [
         __get_token_string('file', 1, 2, TT.STRING, 'bucket number "21"'),
         __get_token_string('file', 1, 21, TT.NEWLINE),
         __get_token_string('file', 2, 1, TT.EOF),
     ]
-    lexer.lex('file', input)
+    lexer.lex('file', input_string)
     output = lexer.tokenList
 
     assert len(output) == len(expected_output)
@@ -140,13 +145,13 @@ def test_lex_quoted_string():
         assert repr(output[i]) == expected_output[i]
 
     lexer = Lexer({'': ''})
-    input = '"bucket number \'21\'"'
+    input_string = '"bucket number \'21\'"'
     expected_output = [
         __get_token_string('file', 1, 2, TT.STRING, "bucket number '21'"),
         __get_token_string('file', 1, 21, TT.NEWLINE),
         __get_token_string('file', 2, 1, TT.EOF),
     ]
-    lexer.lex('file', input)
+    lexer.lex('file', input_string)
     output = lexer.tokenList
 
     assert len(output) == len(expected_output)
@@ -155,16 +160,18 @@ def test_lex_quoted_string():
 
 
 def test_lex_quoted_string_error():
-    input = {
+    """Test lexing of string with no ending quotes."""
+    input_file = {
         'file': 'bucket nom-8: "amount: 5 \n\t',
     }
-    lexer = Lexer(input)
+    lexer = Lexer(input_file)
     with pytest.raises(DSLParserNoEndingQuotesError):
         lexer.run()
 
 
 def test_lex_multiline_input():
-    input = {
+    """Test the lexing of multiline input."""
+    input_file = {
         'file': 'bucket nom\\\ntest:',
     }
     expected_output = [
@@ -175,7 +182,7 @@ def test_lex_multiline_input():
         __get_token_string('file', 2, 6, TT.NEWLINE),
         __get_token_string('file', 3, 1, TT.EOF),
     ]
-    lexer = Lexer(input)
+    lexer = Lexer(input_file)
     lexer.run()
     output = lexer.tokenList
 
@@ -185,14 +192,15 @@ def test_lex_multiline_input():
 
 
 def test_lex_var():
-    input = '#variable'
+    """Test the lexing of a variable."""
+    input_string = '#variable'
     expected_output = [
         __get_token_string('file', 1, 2, TT.VAR, 'variable'),
         __get_token_string('file', 1, 10, TT.NEWLINE),
         __get_token_string('file', 2, 1, TT.EOF),
     ]
     lexer = Lexer({'': ''})
-    lexer.lex('file', input)
+    lexer.lex('file', input_string)
     output = lexer.tokenList
 
     assert len(output) == len(expected_output)
@@ -201,15 +209,18 @@ def test_lex_var():
 
 
 def test_lex_newline():
+    """Test the lexing of a newline."""
     __single_token_test('\n', TT.NEWLINE, is_newline=True)
 
 
 def test_lex_tab():
+    """Test the lexing of a tab."""
     __single_token_test('\t', TT.TAB)
 
 
 def test_lex_4_whitespaces_as_tab():
-    input = {
+    """Test if 4 whitespaces are considered as a tab."""
+    input_file = {
         'file': '    \n\t',
     }
     expected_output = [
@@ -219,7 +230,7 @@ def test_lex_4_whitespaces_as_tab():
         __get_token_string('file', 2, 2, TT.NEWLINE),
         __get_token_string('file', 3, 1, TT.EOF),
     ]
-    lexer = Lexer(input)
+    lexer = Lexer(input_file)
     output = lexer.run()
 
     assert len(output) == len(expected_output)
@@ -228,7 +239,8 @@ def test_lex_4_whitespaces_as_tab():
 
 
 def test_lex_2_4_whitespaces_as_tabs():
-    input = {
+    """Test if 2*4 whitespaces are considered as 2 tabs."""
+    input_file = {
         'file': '        \n\t',
     }
     expected_output = [
@@ -239,7 +251,7 @@ def test_lex_2_4_whitespaces_as_tabs():
         __get_token_string('file', 2, 2, TT.NEWLINE),
         __get_token_string('file', 3, 1, TT.EOF),
     ]
-    lexer = Lexer(input)
+    lexer = Lexer(input_file)
     output = lexer.run()
 
     assert len(output) == len(expected_output)
@@ -248,11 +260,13 @@ def test_lex_2_4_whitespaces_as_tabs():
 
 
 def test_lex_dash():
+    """Test the lexing of a dash."""
     __single_token_test('-', TT.MINUS)
 
 
 def test_lex_amount():
-    input = 'amount '
+    """Test the lexing of an amount."""
+    input_string = 'amount '
     expected_output = [
         __get_token_string('file', 1, 1, TT.AMOUNT),
         __get_token_string('file', 1, 7, TT.WHITESPACE),
@@ -260,7 +274,7 @@ def test_lex_amount():
         __get_token_string('file', 2, 1, TT.EOF),
     ]
     lexer = Lexer({'': ''})
-    lexer.lex('file', input)
+    lexer.lex('file', input_string)
     output = lexer.tokenList
 
     assert len(output) == len(expected_output)
@@ -269,23 +283,28 @@ def test_lex_amount():
 
 
 def test_lex_and():
+    """Test the lexing of an 'and' string."""
     __single_token_test('and', TT.AND)
 
 
 def test_lex_if():
+    """Test the lexing of an 'if' string."""
     __single_token_test('if', TT.IF)
 
 
 def test_lex_elif():
+    """Test the lexing of an 'elif' string."""
     __single_token_test('elif', TT.ELIF)
 
 
 def test_lex_else():
+    """Test the lexing of an 'else' string."""
     __single_token_test('else', TT.ELSE)
 
 
 def test_lex_if_else():
-    input = 'if condition else something'
+    """Test the lexing of an 'if else' string."""
+    input_string = 'if condition else something'
     expected_output = [
         __get_token_string('file', 1, 1, TT.IF),
         __get_token_string('file', 1, 3, TT.WHITESPACE),
@@ -298,7 +317,7 @@ def test_lex_if_else():
         __get_token_string('file', 2, 1, TT.EOF),
     ]
     lexer = Lexer({'': ''})
-    lexer.lex('file', input)
+    lexer.lex('file', input_string)
     output = lexer.tokenList
 
     assert len(output) == len(expected_output)
@@ -307,27 +326,33 @@ def test_lex_if_else():
 
 
 def test_lex_or():
+    """Test the lexing of an 'or' string."""
     __single_token_test('or', TT.OR)
 
 
 def test_lex_true():
+    """Test the lexing of a boolean true."""
     __single_token_test('true', TT.BOOLEAN, token_value='true')
 
 
 def test_lex_false():
+    """Test the lexing of a boolean false."""
     __single_token_test('false', TT.BOOLEAN, token_value='false')
 
 
 def test_lex_int():
+    """Test the lexing of an integer."""
     __single_token_test('8', TT.INT, token_value='8')
 
 
 def test_lex_float():
+    """Test the lexing of a float."""
     __single_token_test('4.5', TT.FLOAT, token_value='4.5')
 
 
 def test_lex_string():
-    input = 'bucket nom-8'
+    """Test the lexing of strings."""
+    input_string = 'bucket nom-8'
     expected_output = [
         __get_token_string('file', 1, 1, TT.STRING, 'bucket'),
         __get_token_string('file', 1, 7, TT.WHITESPACE),
@@ -338,7 +363,7 @@ def test_lex_string():
         __get_token_string('file', 2, 1, TT.EOF),
     ]
     lexer = Lexer({'': ''})
-    lexer.lex('file', input)
+    lexer.lex('file', input_string)
     output = lexer.tokenList
 
     assert len(output) == len(expected_output)
@@ -347,7 +372,8 @@ def test_lex_string():
 
 
 def test_run_lexer():
-    input = {
+    """Test the run method of the lexer."""
+    input_files = {
         'file': 'bucket nom-8: amount: 5 \n\t',
         'file2': 'network aaaa-#i: nombre: 2 4.5\n\t- property',
     }
@@ -390,7 +416,7 @@ def test_run_lexer():
         __get_token_string('file2', 2, 12, TT.NEWLINE),
         __get_token_string('file2', 3, 1, TT.EOF),
     ]
-    lexer = Lexer(input)
+    lexer = Lexer(input_files)
     output = lexer.run()
 
     assert len(output) == len(expected_output)
@@ -399,7 +425,8 @@ def test_run_lexer():
 
 
 def test_run_lexer_var_in_name():
-    input = {
+    """Test the run method of the lexer with a variable in a name."""
+    input_file = {
         'file': 'bucket nom-#test \n\t toto: tata',
     }
     expected_output = [
@@ -419,7 +446,7 @@ def test_run_lexer_var_in_name():
         __get_token_string('file', 2, 13, TT.NEWLINE),
         __get_token_string('file', 3, 1, TT.EOF),
     ]
-    lexer = Lexer(input)
+    lexer = Lexer(input_file)
     output = lexer.run()
 
     assert len(output) == len(expected_output)

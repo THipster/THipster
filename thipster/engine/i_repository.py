@@ -1,14 +1,15 @@
+"""Repository module interface."""
 from abc import ABC, abstractmethod
 
 from thipster.engine.resource_model import ResourceModel
 
 
 class RepositoryPort(ABC):
-    """Repository module interface
-    """
+    """Repository port."""
+
     @abstractmethod
     def get(self, resource_names: list[str]) -> dict[str, ResourceModel]:
-        """Abstract get method
+        """Abstract get method.
 
         Parameters
         ----------

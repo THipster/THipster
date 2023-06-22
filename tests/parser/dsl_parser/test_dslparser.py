@@ -1,8 +1,10 @@
-import os
+"""Tests for the DSLParser class."""
+from pathlib import Path
 
 import pytest
 
 import thipster.engine.parsed_file as pf
+from tests.test_tools import create_dir
 from thipster.parser import DSLParser
 from thipster.parser.dsl_parser.exceptions import (
     DSLArithmeticError,
@@ -13,10 +15,9 @@ from thipster.parser.dsl_parser.exceptions import (
 )
 from thipster.parser.dsl_parser.token import TOKENTYPES as TT
 
-from ...test_tools import create_dir
-
 
 def test_get_files():
+    """Test the getfiles method."""
     path_input = 'test'
     _destroy_dir = create_dir(
         path_input,
@@ -38,6 +39,7 @@ def test_get_files():
 
 
 def test_get_absent_files():
+    """Test the getfiles method with an inexistant path."""
     with pytest.raises(DSLParserPathNotFoundError):
 
         parser = DSLParser
@@ -68,6 +70,7 @@ def __test_file(file: str):
 
 
 def test_parse_simple_file():
+    """Test the parsing of a simple file."""
     out = __test_file(
         file="""bucket my-bucket:
 \tregion: euw
@@ -88,6 +91,7 @@ def test_parse_simple_file():
 
 
 def test_parse_empty_file():
+    """Test the parsing of an empty file."""
     out = __test_file(
         file="""""",
     )
@@ -96,6 +100,7 @@ def test_parse_empty_file():
 
 
 def test_parse_simple_file_with_newlines():
+    """Test the parsing of a simple file with newlines."""
     out = __test_file(
         file="""
 
@@ -123,6 +128,7 @@ bucket my-bucket2:
 
 
 def test_parse_simple_file_with_empty_lines():
+    """Test the parsing of a simple file with empty lines."""
     out = __test_file(
         file="""bucket my-bucket:
 \tregion: euw
@@ -145,6 +151,7 @@ bucket my-bucket2:
 
 
 def test_parse_list():
+    """Test the parsing of a list."""
     out = __test_file(
         file="""bucket my-bucket:
 \tregion:
@@ -204,6 +211,7 @@ def test_parse_list():
 
 
 def test_parse_dict_list_in_dict():
+    """Test the parsing of a list and dict in a dict."""
     out = __test_file(
         file="""bucket my-bucket:
 \ttoto:
@@ -231,6 +239,7 @@ def test_parse_dict_list_in_dict():
 
 
 def test_parse_if_else():
+    """Test the parsing of if else statements."""
     # IN DICT
     out = __test_file(
         file="""bucket my-bucket:
@@ -292,6 +301,7 @@ def test_parse_if_else():
 
 
 def test_parse_literal_types():
+    """Test the parsing of literal types."""
     out = __test_file(
         file="""bucket my-bucket:
 \tregion: euw
@@ -362,6 +372,7 @@ def test_parse_literal_types():
 
 
 def test_parse_amount():
+    """Test the parsing of an amount."""
     out = __test_file(
         file="""bucket my-bucket: amount: 3
 \tregion: euw
@@ -396,6 +407,7 @@ def test_parse_amount():
 
 
 def test_var_in_name():
+    """Test the parsing of a variable in a name."""
     out = __test_file(
         file="""bucket my-bucket#i: amount: 3 #i
 \tregion: #i
@@ -414,6 +426,7 @@ def test_var_in_name():
 
 
 def test_comparisons():
+    """Test the parsing of operator comparisons."""
     def test_cmp(cmp_expr: str, result: str):
         out = __test_file(
             file=f"""bucket my-bucket:
@@ -460,6 +473,7 @@ def test_comparisons():
 
 
 def test_arithmetic():
+    """Test the parsing of arithmetic expressions."""
     # PLUS
     out = __test_file(
         file="""bucket my-bucket:
@@ -532,75 +546,83 @@ def test_arithmetic():
     assert region.value == 16
 
 
-def __test_parser_raises(mocker, input: str, exception: Exception)\
-        -> pytest.ExceptionInfo:
+def __test_parser_raises(
+    mocker,  # noqa: ARG001
+    input_file: str,
+    exception: Exception,
+) -> pytest.ExceptionInfo:
     with pytest.raises(exception) as exc_info:
         __test_file(
-            file=input,
+            file=input_file,
         )
 
     return exc_info
 
 
 def __test_syntax_error(
-    mocker, input: str, ln: int, col: int,
+    mocker, input_file: str, ln: int, col: int,
     expected: str, got: str,
 ):
 
-    exc_info = __test_parser_raises(mocker, input, DSLSyntaxError)
+    exc_info = __test_parser_raises(
+        mocker,
+        input_file,
+        DSLSyntaxError,
+    )
 
     exp = str(' or '.join(list(map(str, expected))))\
         if isinstance(expected, list) else str(expected.value)
 
     assert str(exc_info.value) == f'(File : \
-{os.getcwd()}/test/test_file.thips, Ln {str(ln)}, Col {str(col)}) :\n\t\
-Syntax error : Expected {exp}, got {str(got.value)}'
+{Path.cwd()}/test/test_file.thips, Ln {ln!s}, Col {col!s}) :\n\t\
+Syntax error : Expected {exp}, got {got.value!s}'
 
 
 def test_syntax_error_resource(mocker):
-    # MISSING NAME
-    input = """bucket :
+    """Test the syntax errors in a resource missing its name."""
+    input_file = """bucket :
             """
     __test_syntax_error(
-        mocker, input=input, ln=1, col=8,
+        mocker, input_file=input_file, ln=1, col=8,
         expected=[TT.STRING, TT.VAR], got=TT.COLON,
     )
 
 
 def test_syntax_error_dict(mocker):
+    """Test the syntax errors associated with a dict."""
     # MISSING COLON
-    input = """
+    input_file = """
 bucket my-bucket:
 \tregion euw
             """
     __test_syntax_error(
-        mocker, input=input, ln=3, col=9,
+        mocker, input_file=input_file, ln=3, col=9,
         expected=TT.COLON, got=TT.STRING,
     )
 
     # MISSING TAB
-    input = """
+    input_file = """
 bucket my-bucket:
 region: euw
             """
     __test_syntax_error(
-        mocker, input=input, ln=3, col=1,
+        mocker, input_file=input_file, ln=3, col=1,
         expected=TT.TAB, got=TT.STRING,
     )
 
     # MISSING VALUE
-    input = """
+    input_file = """
 bucket my-bucket:
 \ttest:
 \tregion: euw
 """
     __test_syntax_error(
-        mocker, input=input, ln=3, col=7,
+        mocker, input_file=input_file, ln=3, col=7,
         expected=TT.STRING, got=TT.NEWLINE,
     )
 
     # MISSING VALUE 2
-    input = """
+    input_file = """
 bucket my-bucket:
 \ttest:
 
@@ -610,88 +632,105 @@ bucket my-bucket:
 
 """
     exc_info = __test_parser_raises(
-        mocker, input=input, exception=DSLUnexpectedEOFError,
+        mocker, input_file=input_file, exception=DSLUnexpectedEOFError,
     )
 
     assert str(exc_info.value) == 'Unexpected EOF'
 
 
 def test_syntax_error_amount(mocker):
+    """Test the syntax errors in an amount declaration."""
     # MISSING COLON
-    input = """
+    input_file = """
 bucket my-bucket: amount 3
 \tregion: euw
 """
     __test_syntax_error(
-        mocker, input=input, ln=2, col=26,
+        mocker, input_file=input_file, ln=2, col=26,
         expected=TT.COLON, got=TT.INT,
     )
 
     # NO INTEGER
-    input = """
+    input_file = """
 bucket my-bucket: amount: str
 \tregion: euw
 """
     __test_syntax_error(
-        mocker, input=input, ln=2, col=27,
+        mocker, input_file=input_file, ln=2, col=27,
         expected=[TT.INT, TT.FLOAT, TT.PARENTHESES_START], got=TT.STRING,
     )
 
 
 def test_syntax_error_if(mocker):
+    """Test the syntax errors in an if statement."""
     # MISSING CONDITION
-    input = """
+    input_file = """
 bucket my-bucket: if
 """
-    __test_parser_raises(mocker, input=input, exception=DSLConditionError)
+    __test_parser_raises(
+        mocker,
+        input_file=input_file,
+        exception=DSLConditionError,
+    )
 
     # UNEXPECTED IF ELSE
-    input = """
+    input_file = """
 bucket my-bucket: if 1 == 1 else bbb
 """
     __test_syntax_error(
-        mocker, input=input, ln=2, col=29,
+        mocker, input_file=input_file, ln=2, col=29,
         expected=TT.NEWLINE, got=TT.ELSE,
     )
 
 
 def test_syntax_error_if_else(mocker):
+    """Test the syntax errors in an if else statement."""
     # MISSING ELSE VALUE
-    input = """
+    input_file = """
 bucket my-bucket:
 \ttoto:
 \t\tfoo : bar if true else
 """
     __test_syntax_error(
-        mocker, input=input, ln=4, col=25,
+        mocker, input_file=input_file, ln=4, col=25,
         expected=[TT.INT, TT.FLOAT, TT.PARENTHESES_START], got=TT.NEWLINE,
     )
 
     # MISSING CONDITION VALUE
-    input = """
+    input_file = """
 bucket my-bucket:
 \ttoto:
 \t\tfoo : bar if  else bbb
 """
-    __test_parser_raises(mocker, input=input, exception=DSLConditionError)
+    __test_parser_raises(
+        mocker,
+        input_file=input_file,
+        exception=DSLConditionError,
+    )
 
 
 def test_syntax_error_unexpected_token(mocker):
+    """Test the syntax error with an unexpected 'if' as token name."""
     # RESERVED TOKEN NAME
-    input = """
+    input_file = """
 bucket if:
 \tregion: euw
 """
     __test_syntax_error(
-        mocker, input=input, ln=2, col=8,
+        mocker, input_file=input_file, ln=2, col=8,
         expected=[TT.STRING, TT.VAR], got=TT.IF,
     )
 
 
 def test_amount_error(mocker):
+    """Test the syntax error with an unexpected 'amount' value : 3/2 isn't an int."""
     # RESERVED TOKEN NAME
-    input = """
+    input_file = """
 bucket my-bucket: amount: 3/2
 \tregion: euw
 """
-    __test_parser_raises(mocker, input=input, exception=DSLArithmeticError)
+    __test_parser_raises(
+        mocker,
+        input_file=input_file,
+        exception=DSLArithmeticError,
+    )

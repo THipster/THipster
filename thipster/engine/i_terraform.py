@@ -1,3 +1,4 @@
+"""Terraform module interface."""
 from abc import ABC, abstractclassmethod
 
 import thipster.engine.parsed_file as pf
@@ -7,12 +8,15 @@ from .i_auth import AuthPort
 
 
 class TerraformPort(ABC):
-    """Terraform module interface
-    """
+    """Terraform port."""
+
     @classmethod
     @abstractclassmethod
-    def apply(cls, plan_file_path: str | None = None):
-        """Apply generated terraform code
+    def apply(
+        cls,
+        plan_file_path: str | None = None,  # noqa: ARG003
+    ):
+        """Apply generated terraform code.
 
         Parameters
         ----------
@@ -25,15 +29,18 @@ class TerraformPort(ABC):
             If method is not implemented in inheriting classes
 
         """
-        raise NotImplementedError('Should implement apply()')
+        msg = 'Should implement apply()'
+        raise NotImplementedError(msg)
 
     @classmethod
     @abstractclassmethod
     def generate(
-        cls, file: pf.ParsedFile, models: dict[str, rm.ResourceModel],
+        cls,
+        file: pf.ParsedFile,  # noqa: ARG003
+        models: dict[str, rm.ResourceModel],  # noqa: ARG003
         _authenticator: AuthPort,
     ):
-        """Generates Terraform code from parsed file and models
+        """Generate Terraform code from parsed file and models.
 
         Parameters
         ----------
@@ -48,12 +55,13 @@ class TerraformPort(ABC):
             If method is not implemented in inheriting classes
 
         """
-        raise NotImplementedError('Should implement generate()')
+        msg = 'Should implement generate()'
+        raise NotImplementedError(msg)
 
     @classmethod
     @abstractclassmethod
     def init(cls):
-        """Init Terraform for generated terraform code
+        """Init Terraform for generated terraform code.
 
         Raises
         ------
@@ -61,12 +69,13 @@ class TerraformPort(ABC):
             If method is not implemented in inheriting classes
 
         """
-        raise NotImplementedError('Should implement generate()')
+        msg = 'Should implement generate()'
+        raise NotImplementedError(msg)
 
     @classmethod
     @abstractclassmethod
     def plan(cls):
-        """Get plan from generated terraform code
+        """Get plan from generated terraform code.
 
         Raises
         ------
@@ -74,4 +83,5 @@ class TerraformPort(ABC):
             If method is not implemented in inheriting classes
 
         """
-        raise NotImplementedError('Should implement plan()')
+        msg = 'Should implement plan()'
+        raise NotImplementedError(msg)

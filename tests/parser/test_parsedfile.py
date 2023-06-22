@@ -1,13 +1,16 @@
+"""Tests for the ParsedFile object."""
 import thipster.engine.parsed_file as pf
 
 
 def test_create_parsed_file():
-    file = pf.ParsedFile()
+    """Test creating a ParsedFile object."""
+    parsed_file = pf.ParsedFile()
 
-    assert isinstance(file, pf.ParsedFile)
+    assert isinstance(parsed_file, pf.ParsedFile)
 
 
 def test_create_resource():
+    """Test creating a ParsedResource object."""
     pos = pf.Position('test_file', 3, 7)
     resource = pf.ParsedResource(
         'test_type', 'test_name',
@@ -22,6 +25,7 @@ def test_create_resource():
 
 
 def test_create_position():
+    """Test creating a Position object."""
     pos = pf.Position('test_file', ln=3, col=7)
 
     assert isinstance(pos, pf.Position)
@@ -30,6 +34,7 @@ def test_create_position():
 
 
 def test_create_num_attr():
+    """Test creating a ParsedAttribute object with a number value."""
     val = pf.ParsedLiteral(3)
     pos = pf.Position('test_file', 3, 7)
 
@@ -41,6 +46,7 @@ def test_create_num_attr():
 
 
 def test_create_str_attr():
+    """Test creating a ParsedAttribute object with a string value."""
     val = pf.ParsedLiteral('test_value')
     pos = pf.Position('test_file', 3, 7)
 
@@ -52,6 +58,7 @@ def test_create_str_attr():
 
 
 def test_create_list_str_attr():
+    """Test creating a ParsedAttribute object with a list value."""
     val = pf.ParsedList(
         [pf.ParsedLiteral('test_value_' + str(i)) for i in range(3)],
     )
@@ -68,6 +75,7 @@ def test_create_list_str_attr():
 
 
 def test_create_dict_str_attr():
+    """Test creating a ParsedAttribute object with a dict value."""
     val = pf.ParsedDict(
         {pf.ParsedLiteral('test_value_' + str(i)) for i in range(3)},
     )
@@ -84,6 +92,7 @@ def test_create_dict_str_attr():
 
 
 def test_create_composite_attr():
+    """Test creating a ParsedAttribute object with a composite value."""
     attr = [
         pf.ParsedAttribute(
             'attr_num',
@@ -148,7 +157,8 @@ def test_create_composite_attr():
 
 
 def test_add_resource():
-    file = pf.ParsedFile()
+    """Test adding a resource to a ParsedFile object."""
+    parsed_file = pf.ParsedFile()
 
     pos = pf.Position('test_file', 3, 7)
     resource = pf.ParsedResource(
@@ -156,6 +166,6 @@ def test_add_resource():
         attributes=None, position=pos,
     )
 
-    file.resources.append(resource)
+    parsed_file.resources.append(resource)
 
-    assert resource in file.resources
+    assert resource in parsed_file.resources

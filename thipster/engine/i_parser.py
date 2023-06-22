@@ -1,15 +1,19 @@
+"""Parser module interface."""
 from abc import ABC, abstractclassmethod
 
 from thipster.engine.parsed_file import ParsedFile
 
 
 class ParserPort(ABC):
-    """Parser module interface
-    """
+    """Parser port."""
+
     @classmethod
     @abstractclassmethod
-    def run(cls, path: str) -> ParsedFile:
-        """Abstract run method
+    def run(
+        cls,
+        path: str,  # noqa: ARG003
+    ) -> ParsedFile:
+        """Abstract run method.
 
         Parameters
         ----------
@@ -28,4 +32,5 @@ class ParserPort(ABC):
             If method is not implemented in inheriting classes
 
         """
-        raise NotImplementedError('Should implement run()')
+        msg = 'Should implement run()'
+        raise NotImplementedError(msg)

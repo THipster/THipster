@@ -1,4 +1,6 @@
+"""Module that contains the THipster DSL Parser."""
 import os
+from pathlib import Path
 
 from thipster.engine import ParserPort
 from thipster.engine.parsed_file import ParsedFile
@@ -10,36 +12,37 @@ from .token_parser import TokenParser
 
 
 class DSLParser(ParserPort):
+    """Parser for the THipster's DSL."""
 
     @classmethod
     def __getfiles(cls, path: str) -> dict[str, str]:
-        """Recursively get all files in the requested directory and its sudirectories
-        Can be run on a path file aswell
+        """Recursively get all files in the requested directory and its sudirectories.
+
+        Can be run on a path file aswell.
 
         Parameters
         ----------
         path: str
-            Path to run this function into
+            Path to run this function onto
 
         Returns
         -------
         dict[str, str]
             A dictionary that links a filename to its content, fileName : fileContent
         """
+        path = Path(path).resolve().as_posix()
 
-        path = os.path.abspath(path)
-
-        if not os.path.exists(path):
+        if not Path(path).exists():
             raise DSLParserPathNotFoundError(path)
 
         files = {}
 
-        if os.path.isdir(path):
+        if Path(path).is_dir():
             for content in os.listdir(path):
                 files.update(DSLParser.__getfiles(f'{path}/{content}'))
 
-        if os.path.isfile(path):
-            with open(path) as f:
+        if Path(path).is_file():
+            with Path(path).open() as f:
                 files.update({path: f.read()})
 
                 f.close()
@@ -48,7 +51,7 @@ class DSLParser(ParserPort):
 
     @classmethod
     def run(cls, path: str) -> ParsedFile:
-        """Run the DSLParser
+        """Run the DSLParser.
 
         Parameters
         ----------
@@ -60,7 +63,6 @@ class DSLParser(ParserPort):
         ParsedFile
             A ParsedFile object with the content of all the files in the input path
         """
-
         try:
             files = DSLParser.__getfiles(path)
             lexer = Lexer(files)

@@ -1,6 +1,11 @@
+"""End to end tests for the thipster tool.
+
+Starts from a .thips or .yaml file and tests the creation of the resources on GCP.
+"""
 import os
 import random
 import uuid
+from pathlib import Path
 
 import pytest
 import tftest
@@ -13,11 +18,12 @@ from .test_tools import (
     process_file,
 )
 
-AUTH_FILE_PATH = os.path.join(os.getcwd(), 'tests/credentials.json')
+AUTH_FILE_PATH = Path(Path.cwd(), 'tests/credentials.json')
 
 
 @pytest.fixture
 def apply_output():
+    """Apply terraform and return output."""
     def _apply_output(function_name):
         tf = tftest.TerraformTest(
             tfdir='.',
@@ -39,14 +45,13 @@ def apply_output():
 
 @pytest.fixture
 def authentication():
+    """Authenticate to GCP."""
     delete_credentials = False
     if (
-        not os.path.exists(
-            os.path.join(
-                os.getenv('HOME'),
-                '.config/gcloud/application_default_credentials.json',
-            ),
-        )
+        not Path(
+            os.getenv('HOME'),
+            '.config/gcloud/application_default_credentials.json',
+        ).exists()
         and (
             os.getenv('GOOGLE_APPLICATION_CREDENTIALS') is not None
             or os.getenv('GOOGLE_APPLICATION_CREDENTIALS') != ''
@@ -55,21 +60,23 @@ def authentication():
 
         delete_credentials = True
         if os.getenv('GOOGLE_APPLICATION_CREDENTIALS_CONTENT') is None:
-            raise Exception('No credentials available')
+            msg = 'No credentials available'
+            raise Exception(msg)
 
-        with open(AUTH_FILE_PATH, 'w') as auth_file:
+        with Path(AUTH_FILE_PATH).open('w') as auth_file:
             auth_file.write(
                 os.environ['GOOGLE_APPLICATION_CREDENTIALS_CONTENT'],
             )
-        os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = AUTH_FILE_PATH
+        os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = AUTH_FILE_PATH.as_posix()
 
     yield
 
     if delete_credentials:
-        os.remove(AUTH_FILE_PATH)
+        Path(AUTH_FILE_PATH).unlink()
 
 
 def test_bucket(apply_output, authentication):
+    """Test bucket creation."""
     _ = authentication
     function_name = get_function_name()
 
@@ -89,7 +96,7 @@ bucket {bucket_name}:
         assert_resource_parameters_are(bucket, ['location'])
 
         # Test apply
-        _ = [o for o in apply_output(function_name)]
+        _ = list(apply_output(function_name))
 
     except Exception as e:
         raise e
@@ -98,6 +105,7 @@ bucket {bucket_name}:
 
 
 def test_lb(apply_output, authentication):
+    """Test load balancer creation."""
     _ = authentication
     function_name = get_function_name()
 
@@ -129,7 +137,7 @@ loadbalancer my-lb-{test_id}:
         )
 
         # Test apply
-        _ = [o for o in apply_output(function_name)]
+        _ = list(apply_output(function_name))
 
     except Exception as e:
         raise e

@@ -1,11 +1,25 @@
+"""Setup file for the THipster-cli package."""
+from pathlib import Path
+
 from setuptools import find_packages, setup
+
+
+def get_extra_requires() -> dict[str, list[str]]:
+    """Get the extra requirements from the requirements folder."""
+    extras_require = {}
+    for req_file in Path('requirements').glob('requirements-*.txt'):
+        extras_require[
+            req_file.stem.removeprefix('requirements-')
+        ] = req_file.read_text().splitlines()
+    return extras_require
+
 
 __version__ = '0.17.6'
 
-with open('requirements.txt') as f:
+with Path('requirements.txt').open() as f:
     required = f.read().splitlines()
 
-with open('README.md') as rm:
+with Path('README.md').open() as rm:
     readme = rm.read()
 
 setup(
@@ -44,28 +58,5 @@ simplified format, using either YAML (with JINJA) or the dedicated Thipster DSL.
     packages=find_packages(
         exclude=['pipelines'],
     ),
-    extras_require={
-        'test': [
-            'pytest==7.3.1',
-            'pytest-mock==3.10.0',
-            'tftest==1.8.4',
-            'cdktf-cdktf-provider-google==7.0.10',
-            'google-auth==2.19.1',
-        ],
-        'dev': [
-            'dagger-io==0.6.1',
-            'pre-commit==3.3.2',
-            'pytest==7.3.1',
-            'pytest-mock==3.10.0',
-            'tftest==1.8.4',
-        ],
-        'doc': [
-            'myst-parser==1.0.0',
-            'Sphinx==6.2.1',
-        ],
-        'google': [
-            'cdktf-cdktf-provider-google==7.0.10',
-            'google-auth==2.19.1',
-        ],
-    },
+    extras_require=get_extra_requires(),
 )

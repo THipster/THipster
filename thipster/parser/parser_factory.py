@@ -1,4 +1,6 @@
+"""ParserFactory module."""
 import os
+from pathlib import Path
 
 from thipster.engine import ParserPort
 from thipster.engine.parsed_file import ParsedFile
@@ -12,12 +14,16 @@ from .yaml_parser import YAMLParser
 
 
 class NoParser(ParserPort):
+    """Used when no parser is found for a file extension."""
+
     @classmethod
-    def run(cls, path) -> ParsedFile:
+    def run(cls, path) -> ParsedFile:  # noqa: ARG003
+        """Run the Parser."""
         return ParsedFile()
 
 
 class ParserFactory(ParserPort):
+    """Parser factory, used to run the right parser on the right file."""
 
     __parsers = {
         '.yaml': YAMLParser,
@@ -28,44 +34,45 @@ class ParserFactory(ParserPort):
 
     @classmethod
     def add_parser(cls, parser: ParserPort, extensions: list[str]):
+        """Add a parser to the ParserFactory."""
         cls.__parsers.update({e: parser for e in extensions})
 
     @classmethod
     def __getfiles(cls, path: str) -> list[str]:
-        """Recursively get all files names in the requested directory and its\
-              sudirectories
-        Can be run on a path file aswell
+        """Get the file(s) on the requested path.
+
+        Recursively get all files names in the requested directory and its
+        sudirectories. Can be run on a path file as well.
 
         Parameters
         ----------
         path: str
-            Path to run this function into
+            Path to run this function onto
 
         Returns
         -------
         list[str]
             A list of all the filenames
         """
+        path = Path(path).resolve().as_posix()
 
-        path = os.path.abspath(path)
-
-        if not os.path.exists(path):
+        if not Path(path).exists():
             raise ParserPathNotFoundError(path)
 
         files = []
 
-        if os.path.isdir(path):
+        if Path(path).is_dir():
             for content in os.listdir(path):
                 files += cls.__getfiles(f'{path}/{content}')
 
-        if os.path.isfile(path):
+        if Path(path).is_file():
             return [path]
 
         return files
 
     @classmethod
     def run(cls, path: str) -> ParsedFile:
-        """Run the ParserFactory
+        """Run the ParserFactory.
 
         Parameters
         ----------
@@ -92,7 +99,7 @@ class ParserFactory(ParserPort):
     @classmethod
     def __get_parser(cls, path) -> ParserPort:
 
-        _, path_extension = os.path.splitext(path)
+        path_extension = Path(path).suffix
 
         return cls.__parsers.get(
             path_extension, NoParser,

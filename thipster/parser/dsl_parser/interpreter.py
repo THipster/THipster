@@ -1,3 +1,4 @@
+"""Interpreter for the DSL Parser."""
 import thipster.engine.parsed_file as pf
 import thipster.parser.dsl_parser.ast as ast
 
@@ -10,18 +11,22 @@ from .token import TOKENTYPES as TT
 
 
 class Interpreter():
-    """Interpreter class for the DSL Parser
+    """Interpreter class for the DSL Parser.
 
     Implements a visitor design pattern on the AST nodes
     """
 
     def __init__(self) -> None:
+        """Interpreter class for the DSL Parser.
+
+        Implements a visitor design pattern on the AST nodes
+        """
         super().__init__()
 
         self.__variables = dict[str, int]()
 
     def run(self, tree: ast.FileNode) -> pf.ParsedFile:
-        """Runs the interpreter on an Abstract Syntax Tree
+        """Run the interpreter on an Abstract Syntax Tree.
 
         Parameters
         ----------
@@ -36,11 +41,11 @@ class Interpreter():
         return tree.accept(self)
 
     def visit_comp_expr(self, element: ast.CompExprNode) -> bool:
-        """Visitor for a StringNode
+        """Visitor for a CompExprNode.
 
         Parameters
         ----------
-        element: StringNode
+        element: CompExprNode
             The visited node
 
         Returns
@@ -101,11 +106,11 @@ class Interpreter():
                 )
 
     def visit_arith_expr(self, element: ast.ArithExprNode) -> int | float:
-        """Visitor for a StringNode
+        """Visitor for an ArithExprNode.
 
         Parameters
         ----------
-        element: StringNode
+        element: ArithExprNode
             The visited node
 
         Returns
@@ -134,11 +139,11 @@ class Interpreter():
         return pf.ParsedLiteral(total)
 
     def visit_term(self, element: ast.TermNode) -> int | float:
-        """Visitor for a StringNode
+        """Visitor for a TermNode.
 
         Parameters
         ----------
-        element: StringNode
+        element: TermNode
             The visited node
 
         Returns
@@ -167,11 +172,11 @@ class Interpreter():
         return total
 
     def visit_factor(self, element: ast.FactorNode) -> int | float:
-        """Visitor for a StringNode
+        """Visitor for a Factor node.
 
         Parameters
         ----------
-        element: StringNode
+        element: FactorNode
             The visited node
 
         Returns
@@ -192,14 +197,14 @@ class Interpreter():
 
             case TT.POW:
                 for f in element.factors[1:]:
-                    pow = f.accept(self)
-                    if isinstance(pow, pf.ParsedLiteral):
-                        pow = pow.value
-                    total = total**pow
+                    power = f.accept(self)
+                    if isinstance(power, pf.ParsedLiteral):
+                        power = power.value
+                    total = total**power
                 return pf.ParsedLiteral(total)
 
     def visit_string_expr(self, element: ast.StringExprNode) -> str:
-        """Visitor for a StringExprNode
+        """Visitor for a StringExprNode.
 
         Parameters
         ----------
@@ -218,7 +223,7 @@ class Interpreter():
         return pf.ParsedLiteral(ret)
 
     def visit_variable_definition(self, element: ast.VariableDefinitionNode) -> str:
-        """Visitor for a VariableDefinitionNode
+        """Visitor for a VariableDefinitionNode.
 
         Parameters
         ----------
@@ -243,7 +248,7 @@ class Interpreter():
         return element.name
 
     def visit_variable(self, element: ast.VariableNode) -> object:
-        """Visitor for a VariableNode
+        """Visitor for a VariableNode.
 
         Parameters
         ----------
@@ -266,7 +271,7 @@ class Interpreter():
         return self.__variables[element.name]
 
     def visit_int(self, element: ast.IntNode) -> int:
-        """Visitor for an IntNode
+        """Visitor for an IntNode.
 
         Parameters
         ----------
@@ -281,7 +286,7 @@ class Interpreter():
         return int(element.token.value)
 
     def visit_float(self, element: ast.FloatNode) -> float:
-        """Visitor for a FloatNode
+        """Visitor for a FloatNode.
 
         Parameters
         ----------
@@ -296,7 +301,7 @@ class Interpreter():
         return float(element.token.value)
 
     def visit_bool(self, element: ast.BoolNode) -> bool:
-        """Visitor for a BoolNode
+        """Visitor for a BoolNode.
 
         Parameters
         ----------
@@ -311,7 +316,7 @@ class Interpreter():
         return bool(element.token.value)
 
     def visit_string(self, element: ast.StringNode) -> str:
-        """Visitor for a BoolNode
+        """Visitor for a BoolNode.
 
         Parameters
         ----------
@@ -326,7 +331,7 @@ class Interpreter():
         return str(element.token.value)
 
     def visit_if(self, element: ast.IfNode) -> object | None:
-        """Visitor for an IfNode
+        """Visitor for an IfNode.
 
         Parameters
         ----------
@@ -342,7 +347,7 @@ class Interpreter():
             else None
 
     def visit_ifelse(self, element: ast.IfElseNode):
-        """Visitor for an IfElseNode
+        """Visitor for an IfElseNode.
 
         Parameters
         ----------
@@ -353,13 +358,13 @@ class Interpreter():
         -------
         object | None
             The value of the "if" child node if the condition is true, else the value\
-                  of the "else" child node
+            of the "else" child node
         """
         return element.if_case.accept(self) if element.condition.accept(self).value\
             else element.else_case.accept(self)
 
     def visit_amount(self, element: ast.AmountNode) -> list[object]:
-        """Visitor for an AmountNode
+        """Visitor for an AmountNode.
 
         Parameters
         ----------
@@ -386,7 +391,7 @@ class Interpreter():
         return res
 
     def visit_parameter(self, element: ast.ParameterNode) -> pf.ParsedAttribute:
-        """Visitor for an ParameterNode
+        """Visitor for a ParameterNode.
 
         Parameters
         ----------
@@ -406,7 +411,7 @@ class Interpreter():
         )
 
     def visit_dict(self, element: ast.DictNode) -> pf.ParsedDict:
-        """Visitor for an DictNode
+        """Visitor for a DictNode.
 
         Parameters
         ----------
@@ -421,7 +426,7 @@ class Interpreter():
         return pf.ParsedDict([v.accept(self) for v in element.values])
 
     def visit_literal(self, element: ast.LiteralNode) -> pf.ParsedLiteral:
-        """Visitor for an LiteralNode
+        """Visitor for a LiteralNode.
 
         Parameters
         ----------
@@ -436,7 +441,7 @@ class Interpreter():
         return pf.ParsedLiteral(element.value.accept(self))
 
     def visit_list(self, element: ast.ListNode) -> pf.ParsedList:
-        """Visitor for an ListNode
+        """Visitor for a ListNode.
 
         Parameters
         ----------
@@ -451,7 +456,7 @@ class Interpreter():
         return pf.ParsedList([v.accept(self) for v in element.values])
 
     def visit_resource(self, element: ast.ResourceNode) -> list[pf.ParsedResource]:
-        """Visitor for an ResourceNode
+        """Visitor for a ResourceNode.
 
         Parameters
         ----------
@@ -465,7 +470,7 @@ class Interpreter():
         """
         return [
             pf.ParsedResource(
-                type=element.type.accept(self).value,
+                parsed_resource_type=element.type.accept(self).value,
                 name=element.name.accept(self).value,
                 position=element.position,
                 attributes=[v.accept(self) for v in element.parameters.values],
@@ -473,7 +478,7 @@ class Interpreter():
         ]
 
     def visit_file(self, element: ast.FileNode):
-        """Visitor for an FileNode
+        """Visitor for a FileNode.
 
         Parameters
         ----------
@@ -485,8 +490,8 @@ class Interpreter():
         ParsedFile
             A ParsedFile object based on the node's resources
         """
-        file = pf.ParsedFile()
+        parsed_file = pf.ParsedFile()
         for res in element.resources:
-            file.resources += res.accept(self)
+            parsed_file.resources += res.accept(self)
 
-        return file
+        return parsed_file

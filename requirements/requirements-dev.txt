@@ -1,0 +1,5 @@
+dagger-io==0.6.1
+pre-commit==3.3.2
+pytest==7.3.1
+pytest-mock==3.10.0
+tftest==1.8.4
