@@ -635,15 +635,37 @@ def _create_internal_object(
     return True
 
 
-def _create_dependency(ctx: ResourceCreationContext):
+def _create_dependency(
+        ctx: ResourceCreationContext,
+        dependency_attributes: list[pf.ParsedAttribute] = None,
+):
     """Create a dependency in a resource.
 
     Parameters
     ----------
     ctx: ResourceCreationContext
         Context from which the resource is created
+    dependency_attributes: list[pf.ParsedAttribute]
+        list of attributes to pass to the dependency creation. Defaults to None
     """
+    if dependency_attributes:
+        ctx.no_modif = False
+
     _create_default_resource(ctx)
+
+    ctx.no_modif = True
+
+    # Process attributes
+    def attributes(attribute_list: list[pf.ParsedAttribute]):
+        for attribute in attribute_list:
+            if attribute.name == ctx.model.name_key:
+                ctx.resource_args[ctx.model.name_key] = attribute.name
+            else:
+                _process_attribute(ctx, attribute)
+
+    if dependency_attributes:
+        attributes(dependency_attributes)
+    attributes(CDK._inherited_attributes)
 
     dependency = ctx.resource_class(
         ctx.stack_self, ctx.resource_name, **ctx.resource_args,
@@ -685,6 +707,8 @@ def _check_explicit_dependency(
         dep_ctx.resource_args = attribute_value
 
         # Creates explicit dependency
-        ctx.resource_args[attribute_name] = _create_dependency(dep_ctx)
+        ctx.resource_args[attribute_name] = _create_dependency(
+            dep_ctx, attribute_value,
+        )
 
     ctx.resource_args[attribute_name] = CDK._created_resources[created_name]
