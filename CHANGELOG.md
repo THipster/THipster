@@ -2,6 +2,12 @@
 
 <!--next-version-placeholder-->
 
+## v0.18.0 (2023-06-22)
+
+### :sparkles:
+
+* :sparkles: feat: add tf auto apply ([#181](https://github.com/THipster/THipster/issues/181)) ([`1691ed6`](https://github.com/THipster/THipster/commit/1691ed619342ff823a785af43592ca43779f009f))
+
 ## v0.17.10 (2023-06-22)
 
 ### :bug:
