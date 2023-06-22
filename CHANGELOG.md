@@ -2,6 +2,12 @@
 
 <!--next-version-placeholder-->
 
+## v0.17.6 (2023-06-22)
+
+### :bug:
+
+* :bug: fix: pass args to dependency creation ([#174](https://github.com/THipster/THipster/issues/174)) ([`ab38464`](https://github.com/THipster/THipster/commit/ab384645e0dd477bc2c60181e52d2879809d1f62))
+
 ## v0.17.5 (2023-06-21)
 
 ### :bug:
