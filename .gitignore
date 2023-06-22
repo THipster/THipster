@@ -187,3 +187,6 @@ terraform.rc
 # Thipster
 thipster.tf.json
 thipster.tfplan
+
+test_file.*
+demo.py
