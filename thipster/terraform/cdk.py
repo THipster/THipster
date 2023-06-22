@@ -341,15 +341,6 @@ def _create_default_resource(ctx: ResourceCreationContext):
             missing_atributes,
         )
 
-    # Import package and class
-    CDK._pip_install(ctx.model.cdk_provider)
-    ctx.resource_class = CDK._import(
-        ctx.model.cdk_provider, ctx.model.cdk_module, ctx.model.cdk_name,
-    )
-
-    if ctx.model.name_key:
-        ctx.resource_args[ctx.model.name_key] = ctx.resource_name
-
     for attribute_name, attribute_value in attributes.items():
         _process_attribute(
             ctx, pf.ParsedAttribute(
@@ -362,6 +353,15 @@ def _create_default_resource(ctx: ResourceCreationContext):
     # Create default defendencies if needed
     if not ctx.no_dependencies:
         _generate_default_dependencies(ctx)
+
+    if ctx.model.name_key:
+        ctx.resource_args[ctx.model.name_key] = ctx.resource_name
+
+    # Import package and class
+    CDK._pip_install(ctx.model.cdk_provider)
+    ctx.resource_class = CDK._import(
+        ctx.model.cdk_provider, ctx.model.cdk_module, ctx.model.cdk_name,
+    )
 
     CDK._logger.debug(
         f'Created default {ctx.resource_class} named {ctx.resource_name}',
@@ -477,6 +477,22 @@ def _instantiate_class(ctx: ResourceCreationContext):
     CDK._parent_resources_stack.remove(ctx.resource_type)
 
     if not ctx.arg_to_complete:
+
+        # check args
+        if ctx.no_modif and not all(
+            value.get('optional') or ctx.resource_args.get(name)
+            for name, value in ctx.model.internal_objects.items()
+        ):
+            missing_internal_objects = [
+                name for name, value in ctx.model.internal_objects.items()
+                if not value.get('optional') and not ctx.resource_args.get(name)
+            ]
+
+            raise cdk_exceptions.CDKMissingAttributeInDependencyError(
+                ctx.resource_type,
+                missing_internal_objects,
+            )
+
         if not ctx.model.name_key:
             class_ = ctx.resource_class(**ctx.resource_args)
         else:
@@ -512,7 +528,7 @@ def _process_attribute(ctx: ResourceCreationContext, attribute: pf.ParsedAttribu
     attribute : ParsedAttribute
         Attribute to process
     """
-    if attribute.name in ctx.dependencies:
+    if not ctx.no_dependencies and attribute.name in ctx.dependencies:
         _check_explicit_dependency(ctx, attribute.name, attribute.value)
         del ctx.dependencies[attribute.name]
         return
@@ -676,10 +692,7 @@ def _create_dependency(
         attributes(dependency_attributes)
     attributes(CDK._inherited_attributes)
 
-    dependency = ctx.resource_class(
-        ctx.stack_self, ctx.resource_name, **ctx.resource_args,
-    )
-    CDK._parent_resources_stack.remove(ctx.resource_type)
+    dependency = _instantiate_class(ctx)
     return dependency.id
 
 
@@ -714,7 +727,6 @@ def _check_explicit_dependency(
             ctx,
             resource_type=dependency_type,
         )
-        dep_ctx.resource_args = attribute_value
 
         # Creates explicit dependency
         ctx.resource_args[attribute_name] = _create_dependency(

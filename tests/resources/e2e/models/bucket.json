@@ -2,6 +2,7 @@
     "dependencies": {},
     "internalObjects": {
         "cors": {
+            "optional": true,
             "resource" : "bucket_cors",
             "var_type": "list[StorageBucketCors]",
             "defaults": []
