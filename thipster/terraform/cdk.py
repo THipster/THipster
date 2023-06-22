@@ -424,7 +424,7 @@ def _create_resource_from_args(
     def attributes(attribute_list: list[pf.ParsedAttribute]):
         for attribute in attribute_list:
             if attribute.name == ctx.model.name_key:
-                ctx.resource_args[ctx.model.name_key] = attribute.name
+                ctx.resource_args[ctx.model.name_key] = attribute.value
             else:
                 _process_attribute(ctx, attribute)
 
@@ -549,7 +549,7 @@ def _process_attribute(ctx: ResourceCreationContext, attribute: pf.ParsedAttribu
     # Processes list attribute
     attribute_value = attribute.value
     if ctx.model.attributes[attribute.name].is_list:
-        if type(attribute.value) is list:
+        if isinstance(attribute.value, list):
             attribute_value = [i.value for i in attribute.value]
         else:
             attribute_value = [attribute.value]
