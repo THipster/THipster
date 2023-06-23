@@ -355,7 +355,11 @@ def _create_default_resource(ctx: ResourceCreationContext):
             ctx, pf.ParsedAttribute(
                 name=attribute_name,
                 position=None,
-                value=pf.ParsedLiteral(attribute_value.default),
+                value=(
+                    attribute_value.default
+                    if isinstance(attribute_value.default, pf.ParsedLiteral)
+                    else pf.ParsedLiteral(attribute_value.default)
+                ),
             ),
         )
 
@@ -433,6 +437,7 @@ def _create_resource_from_args(
     def attributes(attribute_list: list[pf.ParsedAttribute]):
         for attribute in attribute_list:
             if attribute.name == ctx.model.name_key:
+                ctx.resource_name = attribute.value
                 ctx.resource_args[ctx.model.name_key] = attribute.value
             else:
                 _process_attribute(ctx, attribute)
@@ -513,10 +518,13 @@ def _instantiate_class(ctx: ResourceCreationContext):
             to_create = CDK._resources_to_create.pop()
             to_create.resource_args[to_create.arg_to_complete] = class_.id
 
-            to_create.resource_class(
+            created_resource = to_create.resource_class(
                 to_create.stack_self, to_create.resource_name,
                 **to_create.resource_args,
             )
+
+            CDK._created_resources[f'{to_create.resource_type}/{to_create.resource_name}']\
+                = created_resource
 
         CDK._logger.debug(
             f'Created {ctx.resource_class} named {ctx.resource_name}',
@@ -573,7 +581,9 @@ def _process_attribute(ctx: ResourceCreationContext, attribute: pf.ParsedAttribu
             attribute_value = [attribute.value]
 
     # Sets attribute value
-    ctx.resource_args[ctx.model.attributes[attribute.name].cdk_name] = attribute_value
+    if attribute_value is not None:
+        ctx.resource_args[ctx.model.attributes[attribute.name].cdk_name]\
+            = attribute_value
 
 
 def _generate_default_dependencies(ctx: ResourceCreationContext):
@@ -649,7 +659,7 @@ def _create_internal_object(
                 and isinstance(internal_object_args[0], pf.ParsedDict):
 
             for internal_object in internal_object_args:
-                internal_object_ctx = copy.copy(internal_object_base_ctx)
+                internal_object_ctx = copy.deepcopy(internal_object_base_ctx)
                 internal_object_ctx.regenerate()
                 res = _create_resource(
                     internal_object_ctx,
