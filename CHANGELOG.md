@@ -2,6 +2,16 @@
 
 <!--next-version-placeholder-->
 
+## v0.19.1 (2023-06-23)
+
+### :bug:
+
+* :bug: fix: set name + add to created resources ([#185](https://github.com/THipster/THipster/issues/185)) ([`45dec4a`](https://github.com/THipster/THipster/commit/45dec4ab3dae3a97c343b6242b87dbb9398d5185))
+
+### Other
+
+* :art: fix: remove comma ([#184](https://github.com/THipster/THipster/issues/184)) ([`1a04f07`](https://github.com/THipster/THipster/commit/1a04f07d530099729e01bec764569a7be5fe68d0))
+
 ## v0.19.0 (2023-06-23)
 
 ### :sparkles:
