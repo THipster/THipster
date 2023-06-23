@@ -542,7 +542,7 @@ def _process_attribute(ctx: ResourceCreationContext, attribute: pf.ParsedAttribu
         resource_value, resource_attribute = attribute.value, 'id'
         if isinstance(resource_value, str):
             split = resource_value.split('.', maxsplit=1)
-            resource_value,  = split[0],
+            resource_value = split[0]
             resource_attribute = split[1] if len(split) > 1 else 'id'
 
         _check_explicit_dependency(
