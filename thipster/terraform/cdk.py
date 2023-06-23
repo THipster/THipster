@@ -203,7 +203,7 @@ class CDK(TerraformPort):
                     )
 
                     cls._created_resources[f'{resource.resource_type}/{resource.name}']\
-                        = created_resource.id
+                        = created_resource
 
         _ResourceStack(app, file_name)
 
@@ -538,7 +538,16 @@ def _process_attribute(ctx: ResourceCreationContext, attribute: pf.ParsedAttribu
         Attribute to process
     """
     if not ctx.no_dependencies and attribute.name in ctx.dependencies:
-        _check_explicit_dependency(ctx, attribute.name, attribute.value)
+        # Test for attribute
+        resource_value, resource_attribute = attribute.value, 'id'
+        if isinstance(resource_value, str):
+            split = resource_value.split('.', maxsplit=1)
+            resource_value,  = split[0],
+            resource_attribute = split[1] if len(split) > 1 else 'id'
+
+        _check_explicit_dependency(
+            ctx, attribute.name, resource_value, resource_attribute,
+        )
         del ctx.dependencies[attribute.name]
         return
 
@@ -707,6 +716,7 @@ def _create_dependency(
 
 def _check_explicit_dependency(
     ctx: ResourceCreationContext, attribute_name: str, attribute_value: str | dict,
+    resource_attribute: str,
 ):
     """Check if a dependency attribute was explicited before.
 
@@ -743,5 +753,7 @@ def _check_explicit_dependency(
         )
         return True
 
-    ctx.resource_args[attribute_name] = CDK._created_resources[created_name]
+    ctx.resource_args[attribute_name] = (
+        getattr(CDK._created_resources[created_name], resource_attribute)
+    )
     return True
