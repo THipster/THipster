@@ -2,6 +2,12 @@
 
 <!--next-version-placeholder-->
 
+## v0.19.0 (2023-06-23)
+
+### :sparkles:
+
+* :sparkles: feat: add option to choose explicit dep arg ([#182](https://github.com/THipster/THipster/issues/182)) ([`3b5c91a`](https://github.com/THipster/THipster/commit/3b5c91a58089a76741d818069c98592fb5fa8031))
+
 ## v0.18.0 (2023-06-22)
 
 ### :sparkles:
