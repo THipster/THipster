@@ -713,7 +713,7 @@ def _create_dependency(
     def attributes(attribute_list: list[pf.ParsedAttribute]):
         for attribute in attribute_list:
             if attribute.name == ctx.model.name_key:
-                ctx.resource_args[ctx.model.name_key] = attribute.name
+                ctx.resource_args[ctx.model.name_key] = attribute.value
             else:
                 _process_attribute(ctx, attribute)
 
