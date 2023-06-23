@@ -2,6 +2,12 @@
 
 <!--next-version-placeholder-->
 
+## v0.19.2 (2023-06-23)
+
+### :arrow_up:
+
+* :arrow_up: chore(deps): Bump pre-commit from 3.3.2 to 3.3.3 ([#183](https://github.com/THipster/THipster/issues/183)) ([`425cbe1`](https://github.com/THipster/THipster/commit/425cbe19e429530a4f899ac9639a1ba59ae52000))
+
 ## v0.19.1 (2023-06-23)
 
 ### :bug:
