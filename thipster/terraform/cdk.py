@@ -546,15 +546,8 @@ def _process_attribute(ctx: ResourceCreationContext, attribute: pf.ParsedAttribu
         Attribute to process
     """
     if not ctx.no_dependencies and attribute.name in ctx.dependencies:
-        # Test for attribute
-        resource_value, resource_attribute = attribute.value, 'id'
-        if isinstance(resource_value, str):
-            split = resource_value.split('.', maxsplit=1)
-            resource_value = split[0]
-            resource_attribute = split[1] if len(split) > 1 else 'id'
-
         _check_explicit_dependency(
-            ctx, attribute.name, resource_value, resource_attribute,
+            ctx, attribute.name, attribute.value,
         )
         del ctx.dependencies[attribute.name]
         return
@@ -655,18 +648,26 @@ def _create_internal_object(
                 and not internal_object_base_ctx.arg_to_complete:
             ctx.resource_args[internal_object_name] = []
 
-        if isinstance(internal_object_args, list) \
-                and isinstance(internal_object_args[0], pf.ParsedDict):
-
+        if isinstance(internal_object_args, list)\
+                and not isinstance(internal_object_args[0], pf.ParsedAttribute):
             for internal_object in internal_object_args:
                 internal_object_ctx = copy.deepcopy(internal_object_base_ctx)
                 internal_object_ctx.regenerate()
-                res = _create_resource(
-                    internal_object_ctx,
-                    internal_object.value,
-                )
-                if not internal_object_base_ctx.arg_to_complete:
-                    ctx.resource_args[internal_object_name] += [res]
+
+                if isinstance(internal_object, pf.ParsedDict):
+                    res = _create_resource(
+                        internal_object_ctx,
+                        internal_object.value,
+                    )
+                    if not internal_object_base_ctx.arg_to_complete:
+                        ctx.resource_args[internal_object_name] += [res]
+
+                elif isinstance(internal_object, pf.ParsedLiteral):
+                    _check_explicit_dependency(
+                        internal_object_ctx,
+                        internal_object_name,
+                        internal_object.value,
+                    )
 
             return True
 
@@ -712,7 +713,7 @@ def _create_dependency(
     def attributes(attribute_list: list[pf.ParsedAttribute]):
         for attribute in attribute_list:
             if attribute.name == ctx.model.name_key:
-                ctx.resource_args[ctx.model.name_key] = attribute.name
+                ctx.resource_args[ctx.model.name_key] = attribute.value
             else:
                 _process_attribute(ctx, attribute)
 
@@ -726,7 +727,6 @@ def _create_dependency(
 
 def _check_explicit_dependency(
     ctx: ResourceCreationContext, attribute_name: str, attribute_value: str | dict,
-    resource_attribute: str,
 ):
     """Check if a dependency attribute was explicited before.
 
@@ -741,13 +741,23 @@ def _check_explicit_dependency(
     attribute_value: str | dict
         Value of the attribute to check
     """
+    resource_attribute = 'id'
+    explicit_value = attribute_value
+    if isinstance(attribute_value, pf.ParsedLiteral):
+        explicit_value = attribute_value.value
+
+    if isinstance(explicit_value, str):
+        split = explicit_value.split('.', maxsplit=1)
+        explicit_value = split[0]
+        resource_attribute = split[1] if len(split) > 1 else 'id'
+
     dependency_type = ctx.dependencies[attribute_name]['resource']
-    created_name = f'{dependency_type}/{attribute_value}'
+    created_name = f'{dependency_type}/{explicit_value}'
 
     # Checks if attribute is an explicit dependency
     if created_name not in CDK._created_resources.keys():
 
-        if isinstance(attribute_value, str):
+        if isinstance(explicit_value, str):
             raise cdk_exceptions.CDKDependencyNotDeclaredError(
                 attribute_name, attribute_value,
             )
@@ -758,12 +768,30 @@ def _check_explicit_dependency(
         )
 
         # Creates explicit dependency
+        if (
+            isinstance(attribute_value, list)
+            and isinstance(attribute_value[0], pf.ParsedDict)
+        ):
+            ctx.resource_args[attribute_name] = []
+            for dict_value in attribute_value:
+                dep_ctx.regenerate()
+                ctx.resource_args[attribute_name].append(
+                    _create_dependency(
+                        dep_ctx, dict_value.value,
+                    ),
+                )
+            return True
+
         ctx.resource_args[attribute_name] = _create_dependency(
             dep_ctx, attribute_value,
         )
         return True
 
-    ctx.resource_args[attribute_name] = (
-        getattr(CDK._created_resources[created_name], resource_attribute)
+    resource = getattr(
+        CDK._created_resources[created_name], resource_attribute,
     )
+    if attribute_name in ctx.resource_args:
+        ctx.resource_args[attribute_name] += [resource]
+
+    ctx.resource_args[attribute_name] = resource
     return True
