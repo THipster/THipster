@@ -1,5 +1,5 @@
 dagger-io==0.6.2
-pre-commit==3.3.2
+pre-commit==3.3.3
 pytest==7.3.2
 pytest-mock==3.11.1
 tftest==1.8.4
