@@ -2,6 +2,12 @@
 
 <!--next-version-placeholder-->
 
+## v0.19.3 (2023-06-23)
+
+### :bug:
+
+* :bug: fix: list dependencies ([#187](https://github.com/THipster/THipster/issues/187)) ([`963587e`](https://github.com/THipster/THipster/commit/963587e4f064840d75d20abe64e8c56e67dfc7af))
+
 ## v0.19.2 (2023-06-23)
 
 ### :arrow_up:
