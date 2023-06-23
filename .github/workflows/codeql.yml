@@ -10,6 +10,7 @@ on:
 
 jobs:
   analyze:
+    if: ${{ !contains(github.event.pull_request.title, ':memo:') && !contains(github.event.pull_request.title, ':arrow') && github.actor != 'dependabot[bot]' && github.actor != 'allcontributors[bot]' }}
     name: Analyze
     runs-on: ${{ (matrix.language == 'swift' && 'macos-latest') || 'ubuntu-latest' }}
     timeout-minutes: ${{ (matrix.language == 'swift' && 120) || 360 }}

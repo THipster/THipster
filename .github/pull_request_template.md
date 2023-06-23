@@ -11,6 +11,7 @@ Please delete options that are not relevant.
 :bug: Bug fix (non-breaking change which fixes an issue)
 :sparkles: New feature (non-breaking change which adds functionality)
 :boom: Breaking change (fix or feature that would cause existing functionality to not work as expected)
+:arrow_up: Dependency update (dependency update or adding a new dependency)
 :memo: Documentation update
 
 # How Has This Been Tested?
