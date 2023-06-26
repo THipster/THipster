@@ -648,8 +648,11 @@ def _create_internal_object(
                 and not internal_object_base_ctx.arg_to_complete:
             ctx.resource_args[internal_object_name] = []
 
-        if isinstance(internal_object_args, list)\
-                and not isinstance(internal_object_args[0], pf.ParsedAttribute):
+        if (
+            isinstance(internal_object_args, list)
+            and len(internal_object_args) > 0
+            and not isinstance(internal_object_args[0], pf.ParsedAttribute)
+        ):
             for internal_object in internal_object_args:
                 internal_object_ctx = copy.deepcopy(internal_object_base_ctx)
                 internal_object_ctx.regenerate()
@@ -770,6 +773,7 @@ def _check_explicit_dependency(
         # Creates explicit dependency
         if (
             isinstance(attribute_value, list)
+            and len(attribute_value) > 0
             and isinstance(attribute_value[0], pf.ParsedDict)
         ):
             ctx.resource_args[attribute_name] = []

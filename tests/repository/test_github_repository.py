@@ -6,14 +6,15 @@ from thipster.repository import GithubRepo
 from thipster.repository.exceptions import ModelNotFoundError
 
 repository = 'THipster/models'
+branch = 'main'
 
 
 def test_get_bucket():
     """Test get bucket model."""
-    gcp_bucket = 'gcp/bucket'
+    gcp_bucket = 'bucket'
     resources = [gcp_bucket]
 
-    repo = GithubRepo(repository)
+    repo = GithubRepo(repository, branch)
 
     models = repo.get(resources)
     assert isinstance(models, dict)
@@ -31,11 +32,11 @@ def test_get_bucket():
 
 def test_get_vm():
     """Test get vm model and its dependencies."""
-    gcp_network = 'gcp/network'
-    gcp_vm = 'gcp/vm'
+    gcp_network = 'network'
+    gcp_vm = 'vm'
     resources = [gcp_vm]
 
-    repo = GithubRepo(repository)
+    repo = GithubRepo(repository, branch)
 
     models = repo.get(resources)
     assert isinstance(models, dict)
