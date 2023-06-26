@@ -110,7 +110,7 @@ class TokenParser:
 
     def __rm_empty_lines(self):
         # Detect empty line
-        empty_types = [TT.TAB]
+        empty_types = [TT.TAB, TT.WHITESPACE]
         end = 0
         while end < len(self.__tokens):
             begin = end
