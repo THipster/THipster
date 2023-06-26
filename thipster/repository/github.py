@@ -1,5 +1,7 @@
 """GithubRepo.py module."""
 
+import json
+
 import requests
 
 from .exceptions import ModelNotFoundError
@@ -45,8 +47,18 @@ class GithubRepo(JSONRepo):
         str | bytes | bytearray
             Content of the JSON file defining the desired resource
         """
+        config_response = requests.get(
+            f'https://raw.githubusercontent.com/{self.__repo}/{self.__branch}/thipster-config.json',
+        )
+
+        if not config_response.ok:
+            raise ModelNotFoundError(name)
+
+        config_file: dict = json.loads(config_response.content)
+        repo_directory = config_file.get('model_folder')
+
         response = requests.get(
-            f'https://raw.githubusercontent.com/{self.__repo}/{self.__branch}/{name}.json',
+            f'https://raw.githubusercontent.com/{self.__repo}/{self.__branch}/{repo_directory}/{name}.json',
         )
 
         if not response.ok:
