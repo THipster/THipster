@@ -1,15 +1,19 @@
 """parsedFile.py Module."""
 
-from abc import ABC
+from abc import ABC, abstractmethod
 
 
 class ParsedValue(ABC):
     """Parsed Value Interface."""
 
-    pass
+    @property
+    @abstractmethod
+    def unmarshalled(self):
+        """Return the unmarshalled value of the object."""
+        pass
 
 
-class Position():
+class Position:
     """Represents the position of a token.
 
     Indicates the initial position of a token, resource or character in the input files.
@@ -75,7 +79,7 @@ class Position():
         )
 
 
-class ParsedAttribute():
+class ParsedAttribute:
     """Reprensents a Parsed Attribute Object."""
 
     def __init__(self, name: str, position: Position | None, value: ParsedValue):
@@ -100,6 +104,11 @@ class ParsedAttribute():
         """Value of the parsed attribute."""
         return self.__value.value
 
+    @property
+    def unmarshalled_value(self):
+        """Value of the parsed attribute."""
+        return self.__value.unmarshalled
+
 
 class ParsedList(ParsedValue):
     """Represents a Parsed List Object."""
@@ -115,6 +124,11 @@ class ParsedList(ParsedValue):
         """
         super().__init__()
         self.value: list[ParsedValue] = value
+
+    @property
+    def unmarshalled(self):
+        """Return the unmarshalled value."""
+        return [e.unmarshalled for e in self.value]
 
     def __iter__(self):
         """Return an iterator object."""
@@ -145,6 +159,11 @@ class ParsedLiteral(ParsedValue):
         super().__init__()
         self.value: bool | int | float | str = value
 
+    @property
+    def unmarshalled(self):
+        """Return the unmarshalled value."""
+        return self.value
+
 
 class ParsedDict(ParsedValue):
     """Represents a Parsed Dictionnary Object."""
@@ -161,8 +180,13 @@ class ParsedDict(ParsedValue):
         super().__init__()
         self.value: list[ParsedAttribute] = value
 
+    @property
+    def unmarshalled(self):
+        """Return the unmarshalled value."""
+        return {e.name: e.unmarshalled_value for e in self.value}
 
-class ParsedResource():
+
+class ParsedResource:
     """Represents a Parsed Resource."""
 
     def __init__(
@@ -191,7 +215,7 @@ class ParsedResource():
         self.attributes: list[ParsedAttribute] = attributes
 
 
-class ParsedFile():
+class ParsedFile:
     """Represents a Parsed File.
 
     Object containing a list of parsed resources making up a file.

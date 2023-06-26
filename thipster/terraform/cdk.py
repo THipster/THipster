@@ -566,12 +566,7 @@ def _process_attribute(ctx: ResourceCreationContext, attribute: pf.ParsedAttribu
         return
 
     # Processes list attribute
-    attribute_value = attribute.value
-    if ctx.model.attributes[attribute.name].is_list:
-        if isinstance(attribute.value, list):
-            attribute_value = [i.value for i in attribute.value]
-        else:
-            attribute_value = [attribute.value]
+    attribute_value = attribute.unmarshalled_value
 
     # Sets attribute value
     if attribute_value is not None:
