@@ -371,6 +371,29 @@ def test_parse_literal_types():
     assert region.value is True
 
 
+def test_parse_comment():
+    """Test the parsing of an amount."""
+    out = __test_file(
+        file="""bucket my-bucket:
+\ttoto: aaaaa // MY COMMENT
+\ttata: bbbbb
+""",
+    )
+
+    assert len(out.resources) == 1
+    bucket = out.resources[0]
+    assert bucket.resource_type == 'bucket'
+    assert 'my-bucket' in bucket.name
+    assert len(bucket.attributes) == 2
+
+    region = bucket.attributes[0]
+    assert region.name == 'toto'
+    assert region.value == 'aaaaa'
+    region = bucket.attributes[1]
+    assert region.name == 'tata'
+    assert region.value == 'bbbbb'
+
+
 def test_parse_amount():
     """Test the parsing of an amount."""
     out = __test_file(

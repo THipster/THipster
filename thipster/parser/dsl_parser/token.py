@@ -50,7 +50,7 @@ class TOKENTYPES(Enum):
         return self.value
 
 
-class Token():
+class Token:
     """Represents a Token of the THipster DSL."""
 
     def __init__(

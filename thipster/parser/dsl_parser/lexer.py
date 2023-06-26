@@ -69,6 +69,13 @@ class Lexer:
         for char in file_content:
             self.__logger.debug('char %s', char)
             self.__currentChar = char
+
+            if self.__lexerPosition.isComment:
+                if char == '\n':
+                    self.__lexerPosition.isComment = False
+                    self.__handle_newline_token()
+                continue
+
             if not self.__lexerPosition.isQuotedString:
                 self.__handle_syntax_tokens()
                 continue
@@ -142,7 +149,7 @@ class Lexer:
             ' ': self.__handle_whitespace,
 
             '=': self.__handle_simple_token(TT.EQ),
-            '/': self.__handle_simple_token(TT.DIV),
+            '/': self.__handle_div_token,
             '-': self.__handle_simple_token(TT.MINUS),
             '+': self.__handle_simple_token(TT.PLUS),
             '*': self.__handle_simple_token(TT.MUL),
@@ -303,6 +310,14 @@ class Lexer:
         self.__handle_current_token()
         self.__update_position()
         self.__lexerPosition.isVariable = True
+
+    def __handle_div_token(self):
+        if len(self.tokenList) == 0 or self.tokenList[-1].token_type is not TT.DIV:
+            return self.__handle_simple_token(TT.DIV)()
+
+        self.__lexerPosition.isComment = True
+        self.__rm_last_tokens()
+        return True
 
     def __handle_whitespace(self) -> None:
         """Handle a WHITESPACE token ' '.
