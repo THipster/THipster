@@ -76,6 +76,16 @@ class Lexer:
                     self.__handle_newline_token()
                 continue
 
+            if self.__lexerPosition.escaped:
+                match char:
+                    case '\n':
+                        self.__lexerPosition.isMultiLine = True
+                        self.__lexerPosition.new_line()
+                    case _:
+                        self.__add_next_char()
+                self.__lexerPosition.escaped = False
+                continue
+
             if not self.__lexerPosition.isQuotedString:
                 self.__handle_syntax_tokens()
                 continue
@@ -354,7 +364,7 @@ class Lexer:
 
         Sets a variable to indicate that the following line is part of the same token.
         """
-        self.__lexerPosition.isMultiLine = True
+        self.__lexerPosition.escaped = True
         self.__lexerPosition.next_column()
 
     def __handle_quotes(self, char) -> None:
@@ -405,6 +415,8 @@ class Lexer:
         if len(self.__lexerPosition.currentToken.strip()) > 0:
             self.__handle_current_token()
             self.__lexerPosition.reset_current_token()
+
+        self.__lexerPosition.isMultiLine = False
         self.__handle_newline_token()
         self.__handle_eof_token()
 

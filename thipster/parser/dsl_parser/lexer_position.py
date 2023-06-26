@@ -26,6 +26,7 @@ class LexerPosition():
         self.isQuotedString = False
         self.isMultiLine = False
         self.isComment = False
+        self.escaped = False
         self.consecutiveWhitespaces = 0
 
     @property
