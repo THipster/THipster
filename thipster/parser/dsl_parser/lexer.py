@@ -8,7 +8,7 @@ from .token import TOKENTYPES as TT
 from .token import Token
 
 
-class Lexer():
+class Lexer:
     """Lexer for the DSL Parser."""
 
     def __init__(self, files: dict[str, str]):
@@ -107,6 +107,18 @@ class Lexer():
         """Pass EMPTY tokens ''."""
         pass
 
+    def __handle_simple_token(self, tokentype: TT):
+        def handle_token():
+            self.__handle_base_token(tokentype)
+        return handle_token
+
+    def __handle_word_token(self, tokentype: TT, value=None):
+        def handle_token():
+            """Handle an AMOUNT token 'amount'."""
+            self.__lexerPosition.reset_consecutive_whitespaces()
+            self.__add_base_token(tokentype, value, is_current_token=True)
+        return handle_token
+
     def __handle_syntax_tokens(self) -> None:
         """Handle single character tokens.
 
@@ -115,29 +127,29 @@ class Lexer():
         If it isn't, it calls the '__iterateNextChar' function
         """
         single_char_tokens = {
-            ':': self.__handle_colon_oken,
-            ',': self.__handle_comma_token,
-            '[': self.__handle_brackets_start_token,
-            ']': self.__handle_brackets_end_token,
-            '(': self.__handle_parentheses_start_token,
-            ')': self.__handle_parentheses_end_token,
+            ':': self.__handle_simple_token(TT.COLON),
+            ',': self.__handle_simple_token(TT.COMMA),
+            '[': self.__handle_simple_token(TT.BRACKETS_START),
+            ']': self.__handle_simple_token(TT.BRACKETS_END),
+            '(': self.__handle_simple_token(TT.PARENTHESES_START),
+            ')': self.__handle_simple_token(TT.PARENTHESES_END),
             '"': self.__handle_quotes('"'),
             "'": self.__handle_quotes("'"),
             '#': self.__handle_hash_token,
             '\n': self.__handle_newline_token,
             '\\': self.__handle_backslash_token,
-            '\t': self.__handle_tab_token,
+            '\t': self.__handle_simple_token(TT.TAB),
             ' ': self.__handle_whitespace,
 
-            '=': self.__handle_eq_token,
-            '/': self.__handle_div_token,
-            '-': self.__handle_minus_token,
-            '+': self.__handle_plus_token,
-            '*': self.__handle_mul_token,
-            '^': self.__handle_pow_token,
-            '<': self.__handle_lt_token,
-            '>': self.__handle_gt_token,
-            '!': self.__handle_exclamation_token,
+            '=': self.__handle_simple_token(TT.EQ),
+            '/': self.__handle_simple_token(TT.DIV),
+            '-': self.__handle_simple_token(TT.MINUS),
+            '+': self.__handle_simple_token(TT.PLUS),
+            '*': self.__handle_simple_token(TT.MUL),
+            '^': self.__handle_simple_token(TT.POW),
+            '<': self.__handle_simple_token(TT.LT),
+            '>': self.__handle_simple_token(TT.GT),
+            '!': self.__handle_simple_token(TT.EXCLAMATION),
         }
 
         single_char_tokens.get(self.__currentChar, self.__add_next_char)()
@@ -152,15 +164,15 @@ class Lexer():
 
         keywords = {
             '': self.__handle_empty_token,
-            'amount': self.__handle_amount_token,
-            'and': self.__handle_and_token,
-            'if': self.__handle_if_token,
-            'elif': self.__handle_elif_token,
-            'else': self.__handle_else_token,
-            'or': self.__handle_or_token,
-            'true': self.__handle_boolean_token,
-            'false': self.__handle_boolean_token,
-            'not': self.__handle_not_token,
+            'amount': self.__handle_word_token(TT.AMOUNT),
+            'and': self.__handle_word_token(TT.AND),
+            'if': self.__handle_word_token(TT.IF),
+            'elif': self.__handle_word_token(TT.ELIF),
+            'else': self.__handle_word_token(TT.ELSE),
+            'or': self.__handle_word_token(TT.OR),
+            'true': self.__handle_word_token(TT.BOOLEAN, 'true'),
+            'false': self.__handle_word_token(TT.BOOLEAN, 'false'),
+            'not': self.__handle_word_token(TT.NOT),
         }
 
         keywords.get(current_token, self.__handle_literals_and_variables)()
@@ -282,66 +294,6 @@ class Lexer():
         self.__add_base_token(token_type, value, is_current_token)
         self.__update_position(reset_current_token)
 
-    def __handle_colon_oken(self):
-        """Handle a COLON token ':'."""
-        self.__handle_base_token(TT.COLON)
-
-    def __handle_comma_token(self):
-        """Handle a COMMA token ','."""
-        self.__handle_base_token(TT.COMMA)
-
-    def __handle_brackets_start_token(self):
-        """Handle a BRACKETS_START token '['."""
-        self.__handle_base_token(TT.BRACKETS_START)
-
-    def __handle_brackets_end_token(self):
-        """Handle a BRACKETS_END token ']'."""
-        self.__handle_base_token(TT.BRACKETS_END)
-
-    def __handle_parentheses_start_token(self):
-        """Handle a PARENTHESES_START token '('."""
-        self.__handle_base_token(TT.PARENTHESES_START)
-
-    def __handle_parentheses_end_token(self):
-        """Handle a PARENTHESES_END token ')'."""
-        self.__handle_base_token(TT.PARENTHESES_END)
-
-    def __handle_plus_token(self):
-        """Handle a PLUS token '+'."""
-        self.__handle_base_token(TT.PLUS)
-
-    def __handle_minus_token(self):
-        """Handle a MINUS token '-'."""
-        self.__handle_base_token(TT.MINUS)
-
-    def __handle_mul_token(self):
-        """Handle a MUL token '*'."""
-        self.__handle_base_token(TT.MUL)
-
-    def __handle_div_token(self):
-        """Handle a DIV token '/'."""
-        self.__handle_base_token(TT.DIV)
-
-    def __handle_eq_token(self):
-        """Handle a EQ token '='."""
-        self.__handle_base_token(TT.EQ)
-
-    def __handle_exclamation_token(self):
-        """Handle a EXCLAMATION token '!'."""
-        self.__handle_base_token(TT.EXCLAMATION)
-
-    def __handle_lt_token(self):
-        """Handle a LT token '<'."""
-        self.__handle_base_token(TT.LT)
-
-    def __handle_gt_token(self):
-        """Handle a GT token '>'."""
-        self.__handle_base_token(TT.GT)
-
-    def __handle_pow_token(self):
-        """Handle a POW token '^'."""
-        self.__handle_base_token(TT.POW)
-
     def __handle_hash_token(self) -> None:
         """Handle a HASH token '#'.
 
@@ -389,10 +341,6 @@ class Lexer():
         self.__lexerPosition.isMultiLine = True
         self.__lexerPosition.next_column()
 
-    def __handle_tab_token(self) -> None:
-        r"""Handle a TAB token '\\t'."""
-        self.__handle_base_token(TT.TAB)
-
     def __handle_quotes(self, char) -> None:
         """Handle a DOUBLEQUOTES token '"'.
 
@@ -400,7 +348,6 @@ class Lexer():
         """
 
         def quote_handler(self=self):
-
             if self.__lexerPosition.isQuotedString:
                 if char == self.__lexerPosition.isQuotedString:
                     self.__add_literal_token_to_list(
@@ -417,48 +364,6 @@ class Lexer():
                 self.__lexerPosition.reset_current_token()
 
         return quote_handler
-
-    def __handle_amount_token(self):
-        """Handle an AMOUNT token 'amount'."""
-        self.__lexerPosition.reset_consecutive_whitespaces()
-        self.__add_base_token(TT.AMOUNT, is_current_token=True)
-
-    def __handle_and_token(self):
-        """Handle an AND token 'and'."""
-        self.__lexerPosition.reset_consecutive_whitespaces()
-        self.__add_base_token(TT.AND, is_current_token=True)
-
-    def __handle_if_token(self):
-        """Handle an IF token 'if'."""
-        self.__lexerPosition.reset_consecutive_whitespaces()
-        self.__add_base_token(TT.IF, is_current_token=True)
-
-    def __handle_elif_token(self):
-        """Handle an ELIF token 'elif'."""
-        self.__lexerPosition.reset_consecutive_whitespaces()
-        self.__add_base_token(TT.ELIF, is_current_token=True)
-
-    def __handle_else_token(self):
-        """Handle an ELSE token 'else'."""
-        self.__lexerPosition.reset_consecutive_whitespaces()
-        self.__add_base_token(TT.ELSE, is_current_token=True)
-
-    def __handle_not_token(self):
-        """Handle an OR token 'or'."""
-        self.__lexerPosition.reset_consecutive_whitespaces()
-        self.__add_base_token(TT.NOT, is_current_token=True)
-
-    def __handle_or_token(self):
-        """Handle an OR token 'or'."""
-        self.__lexerPosition.reset_consecutive_whitespaces()
-        self.__add_base_token(TT.OR, is_current_token=True)
-
-    def __handle_boolean_token(self):
-        """Handle a BOOLEAN token 'true' or 'false'."""
-        self.__lexerPosition.reset_consecutive_whitespaces()
-        self.__add_base_token(
-            TT.BOOLEAN, self.__lexerPosition.currentToken, True,
-        )
 
     def __handle_eof_token(self) -> None:
         """Add an EOF token at the end of each file."""
