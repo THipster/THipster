@@ -2,6 +2,12 @@
 
 <!--next-version-placeholder-->
 
+## v0.19.5 (2023-06-26)
+
+### :bug:
+
+* :bug: fix: update githubrepo with folder_name ([#190](https://github.com/THipster/THipster/issues/190)) ([`50d7529`](https://github.com/THipster/THipster/commit/50d752930f0cfa42da802d6bca55fbe55dd0a465))
+
 ## v0.19.4 (2023-06-26)
 
 ### :arrow_up:
