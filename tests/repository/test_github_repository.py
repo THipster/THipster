@@ -6,7 +6,7 @@ from thipster.repository import GithubRepo
 from thipster.repository.exceptions import ModelNotFoundError
 
 repository = 'THipster/models'
-branch = 'remove-folder-name'
+branch = 'main'
 
 
 def test_get_bucket():
