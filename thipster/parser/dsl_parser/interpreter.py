@@ -391,7 +391,9 @@ class Interpreter:
             )
 
         for _ in range(amount):
-            res += element.node.accept(self)
+            node = element.node.accept(self)
+            if node:
+                res += node
             if var:
                 self.__variables[var] += 1
         return res

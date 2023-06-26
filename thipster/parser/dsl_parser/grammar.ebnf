@@ -1,10 +1,10 @@
-resource    = type, string, COLON, [nb_ctrl], [if_ctrl] ,NEWLINE
+resource    = type, string, COLON, [if_ctrl] , [nb_ctrl],NEWLINE
                                 {parameter, NEWLINE}
 
 parameter   = name, COLON, (" ", value, [if_else_ctrl]
                     | [if_ctrl], NEWLINE (list | dict))
 
-list        = { MINUS, value, [nb_ctrl], [if_else_ctrl], NEWLINE}
+list        = { MINUS, value, [if_else_ctrl], [nb_ctrl], NEWLINE}
             | inline_list
 inline_list = ( BRACKETS_START [ value { COMMA, value } ] BRACKETS_END )
 
@@ -15,7 +15,7 @@ nb_ctrl     = AMOUNT, COLON, arith-expr, ["#", name]
 if_else_ctrl= if_ctrl, [ELSE , value]
 if_ctrl     = IF, comp-expr
 
-value       = comp-expr|arith-expr|string|VAR|inline_list
+value       = comp-expr|arith-expr|string|VAR|inline_list|(value if_else_ctrl)
 
 comp-expr   = NOT comp-expr
             | PARENTHESES_START comp-expr (AND|OR) comp-expr PARENTHESES_END

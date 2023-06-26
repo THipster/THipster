@@ -429,6 +429,44 @@ def test_parse_amount():
         assert region.value == i
 
 
+def test_parse_amount_if_value():
+    """Test the parsing of an amount."""
+    out = __test_file(
+        file="""bucket my-bucket: amount: 3 if 1==1 else 2
+\tregion: euw
+""",
+    )
+
+    assert len(out.resources) == 3
+
+    out = __test_file(
+        file="""bucket my-bucket: amount: 3 if 1==2 else 2
+\tregion: euw
+""",
+    )
+
+    assert len(out.resources) == 2
+
+
+def test_parse_if_and_amount_resource():
+    """Test the parsing of an amount."""
+    out = __test_file(
+        file="""bucket my-bucket:  if 1==1 amount: 3
+\tregion: euw
+""",
+    )
+
+    assert len(out.resources) == 3
+
+    out = __test_file(
+        file="""bucket my-bucket: if 1==2 amount: 3
+\tregion: euw
+""",
+    )
+
+    assert len(out.resources) == 0
+
+
 def test_var_in_name():
     """Test the parsing of a variable in a name."""
     out = __test_file(
@@ -638,9 +676,10 @@ bucket my-bucket: amount 3
 bucket my-bucket: amount: str
 \tregion: euw
 """
-    __test_syntax_error(
-        mocker, input_file=input_file, ln=2, col=27,
-        expected=[TT.INT, TT.FLOAT, TT.PARENTHESES_START], got=TT.STRING,
+    __test_parser_raises(
+        mocker,
+        input_file=input_file,
+        exception=DSLArithmeticError,
     )
 
 

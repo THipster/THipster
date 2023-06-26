@@ -162,9 +162,9 @@ class TokenParser:
             self.__next(TT.COLON)
             self.__get_whitespaces()
 
-            nb_ctrl = self.__get_nb_ctrl()
-            self.__get_whitespaces()
             if_ctrl = self.__get_if_ctrl()
+            self.__get_whitespaces()
+            nb_ctrl = self.__get_nb_ctrl()
             self.__get_whitespaces()
 
             self.__get_newline()
@@ -302,10 +302,9 @@ class TokenParser:
                 value = self.__get_value()
                 self.__get_whitespaces()
 
-                amount_ctrl = self.__get_nb_ctrl()
-                self.__get_whitespaces()
-
                 if_else_ctrl = self.__get_if_else_ctrl()
+                self.__get_whitespaces()
+                amount_ctrl = self.__get_nb_ctrl()
                 self.__get_whitespaces()
 
                 if if_else_ctrl:
@@ -399,7 +398,7 @@ class TokenParser:
             self.__next(TT.COLON)
 
             self.__get_whitespaces()
-            amount = self.__get_arith_expr()
+            amount = self.__get_value()
 
             self.__get_whitespaces()
         except DSLSyntaxError as e:
@@ -465,16 +464,16 @@ class TokenParser:
         next_token_type = self.__get_next_type()
         match next_token_type:
             case TT.STRING:
-                return self.__get_string_expr()
+                value = self.__get_string_expr()
 
             case TT.VAR:
-                return ast.LiteralNode(ast.VariableNode(self.__next(TT.VAR)))
+                value = ast.LiteralNode(ast.VariableNode(self.__next(TT.VAR)))
 
             case TT.BRACKETS_START:
-                return self.__get_inline_list()
+                value = self.__get_inline_list()
 
             case TT.NOT | TT.BOOLEAN:
-                return self.__get_comp_expr()
+                value = self.__get_comp_expr()
 
             case _:
                 value = self.__get_arith_expr()
@@ -491,8 +490,16 @@ class TokenParser:
                     self.__next(TT.PARENTHESES_END)
                     self.__get_whitespaces()
 
-                    return ast.CompExprNode(value, operator, right_expression)
-                return value
+                    value = ast.CompExprNode(value, operator, right_expression)
+
+        if_else_ctrl = self.__get_if_else_ctrl()
+        if not if_else_ctrl:
+            return value
+
+        if_else_ctrl.if_case = value
+        if if_else_ctrl.else_case is None:
+            raise DSLSyntaxError([TT.STRING, TT.VAR])
+        return if_else_ctrl
 
     def __get_comp_expr(self) -> ast.CompExprNode:
         try:
