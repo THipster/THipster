@@ -10,7 +10,7 @@ from .exceptions import (
 from .token import TOKENTYPES as TT
 
 
-class Interpreter():
+class Interpreter:
     """Interpreter class for the DSL Parser.
 
     Implements a visitor design pattern on the AST nodes
@@ -168,6 +168,12 @@ class Interpreter():
                     if isinstance(div, pf.ParsedLiteral):
                         div = div.value
                     total /= div
+
+                case TT.PERCENT:
+                    mod = element.factors[i+1].accept(self)
+                    if isinstance(mod, pf.ParsedLiteral):
+                        mod = mod.value
+                    total %= mod
 
         return total
 

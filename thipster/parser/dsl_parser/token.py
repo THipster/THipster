@@ -35,6 +35,7 @@ class TOKENTYPES(Enum):
     MINUS = 'MINUS'
     MUL = 'MUL'
     DIV = 'DIV'
+    PERCENT = 'PERCENT'
     POW = 'POW'
     EQ = 'EQ'
     EE = 'EE'

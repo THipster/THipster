@@ -147,6 +147,7 @@ class Lexer:
             '+': self.__handle_simple_token(TT.PLUS),
             '*': self.__handle_simple_token(TT.MUL),
             '^': self.__handle_simple_token(TT.POW),
+            '%': self.__handle_simple_token(TT.PERCENT),
             '<': self.__handle_simple_token(TT.LT),
             '>': self.__handle_simple_token(TT.GT),
             '!': self.__handle_simple_token(TT.EXCLAMATION),

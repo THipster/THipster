@@ -10,7 +10,7 @@ from .token import TOKENTYPES as TT
 from .token import Token
 
 
-class TokenParser():
+class TokenParser:
     """Parse the tokens into an AST (Abstract Syntax Tree)."""
 
     def __init__(self, tokens: list[Token]) -> None:
@@ -579,8 +579,12 @@ class TokenParser():
         self.__get_whitespaces()
 
         next_token_type = self.__get_next_type()
-        while next_token_type in [TT.MUL, TT.DIV]:
-            operator.append(self.__next([TT.MUL, TT.DIV]).token_type)
+        while next_token_type in [TT.MUL, TT.DIV, TT.PERCENT]:
+            operator.append(
+                self.__next(
+                    [TT.MUL, TT.DIV, TT.PERCENT],
+                ).token_type,
+            )
             self.__get_whitespaces()
             factors.append(self.__get_factor())
             self.__get_whitespaces()

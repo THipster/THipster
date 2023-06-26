@@ -75,6 +75,7 @@ def test_lex_single_tokens():
         '<': TT.LT,
         '>': TT.GT,
         '^': TT.POW,
+        '%': TT.PERCENT,
     }.items():
         __single_token_test(input_char, output)
 

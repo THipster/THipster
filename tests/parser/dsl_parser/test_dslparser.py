@@ -474,76 +474,36 @@ def test_comparisons():
 
 def test_arithmetic():
     """Test the parsing of arithmetic expressions."""
-    # PLUS
-    out = __test_file(
-        file="""bucket my-bucket:
-\tvalue: -1+1-3
+    def arithmetic_test(calcul: str, expected: int):
+        out = __test_file(
+            file=f"""bucket my-bucket:
+\tvalue: {calcul}
 """,
-    )
+        )
 
-    assert len(out.resources) == 1
+        assert len(out.resources) == 1
 
-    bucket = out.resources[0]
-    assert bucket.resource_type == 'bucket'
-    assert bucket.name == 'my-bucket'
-    assert len(bucket.attributes) == 1
+        bucket = out.resources[0]
+        assert bucket.resource_type == 'bucket'
+        assert bucket.name == 'my-bucket'
+        assert len(bucket.attributes) == 1
 
-    region = bucket.attributes[0]
-    assert region.name == 'value'
-    assert region.value == 3
+        region = bucket.attributes[0]
+        assert region.name == 'value'
+        assert region.value == expected
+
+    # PLUS
+    arithmetic_test('-1+1-3', 3)
 
     # OPERATION ORDER
-    out = __test_file(
-        file="""bucket my-bucket:
-\tvalue2: 10/2+3*3
-""",
-    )
-
-    assert len(out.resources) == 1
-
-    bucket = out.resources[0]
-    assert bucket.resource_type == 'bucket'
-    assert bucket.name == 'my-bucket'
-    assert len(bucket.attributes) == 1
-
-    region = bucket.attributes[0]
-    assert region.name == 'value2'
-    assert region.value == 14
-
-    out = __test_file(
-        file="""bucket my-bucket:
-\tvalue: 10/(2+3)*3
-""",
-    )
-
-    assert len(out.resources) == 1
-
-    bucket = out.resources[0]
-    assert bucket.resource_type == 'bucket'
-    assert bucket.name == 'my-bucket'
-    assert len(bucket.attributes) == 1
-
-    region = bucket.attributes[0]
-    assert region.name == 'value'
-    assert region.value == 6
+    arithmetic_test('10/2+3*3', 14)
+    arithmetic_test('10/(2+3)*3', 6)
 
     # POW
-    out = __test_file(
-        file="""bucket my-bucket:
-\tvalue: (-2)^4
-""",
-    )
+    arithmetic_test('(-2)^4', 16)
 
-    assert len(out.resources) == 1
-
-    bucket = out.resources[0]
-    assert bucket.resource_type == 'bucket'
-    assert bucket.name == 'my-bucket'
-    assert len(bucket.attributes) == 1
-
-    region = bucket.attributes[0]
-    assert region.name == 'value'
-    assert region.value == 16
+    # MODULO
+    arithmetic_test('25%17', 8)
 
 
 def __test_parser_raises(
