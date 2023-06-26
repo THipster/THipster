@@ -15,10 +15,12 @@ tests:
 
 documentation:
 - docs/**/*
+- .readthedocs.yaml
 - CODE_OF_CONDUCT.md
 - CONTRIBUTING.md
 - LICENSE
 - README.md
+- SECURITY.md
 - .github/ISSUE_TEMPLATE/**/*
 - .github/pull_request_template.md
 
@@ -42,3 +44,15 @@ repository:
 
 terraform:
 - thipster/terraform/**/*
+
+configuration:
+- pyproject.toml
+- setup.py
+
+python:
+- '**/*.py'
+
+dependencies:
+- requirements.txt
+- requirements-*.txt
+- requirements/**/*.txt
