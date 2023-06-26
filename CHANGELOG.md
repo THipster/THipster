@@ -2,6 +2,17 @@
 
 <!--next-version-placeholder-->
 
+## v0.19.4 (2023-06-26)
+
+### :arrow_up:
+
+* :arrow_up: chore(deps): Bump pytest from 7.3.2 to 7.4.0 ([#188](https://github.com/THipster/THipster/issues/188)) ([`c698049`](https://github.com/THipster/THipster/commit/c698049eca0fb92712872d82be23aa6237e9a5f0))
+
+### Other
+
+* :green_heart: chore(ci): Bump actions/dependency-review-action from 2 to 3 ([#189](https://github.com/THipster/THipster/issues/189)) ([`3e101bb`](https://github.com/THipster/THipster/commit/3e101bbc81c64d9876a1e8636f85bacc6bb7e917))
+* :green_heart: fix: update ci and doc ([#186](https://github.com/THipster/THipster/issues/186)) ([`cbeb25c`](https://github.com/THipster/THipster/commit/cbeb25cc6ba63b48bd1006d32540a81951d8cf88))
+
 ## v0.19.3 (2023-06-23)
 
 ### :bug:
