@@ -2,6 +2,12 @@
 
 <!--next-version-placeholder-->
 
+## v0.19.6 (2023-06-26)
+
+### :bug:
+
+* :bug: fix: unmarshalled parsed values ([#191](https://github.com/THipster/THipster/issues/191)) ([`9c55121`](https://github.com/THipster/THipster/commit/9c551217c2881323043331e8fc58f4222ca3c412))
+
 ## v0.19.5 (2023-06-26)
 
 ### :bug:
