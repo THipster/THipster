@@ -371,6 +371,29 @@ def test_parse_literal_types():
     assert region.value is True
 
 
+def test_parse_comment():
+    """Test the parsing of an amount."""
+    out = __test_file(
+        file="""bucket my-bucket:
+\ttoto: aaaaa // MY COMMENT
+\ttata: bbbbb
+""",
+    )
+
+    assert len(out.resources) == 1
+    bucket = out.resources[0]
+    assert bucket.resource_type == 'bucket'
+    assert 'my-bucket' in bucket.name
+    assert len(bucket.attributes) == 2
+
+    region = bucket.attributes[0]
+    assert region.name == 'toto'
+    assert region.value == 'aaaaa'
+    region = bucket.attributes[1]
+    assert region.name == 'tata'
+    assert region.value == 'bbbbb'
+
+
 def test_parse_amount():
     """Test the parsing of an amount."""
     out = __test_file(
@@ -404,6 +427,44 @@ def test_parse_amount():
         region = bucket.attributes[0]
         assert region.name == 'region'
         assert region.value == i
+
+
+def test_parse_amount_if_value():
+    """Test the parsing of an amount."""
+    out = __test_file(
+        file="""bucket my-bucket: amount: 3 if 1==1 else 2
+\tregion: euw
+""",
+    )
+
+    assert len(out.resources) == 3
+
+    out = __test_file(
+        file="""bucket my-bucket: amount: 3 if 1==2 else 2
+\tregion: euw
+""",
+    )
+
+    assert len(out.resources) == 2
+
+
+def test_parse_if_and_amount_resource():
+    """Test the parsing of an amount."""
+    out = __test_file(
+        file="""bucket my-bucket:  if 1==1 amount: 3
+\tregion: euw
+""",
+    )
+
+    assert len(out.resources) == 3
+
+    out = __test_file(
+        file="""bucket my-bucket: if 1==2 amount: 3
+\tregion: euw
+""",
+    )
+
+    assert len(out.resources) == 0
 
 
 def test_var_in_name():
@@ -474,76 +535,36 @@ def test_comparisons():
 
 def test_arithmetic():
     """Test the parsing of arithmetic expressions."""
-    # PLUS
-    out = __test_file(
-        file="""bucket my-bucket:
-\tvalue: -1+1-3
+    def arithmetic_test(calcul: str, expected: int):
+        out = __test_file(
+            file=f"""bucket my-bucket:
+\tvalue: {calcul}
 """,
-    )
+        )
 
-    assert len(out.resources) == 1
+        assert len(out.resources) == 1
 
-    bucket = out.resources[0]
-    assert bucket.resource_type == 'bucket'
-    assert bucket.name == 'my-bucket'
-    assert len(bucket.attributes) == 1
+        bucket = out.resources[0]
+        assert bucket.resource_type == 'bucket'
+        assert bucket.name == 'my-bucket'
+        assert len(bucket.attributes) == 1
 
-    region = bucket.attributes[0]
-    assert region.name == 'value'
-    assert region.value == 3
+        region = bucket.attributes[0]
+        assert region.name == 'value'
+        assert region.value == expected
+
+    # PLUS
+    arithmetic_test('-1+1-3', 3)
 
     # OPERATION ORDER
-    out = __test_file(
-        file="""bucket my-bucket:
-\tvalue2: 10/2+3*3
-""",
-    )
-
-    assert len(out.resources) == 1
-
-    bucket = out.resources[0]
-    assert bucket.resource_type == 'bucket'
-    assert bucket.name == 'my-bucket'
-    assert len(bucket.attributes) == 1
-
-    region = bucket.attributes[0]
-    assert region.name == 'value2'
-    assert region.value == 14
-
-    out = __test_file(
-        file="""bucket my-bucket:
-\tvalue: 10/(2+3)*3
-""",
-    )
-
-    assert len(out.resources) == 1
-
-    bucket = out.resources[0]
-    assert bucket.resource_type == 'bucket'
-    assert bucket.name == 'my-bucket'
-    assert len(bucket.attributes) == 1
-
-    region = bucket.attributes[0]
-    assert region.name == 'value'
-    assert region.value == 6
+    arithmetic_test('10/2+3*3', 14)
+    arithmetic_test('10/(2+3)*3', 6)
 
     # POW
-    out = __test_file(
-        file="""bucket my-bucket:
-\tvalue: (-2)^4
-""",
-    )
+    arithmetic_test('(-2)^4', 16)
 
-    assert len(out.resources) == 1
-
-    bucket = out.resources[0]
-    assert bucket.resource_type == 'bucket'
-    assert bucket.name == 'my-bucket'
-    assert len(bucket.attributes) == 1
-
-    region = bucket.attributes[0]
-    assert region.name == 'value'
-    assert region.value == 16
+    # MODULO
+    arithmetic_test('25%17', 8)
 
 
 def __test_parser_raises(
@@ -655,9 +676,10 @@ bucket my-bucket: amount 3
 bucket my-bucket: amount: str
 \tregion: euw
 """
-    __test_syntax_error(
-        mocker, input_file=input_file, ln=2, col=27,
-        expected=[TT.INT, TT.FLOAT, TT.PARENTHESES_START], got=TT.STRING,
+    __test_parser_raises(
+        mocker,
+        input_file=input_file,
+        exception=DSLArithmeticError,
     )
 
 

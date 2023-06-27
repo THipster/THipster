@@ -35,6 +35,7 @@ class TOKENTYPES(Enum):
     MINUS = 'MINUS'
     MUL = 'MUL'
     DIV = 'DIV'
+    PERCENT = 'PERCENT'
     POW = 'POW'
     EQ = 'EQ'
     EE = 'EE'
@@ -49,7 +50,7 @@ class TOKENTYPES(Enum):
         return self.value
 
 
-class Token():
+class Token:
     """Represents a Token of the THipster DSL."""
 
     def __init__(
