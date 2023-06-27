@@ -2,6 +2,12 @@
 
 <!--next-version-placeholder-->
 
+## v0.20.0 (2023-06-27)
+
+### :sparkles:
+
+* :sparkles: feat: upgrade dsl ([#193](https://github.com/THipster/THipster/issues/193)) ([`b96d888`](https://github.com/THipster/THipster/commit/b96d88851385f1a2e032d4cdbb966131812abc38))
+
 ## v0.19.6 (2023-06-26)
 
 ### :bug:
