@@ -510,7 +510,23 @@ def test_var_in_name():
     assert len(out.resources) == 3
     for bucket, i in zip(out.resources, range(1, 4)):
         assert bucket.resource_type == 'bucket'
-        assert bucket.name == 'my-bucket' + str(i)
+        assert bucket.name == f'my-bucket{i!s}'
+        assert len(bucket.attributes) == 1
+
+        region = bucket.attributes[0]
+        assert region.name == 'region'
+        assert region.value == i
+
+    out = __test_file(
+        file="""bucket my-bucket#i#-dev: amount: 3 #i
+\tregion: #i
+""",
+    )
+
+    assert len(out.resources) == 3
+    for bucket, i in zip(out.resources, range(1, 4)):
+        assert bucket.resource_type == 'bucket'
+        assert bucket.name == f'my-bucket{i!s}-dev'
         assert len(bucket.attributes) == 1
 
         region = bucket.attributes[0]
