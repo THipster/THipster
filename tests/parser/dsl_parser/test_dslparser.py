@@ -215,8 +215,8 @@ def test_parse_dict_list_in_dict():
     out = __test_file(
         file="""bucket my-bucket:
 \ttoto:
-\t\t aaa: val1
-\t\t bbb: val2
+\t\taaa: val1
+\t\tbbb: val2
 \ttata:
 \t\t- ccc
 \t\t- ddd
@@ -236,6 +236,38 @@ def test_parse_dict_list_in_dict():
     tata = bucket.attributes[1]
     assert tata.name == 'tata'
     assert isinstance(tata._ParsedAttribute__value, pf.ParsedList)
+
+
+def test_parse_dict_list_in_list():
+    """Test the parsing of a list and dict in a dict."""
+    out = __test_file(
+        file="""
+bucket my-bucket:
+  toto:
+  - aaa: val1
+    bbb: val2
+  - tata:
+    - ccc
+    - ddd
+  - foo
+""",
+    )
+
+    assert len(out.resources) == 1
+
+    bucket = out.resources[0]
+    assert bucket.resource_type == 'bucket'
+    assert bucket.name == 'my-bucket'
+    assert len(bucket.attributes) == 1
+
+    toto = bucket.attributes[0]
+    assert toto.name == 'toto'
+    assert isinstance(toto._ParsedAttribute__value, pf.ParsedList)
+    tested_list = toto.value
+    assert len(tested_list) == 3
+    assert isinstance(tested_list[0], pf.ParsedDict)
+    assert isinstance(tested_list[1], pf.ParsedDict)
+    assert isinstance(tested_list[2], pf.ParsedValue)
 
 
 def test_parse_if_else():
@@ -451,7 +483,7 @@ def test_parse_amount_if_value():
 def test_parse_if_and_amount_resource():
     """Test the parsing of an amount."""
     out = __test_file(
-        file="""bucket my-bucket:  if 1==1 amount: 3
+        file="""bucket my-bucket: if 1==1 amount: 3
 \tregion: euw
 """,
     )

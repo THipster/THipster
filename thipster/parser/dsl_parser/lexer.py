@@ -340,11 +340,11 @@ class Lexer:
         self.__lexerPosition.reset_current_token()
         self.__lexerPosition.isVariable = False
         self.__lexerPosition.increment_consecutive_whitespaces()
-        if self.__lexerPosition.consecutiveWhitespaces == 4:
-            self.__lexerPosition.next_column(-4)
-            self.__rm_last_tokens(4)
+        if self.__lexerPosition.consecutiveWhitespaces == 2:
+            self.__lexerPosition.next_column(-2)
+            self.__rm_last_tokens(2)
             self.__add_base_token(TT.TAB)
-            self.__lexerPosition.next_column(4)
+            self.__lexerPosition.next_column(2)
             self.__lexerPosition.reset_consecutive_whitespaces()
             self.__lexerPosition.set_current_token_index()
 

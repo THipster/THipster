@@ -50,7 +50,7 @@ def test_empty_bucket_two():
 bucket {empty_bucket_name}:
 
 bucket {bucket_name}:
-    region: europe-west2
+  region: europe-west2
 """,
         mock_auth=True,
     )
@@ -179,14 +179,14 @@ def test_bucket_cors():
         directory=function_name,
         file=f"""
 bucket {bucket_name}:
-    cors:
-        origin:
-            - "http://example.com"
-        method:
-            - "*"
-        responseHeader:
-            - "*"
-        maxAge: 400
+  cors:
+    origin:
+      - "http://example.com"
+    method:
+      - "*"
+    responseHeader:
+      - "*"
+    maxAge: 400
 """,
         mock_auth=True,
     )

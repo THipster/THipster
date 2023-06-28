@@ -219,14 +219,14 @@ def test_lex_tab():
     __single_token_test('\t', TT.TAB)
 
 
-def test_lex_4_whitespaces_as_tab():
-    """Test if 4 whitespaces are considered as a tab."""
+def test_lex_2_whitespaces_as_tab():
+    """Test if 2 whitespaces are considered as a tab."""
     input_file = {
-        'file': '    \n\t',
+        'file': '  \n\t',
     }
     expected_output = [
         __get_token_string('file', 1, 1, TT.TAB),
-        __get_token_string('file', 1, 5, TT.NEWLINE),
+        __get_token_string('file', 1, 3, TT.NEWLINE),
         __get_token_string('file', 2, 1, TT.TAB),
         __get_token_string('file', 2, 2, TT.NEWLINE),
         __get_token_string('file', 3, 1, TT.EOF),
@@ -239,15 +239,15 @@ def test_lex_4_whitespaces_as_tab():
         assert repr(output[i]) == expected_output[i]
 
 
-def test_lex_2_4_whitespaces_as_tabs():
-    """Test if 2*4 whitespaces are considered as 2 tabs."""
+def test_lex_2_2_whitespaces_as_tabs():
+    """Test if 2*2 whitespaces are considered as 2 tabs."""
     input_file = {
-        'file': '        \n\t',
+        'file': '    \n\t',
     }
     expected_output = [
         __get_token_string('file', 1, 1, TT.TAB),
-        __get_token_string('file', 1, 5, TT.TAB),
-        __get_token_string('file', 1, 9, TT.NEWLINE),
+        __get_token_string('file', 1, 3, TT.TAB),
+        __get_token_string('file', 1, 5, TT.NEWLINE),
         __get_token_string('file', 2, 1, TT.TAB),
         __get_token_string('file', 2, 2, TT.NEWLINE),
         __get_token_string('file', 3, 1, TT.EOF),
