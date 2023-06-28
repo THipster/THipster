@@ -62,7 +62,7 @@ class MockTerraform(eng.TerraformPort):
     """Mock engine terraform port."""
 
     @logger('- Terraform:apply')
-    def apply(self, file):
+    def apply(self, wdir, file):
         """Mock the terraform apply method."""
         pass
 
@@ -72,12 +72,12 @@ class MockTerraform(eng.TerraformPort):
         pass
 
     @logger('- Terraform:init')
-    def init(self):
+    def init(self, wdir, upgrade=False):
         """Mock the terraform init method."""
         pass
 
     @logger('- Terraform:plan')
-    def plan(self, file):
+    def plan(self, wdir, file):
         """Mock the terraform plan method."""
         pass
 
@@ -92,7 +92,7 @@ def test_engine_calls():
     engine = eng.Engine(parser, repository, auth, terraform)
     res = engine.run(test_file)
 
-    assert res is None
+    assert res == ''
 
 
 def test_parser_failure(mocker):

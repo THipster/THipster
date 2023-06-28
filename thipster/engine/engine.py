@@ -122,7 +122,14 @@ class Engine():
 
         self.init_terraform()
 
-        return self.plan_terraform(plan_file_path=terraform_plan_file)[1]
+        terraform_plan = self.plan_terraform(
+            plan_file_path=terraform_plan_file,
+        )
+
+        if not terraform_plan:
+            return ''
+
+        return terraform_plan[1]
 
     def parse_files(self, path: str) -> pf.ParsedFile:
         """Parse the input file or directory.
