@@ -630,6 +630,9 @@ class TokenParser:
             case TT.INT:
                 return ast.IntNode(self.__next())
 
+            case TT.VAR:
+                return ast.VariableNode(self.__next())
+
             case TT.FLOAT:
                 return ast.FloatNode(self.__next())
 
