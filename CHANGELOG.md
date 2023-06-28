@@ -2,6 +2,16 @@
 
 <!--next-version-placeholder-->
 
+## v0.21.0 (2023-06-28)
+
+### :sparkles:
+
+* :sparkles: feat: dict in dsl list ([#199](https://github.com/THipster/THipster/issues/199)) ([`2e1dcdc`](https://github.com/THipster/THipster/commit/2e1dcdc258f3077d7b9ef3d39059ba77bb018d1f))
+
+### Other
+
+* :green_heart: fix: remove edit to pr handler ([#200](https://github.com/THipster/THipster/issues/200)) ([`40e053a`](https://github.com/THipster/THipster/commit/40e053a95d3b2c6d25ce49c65dd38081634d438b))
+
 ## v0.20.1 (2023-06-28)
 
 ### :bug:
