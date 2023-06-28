@@ -2,6 +2,12 @@
 
 <!--next-version-placeholder-->
 
+## v0.22.0 (2023-06-28)
+
+### :sparkles:
+
+* :sparkles: feat: variable definition ([#202](https://github.com/THipster/THipster/issues/202)) ([`4a0d33a`](https://github.com/THipster/THipster/commit/4a0d33a89a71054c8f9bee29455a5d7ff66ba61e))
+
 ## v0.21.0 (2023-06-28)
 
 ### :sparkles:
