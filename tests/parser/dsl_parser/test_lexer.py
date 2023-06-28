@@ -220,7 +220,7 @@ def test_lex_tab():
 
 
 def test_lex_2_whitespaces_as_tab():
-    """Test if 4 whitespaces are considered as a tab."""
+    """Test if 2 whitespaces are considered as a tab."""
     input_file = {
         'file': '  \n\t',
     }
@@ -240,7 +240,7 @@ def test_lex_2_whitespaces_as_tab():
 
 
 def test_lex_2_2_whitespaces_as_tabs():
-    """Test if 2*4 whitespaces are considered as 2 tabs."""
+    """Test if 2*2 whitespaces are considered as 2 tabs."""
     input_file = {
         'file': '    \n\t',
     }
