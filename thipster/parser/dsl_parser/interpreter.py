@@ -249,7 +249,7 @@ class Interpreter:
         if element.name in self.__variables:
             raise DSLParserVariableAlreadyUsedError(element.name)
 
-        self.__variables[element.name] = element.value.accept(self)
+        self.__variables[element.name] = element.value.accept(self).value
 
         return element.name
 
@@ -384,13 +384,13 @@ class Interpreter:
         """
         var = element.variable.accept(self) if element.variable else None
         res = []
-        amount = element.amount.accept(self).value
-        if not isinstance(amount, int):
+        amount = element.amount.accept(self)
+        if not isinstance(amount.value, int):
             raise DSLArithmeticError(
                 element.amount.position, 'Integer expected',
             )
 
-        for _ in range(amount):
+        for _ in range(amount.value):
             node = element.node.accept(self)
             if node:
                 res += node
@@ -431,7 +431,7 @@ class Interpreter:
         ParsedDict
             A ParsedDict object based on the node attributes
         """
-        return pf.ParsedDict([v.accept(self) for v in element.values])
+        return pf.ParsedDict([v.accept(self) for v in element.value])
 
     def visit_literal(self, element: ast.LiteralNode) -> pf.ParsedLiteral:
         """Visitor for a LiteralNode.
@@ -461,7 +461,7 @@ class Interpreter:
         ParsedList
             A ParsedLiteral object based on the node elements
         """
-        return pf.ParsedList([v.accept(self) for v in element.values])
+        return pf.ParsedList([v.accept(self) for v in element.value])
 
     def visit_resource(self, element: ast.ResourceNode) -> list[pf.ParsedResource]:
         """Visitor for a ResourceNode.
@@ -481,7 +481,7 @@ class Interpreter:
                 parsed_resource_type=element.type.accept(self).value,
                 name=element.name.accept(self).value,
                 position=element.position,
-                attributes=[v.accept(self) for v in element.parameters.values],
+                attributes=[v.accept(self) for v in element.parameters.value],
             ),
         ]
 
@@ -499,6 +499,10 @@ class Interpreter:
             A ParsedFile object based on the node's resources
         """
         parsed_file = pf.ParsedFile()
+
+        for var in element.variables:
+            var.accept(self)
+
         for res in element.resources:
             parsed_file.resources += res.accept(self)
 

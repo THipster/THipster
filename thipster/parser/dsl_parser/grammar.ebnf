@@ -1,7 +1,11 @@
+file        = {assignation | resource}
+
+assignation = VARIABLE, EQ, value
+
 resource    = type, string, COLON, [if_ctrl] , [nb_ctrl],NEWLINE
                                 {parameter, NEWLINE}
 
-parameter   = name, COLON, ( value, [if_else_ctrl]
+parameter   = STRING, COLON, ( value, [if_else_ctrl]
                     | [if_ctrl], NEWLINE (list | dict))
 
 list        = { MINUS, (value, [if_else_ctrl], [nb_ctrl], NEWLINE | dict )}
@@ -11,7 +15,7 @@ inline_list = ( BRACKETS_START [ value { COMMA, value } ] BRACKETS_END )
 
 dict        = { parameter, NEWLINE }
 
-nb_ctrl     = AMOUNT, COLON, arith-expr, ["#", name]
+nb_ctrl     = AMOUNT, COLON, arith-expr, [ VARIABLE ]
 
 if_else_ctrl= if_ctrl, [ELSE , value]
 if_ctrl     = IF, comp-expr

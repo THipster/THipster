@@ -319,7 +319,7 @@ class Lexer:
         """
         self.__handle_current_token()
         self.__update_position()
-        self.__lexerPosition.isVariable = True
+        self.__lexerPosition.isVariable = not self.__lexerPosition.isVariable
 
     def __handle_div_token(self):
         if len(self.tokenList) == 0 or self.tokenList[-1].token_type is not TT.DIV:
