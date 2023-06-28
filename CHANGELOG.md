@@ -2,6 +2,12 @@
 
 <!--next-version-placeholder-->
 
+## v0.20.1 (2023-06-28)
+
+### :bug:
+
+* :bug: fix: add variable to arithmetic expr ([#198](https://github.com/THipster/THipster/issues/198)) ([`9566641`](https://github.com/THipster/THipster/commit/95666418dacdb14959c53bc53a5c7fb75b762c95))
+
 ## v0.20.0 (2023-06-27)
 
 ### :sparkles:
