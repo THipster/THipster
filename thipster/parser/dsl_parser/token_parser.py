@@ -32,7 +32,15 @@ class TokenParser:
             while self.__get_next_type() != TT.EOF:
                 self.__trim_newlines()
 
-                tree.add(self.__create_resource())
+                match self.__get_next_type():
+                    case TT.VAR:
+                        tree.add_variable(self.__variable_definition())
+                    case TT.STRING:
+                        tree.add_resource(self.__create_resource())
+                    case _:
+                        raise DSLSyntaxError(
+                            self.__next(), [TT.VAR, TT.STRING],
+                        )
                 self.__trim_newlines()
         except Exception as e:
             raise e
@@ -151,28 +159,24 @@ class TokenParser:
         Format: type, name, ":", [amt_ctrl], [if_ctrl] ,"\\n"
         (list | dict | {parameter, "\\n"}).
         """
-        try:
-            for _ in range(indent):
-                self.__next(TT.TAB)
+        for _ in range(indent):
+            self.__next(TT.TAB)
 
-            resource_type = self.__get_type()
-            self.__get_whitespaces()
-            name = self.__get_string_expr()
-            self.__get_whitespaces()
-            self.__next(TT.COLON)
-            self.__get_whitespaces()
+        resource_type = self.__get_type()
+        self.__get_whitespaces()
+        name = self.__get_string_expr()
+        self.__get_whitespaces()
+        self.__next(TT.COLON)
+        self.__get_whitespaces()
 
-            if_ctrl = self.__get_if_ctrl()
-            self.__get_whitespaces()
-            nb_ctrl = self.__get_nb_ctrl()
-            self.__get_whitespaces()
+        if_ctrl = self.__get_if_ctrl()
+        self.__get_whitespaces()
+        nb_ctrl = self.__get_nb_ctrl()
+        self.__get_whitespaces()
 
-            self.__get_newline()
+        self.__get_newline()
 
-            properties = self.__get_properties(indent+1)
-
-        except DSLSyntaxError as e:
-            raise e
+        properties = self.__get_properties(indent+1)
 
         resource = ast.ResourceNode(
             resource_type=resource_type,
@@ -434,7 +438,9 @@ class TokenParser:
             position=amount_token,
             amount=amount,
             variable=ast.VariableDefinitionNode(
-                amount_variable, ast.IntNode(Token(None, TT.INT, 1)),
+                amount_variable, ast.LiteralNode(
+                    ast.IntNode(Token(None, TT.INT, 1)),
+                ),
             )
             if amount_variable else None,
             node=None,
@@ -735,3 +741,13 @@ class TokenParser:
             next_token_type = self.__get_next_type()
 
         return ast.StringExprNode(values)
+
+    def __variable_definition(self):
+        name = self.__next(TT.VAR)
+        self.__get_whitespaces()
+        self.__next(TT.EQ)
+        self.__get_whitespaces()
+        value = self.__get_value()
+        self.__get_whitespaces()
+
+        return ast.VariableDefinitionNode(name, value)

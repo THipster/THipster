@@ -518,6 +518,28 @@ def test_var_in_name():
         assert region.value == i
 
 
+def test_var_assignation():
+    """Test the parsing of a variable in a name."""
+    out = __test_file(
+        file="""
+#region = europe-west1
+
+bucket my-bucket:
+  region: #region
+""",
+    )
+
+    assert len(out.resources) == 1
+    bucket = out.resources[0]
+    assert bucket.resource_type == 'bucket'
+    assert bucket.name == 'my-bucket'
+    assert len(bucket.attributes) == 1
+
+    region = bucket.attributes[0]
+    assert region.name == 'region'
+    assert region.value == 'europe-west1'
+
+
 def test_comparisons():
     """Test the parsing of operator comparisons."""
     def test_cmp(cmp_expr: str, result: str):
