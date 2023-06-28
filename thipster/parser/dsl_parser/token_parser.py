@@ -288,18 +288,20 @@ class TokenParser:
         return props
 
     def __get_list(self, indent: int) -> ast.ListNode:
-        r"""Create an AST List node.
+        """Create an AST List node.
 
-        Format: { "-", value, [amt_ctrl], [if_else_ctrl], "\\n"}.
+        Format: { "-", (value, [if_else_ctrl], [amt_ctrl], NEWLINE | dict) }.
         """
         list_items = []
 
         try:
             while self.__get_tabs(indent):
-                self.__check(TT.MINUS)
+                if self.__check(TT.MINUS):
+                    self.__next(TT.WHITESPACE)
                 self.__get_whitespaces()
 
-                value = self.__get_value()
+                value = self.__get_dict(indent+1, no_indent_first=True)\
+                    if self.__check_dict() else self.__get_value()
                 self.__get_whitespaces()
 
                 if_else_ctrl = self.__get_if_else_ctrl()
@@ -330,6 +332,20 @@ class TokenParser:
 
         return ast.ListNode(list_items)
 
+    def __check_dict(self):
+        i = 0
+        next_type = self.__get_next_type(i)
+        has_amount = False
+        has_colon = False
+        while self.__get_next_type(i) is not TT.NEWLINE:
+            if next_type is TT.AMOUNT:
+                has_amount = True
+            if next_type is TT.COLON:
+                has_colon = True
+            i += 1
+            next_type = self.__get_next_type(i)
+        return has_colon and not has_amount
+
     def __get_inline_list(self) -> ast.ListNode:
         list_items = []
 
@@ -359,19 +375,20 @@ class TokenParser:
 
         return ast.ListNode(list_items)
 
-    def __get_dict(self, indent: int) -> ast.DictNode:
-        r"""Create an AST Dict node.
+    def __get_dict(self, indent: int, no_indent_first=False) -> ast.DictNode:
+        """Create an AST Dict node.
 
-        Format: { parameter, "\\n" }.
+        Format: { parameter, NEWLINE }.
         """
         parameters = []
 
         try:
-            while self.__get_tabs(indent):
+            while self.__get_tabs(indent) or no_indent_first:
                 self.__get_whitespaces()
                 parameters.append(self.__get_parameter(indent))
                 self.__get_whitespaces()
                 self.__get_newline()
+                no_indent_first = False
         except Exception as e:
             raise e
 
