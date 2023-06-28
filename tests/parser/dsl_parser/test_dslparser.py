@@ -244,12 +244,12 @@ def test_parse_dict_list_in_list():
         file="""
 bucket my-bucket:
   toto:
-    - aaa: val1
-      bbb: val2
-    - tata:
-        - ccc
-        - ddd
-    - foo
+  - aaa: val1
+    bbb: val2
+  - tata:
+    - ccc
+    - ddd
+  - foo
 """,
     )
 

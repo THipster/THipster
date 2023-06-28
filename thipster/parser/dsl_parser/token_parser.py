@@ -267,12 +267,12 @@ class TokenParser:
                 i += 1
                 next_token_type = self.__get_next_type(i)
 
-            if next_token_type == TT.STRING:
-                props = self.__get_dict(indent)
-
-            elif next_token_type == TT.MINUS:
+            if next_token_type == TT.MINUS:
                 props = self.__get_list(indent)
-
+            elif self.__get_next_type(indent - 1) == TT.MINUS:
+                props = self.__get_list(indent - 1, check_small_indent=False)
+            elif next_token_type == TT.STRING:
+                props = self.__get_dict(indent)
             else:
                 raise DSLSyntaxError(self.__next(), TT.TAB)
 
@@ -287,7 +287,7 @@ class TokenParser:
 
         return props
 
-    def __get_list(self, indent: int) -> ast.ListNode:
+    def __get_list(self, indent: int, check_small_indent=True) -> ast.ListNode:
         """Create an AST List node.
 
         Format: { "-", (value, [if_else_ctrl], [amt_ctrl], NEWLINE | dict) }.
@@ -295,9 +295,16 @@ class TokenParser:
         list_items = []
 
         try:
-            while self.__get_tabs(indent):
-                if self.__check(TT.MINUS):
-                    self.__next(TT.WHITESPACE)
+            small_indent = indent-1 if check_small_indent else indent
+            while self.__get_tabs(small_indent):
+                if not self.__check(TT.MINUS):
+                    if not check_small_indent:
+                        raise DSLSyntaxError(self.__next(), TT.TAB)
+                    small_indent = indent
+                    self.__next(TT.TAB)
+                    self.__next(TT.MINUS)
+                check_small_indent = False
+                self.__next(TT.WHITESPACE)
                 self.__get_whitespaces()
 
                 value = self.__get_dict(indent+1, no_indent_first=True)\
