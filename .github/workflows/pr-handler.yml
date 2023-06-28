@@ -1,7 +1,5 @@
 name: "Pull Request Handler"
-on:
-  pull_request:
-    types: [opened, edited, reopened, synchronize]
+on: [pull_request]
 
 jobs:
   triage:
@@ -13,7 +11,7 @@ jobs:
       - uses: actions/labeler@v4
 
   check_pr_name:
-    if: ${{ github.actor != 'dependabot[bot]'  && github.actor != 'allcontributors[bot]' }}
+    if: ${{ github.actor != 'dependabot[bot]' && github.actor != 'allcontributors[bot]' }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
