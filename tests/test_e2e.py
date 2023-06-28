@@ -75,7 +75,7 @@ def authentication():
         Path(AUTH_FILE_PATH).unlink()
 
 
-def test_bucket(apply_output, authentication):
+def test_bucket(authentication):
     """Test bucket creation."""
     _ = authentication
     function_name = get_function_name()
@@ -87,6 +87,7 @@ def test_bucket(apply_output, authentication):
 bucket {bucket_name}:
 \tregion : europe-west1
     """,
+        terraform_apply=True,
     )
 
     try:
@@ -94,9 +95,6 @@ bucket {bucket_name}:
         assert_number_of_resource_type_is('google_storage_bucket', 1)
         bucket = assert_resource_created('google_storage_bucket', bucket_name)
         assert_resource_parameters_are(bucket, ['location'])
-
-        # Test apply
-        _ = list(apply_output(function_name))
 
     except Exception as e:
         raise e

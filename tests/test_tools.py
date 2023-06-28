@@ -10,6 +10,7 @@ from cdktf_cdktf_provider_google.provider import GoogleProvider
 from thipster import Engine
 from thipster.auth import Google
 from thipster.engine import AuthPort
+from thipster.helpers import execute_subprocess
 from thipster.parser import ParserFactory
 from thipster.repository import LocalRepo
 from thipster.terraform import Terraform
@@ -82,6 +83,7 @@ def process_file(
         directory: str, file: str,
         local_repo: str = LOCAL_REPO, file_type: str = 'thips',
         mock_auth=False,
+        terraform_apply: bool = False,
 ):
     """Handle the file creation, engine run and clean up for the test.
 
@@ -118,23 +120,61 @@ def process_file(
         if Path('test').exists() and len(os.listdir('test')) == 0:
             shutil.rmtree('test')
 
-    engine = Engine(
-        ParserFactory(),
-        LocalRepo(local_repo),
-        Google() if not mock_auth else MockAuth(),
-        Terraform(),
-    )
+    engine = create_engine(local_repo, mock_auth)
     try:
         engine.run(f'test/{directory}')
         shutil.move(
             Path(Path.cwd(), 'thipster.tf.json'),
             Path(Path.cwd(), f'test/{directory}', 'thipster.tf.json'),
         )
+        if terraform_apply:
+            apply_terraform(engine, f'test/{directory}')
+
     except Exception as e:
         clean_up()
         raise e
 
     return clean_up
+
+
+def apply_terraform(
+    engine: Engine,
+    directory_path: str,
+):
+    """Apply terraform using thipster functions."""
+    working_dir = Path(Path.cwd(), directory_path)
+    assert engine.init_terraform(working_dir)[0] == 0
+    assert engine.plan_terraform(working_dir)[0] == 0
+    assert engine.apply_terraform(working_dir)[0] == 0
+
+    destroy_result = execute_subprocess(
+        ['terraform', 'destroy', '-auto-approve'],
+        cwd=working_dir,
+    )
+
+    if destroy_result[0] != 0:
+        raise Exception(destroy_result[1])
+
+
+def create_engine(
+    local_repo: str = LOCAL_REPO,
+    mock_auth=False,
+) -> Engine:
+    """Create a THipster engine instance.
+
+    Parameters
+    ----------
+    local_repo : str
+        The path to the local repository.
+    mock_auth : bool
+        Whether to mock the authentication to GCP. Defaults to False.
+    """
+    return Engine(
+        ParserFactory(),
+        LocalRepo(local_repo),
+        Google() if not mock_auth else MockAuth(),
+        Terraform(),
+    )
 
 
 def __get_output(test_name):
