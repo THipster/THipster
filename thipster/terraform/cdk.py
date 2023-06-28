@@ -16,7 +16,7 @@ import thipster.engine.parsed_file as pf
 import thipster.engine.resource_model as rm
 import thipster.terraform.exceptions as cdk_exceptions
 from thipster.engine import AuthPort, TerraformPort
-from thipster.helpers import create_logger
+from thipster.helpers import create_logger, execute_subprocess
 
 
 class ResourceCreationContext:
@@ -136,7 +136,7 @@ class CDK(TerraformPort):
     _logger = create_logger(__name__)
 
     @classmethod
-    def apply(cls, plan_file_path: str):
+    def apply(cls, plan_file_path: str) -> tuple[int, str]:
         """Apply generated Terraform plan.
 
         Parameters
@@ -146,16 +146,12 @@ class CDK(TerraformPort):
 
         Returns
         -------
-        str
-            Terraform apply output
+        tuple[int, str]
+            Terraform apply exitcode and output
         """
-        output = subprocess.run(
-            ['terrraform', 'apply', plan_file_path],
-            shell=True,
-            capture_output=True,
-            encoding='utf-8',
+        return execute_subprocess(
+            ['terraform', 'apply', plan_file_path],
         )
-        return output.stdout + output.stderr
 
     @classmethod
     def generate(
@@ -253,7 +249,7 @@ class CDK(TerraformPort):
         return stdout + stderr
 
     @classmethod
-    def plan(cls, plan_file_path: str):
+    def plan(cls, plan_file_path: str) -> tuple[int, str]:
         """Get plan from generated terraform code.
 
         Parameters
@@ -263,12 +259,12 @@ class CDK(TerraformPort):
 
         Returns
         -------
-        str
-            Terraform plan output
+        tuple[int, str]
+            Terraform plan exitcode and output
         """
-        t = Terraform()
-        _, stdout, stderr = t.plan(out=plan_file_path)
-        return stdout + stderr
+        return execute_subprocess(
+            ['terraform', 'plan', f'-out={plan_file_path}'],
+        )
 
     @classmethod
     def _pip_install(cls, package: str):

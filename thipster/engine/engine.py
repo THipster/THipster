@@ -93,7 +93,7 @@ class Engine():
 
         self.__terraform = value
 
-    def run(self, path: str) -> tuple[list[str], str]:
+    def run(self, path: str) -> str:
         """Return json Terraform files from the input file name.
 
         Calls the different run methods of the parser, repository,
@@ -107,9 +107,8 @@ class Engine():
 
         Returns
         -------
-        tuple[list[str], str]
-            A tuple made up of the list of directories containing the Terraform json
-            files and a string with the results of the Terraform plan
+        str
+            A string with the results of the Terraform plan
         """
         # Parse file or directory
         parsed_file = self.parse_files(path)
@@ -178,7 +177,10 @@ class Engine():
         """Initialize Terraform."""
         self.__terraform.init()
 
-    def plan_terraform(self, plan_file_path: str = terraform_plan_file) -> str:
+    def plan_terraform(
+        self,
+        plan_file_path: str = terraform_plan_file,
+    ) -> tuple[int, str]:
         """Plan Terraform.
 
         Parameters
@@ -188,12 +190,15 @@ class Engine():
 
         Returns
         -------
-        str
-            The results of the Terraform plan
+        tuple[int, str]
+            The terraform plan exit code and output
         """
         return self.__terraform.plan(plan_file_path)
 
-    def apply_terraform(self, plan_file_path: str = terraform_plan_file) -> str:
+    def apply_terraform(
+        self,
+        plan_file_path: str = terraform_plan_file,
+    ) -> tuple[int, str]:
         """Apply Terraform.
 
         Parameters
@@ -203,7 +208,7 @@ class Engine():
 
         Returns
         -------
-        str
-            The results of the Terraform apply
+        tuple[int, str]
+            The terraform apply exit code and output
         """
         return self.__terraform.apply(plan_file_path)

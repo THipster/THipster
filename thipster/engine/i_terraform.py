@@ -15,13 +15,18 @@ class TerraformPort(ABC):
     def apply(
         cls,
         plan_file_path: str | None = None,  # noqa: ARG003
-    ):
+    ) -> tuple[int, str]:
         """Apply generated terraform code.
 
         Parameters
         ----------
         plan_file_path : str, optional
             Path to plan file, by default None
+
+        Returns
+        -------
+        tuple[int, str]
+            The Terraform apply exit code and output
 
         Raises
         ------
@@ -74,8 +79,13 @@ class TerraformPort(ABC):
 
     @classmethod
     @abstractclassmethod
-    def plan(cls):
+    def plan(cls) -> tuple[int, str]:
         """Get plan from generated terraform code.
+
+        Returns
+        -------
+        tuple[int, str]
+            The Terraform plan exit code and output
 
         Raises
         ------
