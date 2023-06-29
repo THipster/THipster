@@ -2,6 +2,12 @@
 
 <!--next-version-placeholder-->
 
+## v0.22.1 (2023-06-29)
+
+### :bug:
+
+* :bug: fix(terraform): fix terraform apply command and add test ([#201](https://github.com/THipster/THipster/issues/201)) ([`7a813ee`](https://github.com/THipster/THipster/commit/7a813eed77aad6f630a8e1dbc0eb9f476b2ba8a7))
+
 ## v0.22.0 (2023-06-28)
 
 ### :sparkles:
