@@ -10,13 +10,12 @@ from pathlib import Path
 
 from cdktf import App, TerraformStack
 from constructs import Construct
-from python_terraform import Terraform
 
 import thipster.engine.parsed_file as pf
 import thipster.engine.resource_model as rm
 import thipster.terraform.exceptions as cdk_exceptions
 from thipster.engine import AuthPort, TerraformPort
-from thipster.helpers import create_logger
+from thipster.helpers import create_logger, execute_subprocess
 
 
 class ResourceCreationContext:
@@ -136,26 +135,29 @@ class CDK(TerraformPort):
     _logger = create_logger(__name__)
 
     @classmethod
-    def apply(cls, plan_file_path: str):
+    def apply(
+        cls,
+        working_dir: Path,
+        plan_file_path: str,
+    ) -> tuple[int, str]:
         """Apply generated Terraform plan.
 
         Parameters
         ----------
+        working_dir : Path
+            Path to the working directory
         plan_file_path : str
             Path to the plan file
 
         Returns
         -------
-        str
-            Terraform apply output
+        tuple[int, str]
+            Terraform apply exitcode and output
         """
-        output = subprocess.run(
-            ['terrraform', 'apply', plan_file_path],
-            shell=True,
-            capture_output=True,
-            encoding='utf-8',
+        return execute_subprocess(
+            ['terraform', 'apply', plan_file_path],
+            cwd=working_dir,
         )
-        return output.stdout + output.stderr
 
     @classmethod
     def generate(
@@ -240,35 +242,59 @@ class CDK(TerraformPort):
         Path('cdktf.out').rmdir()
 
     @classmethod
-    def init(cls):
+    def init(
+        cls,
+        working_dir: Path,
+        upgrade: bool = False,
+    ) -> tuple[int, str]:
         """Initilize terraform.
+
+        Parameters
+        ----------
+        working_dir : Path
+            Path to the working directory
+        upgrade : bool, optional
+            If terraform providers should be upgraded, by default False
 
         Returns
         -------
-        str
-            Terraform init output
+        tuple[int, str]
+            Terraform init exitcode and output
         """
-        t = Terraform()
-        _, stdout, stderr = t.init(upgrade=True)
-        return stdout + stderr
+        cmd = ['terraform', 'init']
+
+        if upgrade:
+            cmd.append('-upgrade')
+
+        return execute_subprocess(
+            cmd,
+            cwd=working_dir,
+        )
 
     @classmethod
-    def plan(cls, plan_file_path: str):
+    def plan(
+        cls,
+        working_dir: Path,
+        plan_file_path: str,
+    ) -> tuple[int, str]:
         """Get plan from generated terraform code.
 
         Parameters
         ----------
+        working_dir : Path
+            Path to the working directory
         plan_file_path : str
             Path and name of the plan file
 
         Returns
         -------
-        str
-            Terraform plan output
+        tuple[int, str]
+            Terraform plan exitcode and output
         """
-        t = Terraform()
-        _, stdout, stderr = t.plan(out=plan_file_path)
-        return stdout + stderr
+        return execute_subprocess(
+            ['terraform', 'plan', f'-out={plan_file_path}'],
+            cwd=working_dir,
+        )
 
     @classmethod
     def _pip_install(cls, package: str):

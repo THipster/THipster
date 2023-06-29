@@ -1,5 +1,6 @@
 """Helper functions for thipster."""
 import logging
+from pathlib import Path
 
 
 def create_logger(class_name: str) -> logging.Logger:
@@ -29,3 +30,38 @@ def set_logging_config(
         filemode=filemode,
         encoding='utf-8',
     )
+
+
+def execute_subprocess(
+    command: list[str] | str,
+    cwd: Path = Path.cwd(),
+    shell: bool = False,
+) -> tuple[int, str]:
+    """Execute a subprocess and return the exit code and output.
+
+    Parameters
+    ----------
+    command : list[str] | str
+        Command to execute
+    cwd : Path, optional
+        Current working directory, defaults to Path.cwd()
+    shell : bool, optional
+        Whether to use the shell, defaults to False
+
+    Returns
+    -------
+    tuple[int, str]
+        Exit code and output
+
+    """
+    import subprocess
+
+    process = subprocess.Popen(
+        command,
+        cwd=cwd,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+        shell=shell,
+    )
+    stdout, stderr = process.communicate()
+    return process.returncode, stdout.decode() + stderr.decode()

@@ -1,5 +1,6 @@
 """Terraform module interface."""
 from abc import ABC, abstractclassmethod
+from pathlib import Path
 
 import thipster.engine.parsed_file as pf
 import thipster.engine.resource_model as rm
@@ -14,14 +15,22 @@ class TerraformPort(ABC):
     @abstractclassmethod
     def apply(
         cls,
+        working_dir: Path,  # noqa: ARG003
         plan_file_path: str | None = None,  # noqa: ARG003
-    ):
+    ) -> tuple[int, str]:
         """Apply generated terraform code.
 
         Parameters
         ----------
+        working_dir : Path
+            Path to the working directory
         plan_file_path : str, optional
             Path to plan file, by default None
+
+        Returns
+        -------
+        tuple[int, str]
+            The Terraform apply exit code and output
 
         Raises
         ------
@@ -60,8 +69,15 @@ class TerraformPort(ABC):
 
     @classmethod
     @abstractclassmethod
-    def init(cls):
+    def init(cls, working_dir: Path, upgrade: bool):  # noqa: ARG003
         """Init Terraform for generated terraform code.
+
+        Parameters
+        ----------
+        working_dir : Path
+            Path to the working directory
+        upgrade : bool
+            Whether to upgrade Terraform providers or not
 
         Raises
         ------
@@ -74,8 +90,24 @@ class TerraformPort(ABC):
 
     @classmethod
     @abstractclassmethod
-    def plan(cls):
+    def plan(
+        cls,
+        working_dir: Path,  # noqa: ARG003
+        plan_file_path: str,  # noqa: ARG003
+    ) -> tuple[int, str]:
         """Get plan from generated terraform code.
+
+        Parameters
+        ----------
+        working_dir : Path
+            Path to the working directory
+        plan_file_path : str
+            Path and name of the plan file
+
+        Returns
+        -------
+        tuple[int, str]
+            Terraform plan exitcode and output
 
         Raises
         ------

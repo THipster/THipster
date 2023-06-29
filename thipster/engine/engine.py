@@ -1,4 +1,5 @@
 """Engine.py module."""
+from pathlib import Path
 
 import thipster.engine.parsed_file as pf
 
@@ -93,7 +94,7 @@ class Engine():
 
         self.__terraform = value
 
-    def run(self, path: str) -> tuple[list[str], str]:
+    def run(self, path: str) -> str:
         """Return json Terraform files from the input file name.
 
         Calls the different run methods of the parser, repository,
@@ -107,9 +108,8 @@ class Engine():
 
         Returns
         -------
-        tuple[list[str], str]
-            A tuple made up of the list of directories containing the Terraform json
-            files and a string with the results of the Terraform plan
+        str
+            A string with the results of the Terraform plan
         """
         # Parse file or directory
         parsed_file = self.parse_files(path)
@@ -120,9 +120,16 @@ class Engine():
         # Generate Terraform files
         self.generate_tf_files(parsed_file, models)
 
-        self.__terraform.init()
+        self.init_terraform()
 
-        return self.__terraform.plan(terraform_plan_file)
+        terraform_plan = self.plan_terraform(
+            plan_file_path=terraform_plan_file,
+        )
+
+        if not terraform_plan:
+            return ''
+
+        return terraform_plan[1]
 
     def parse_files(self, path: str) -> pf.ParsedFile:
         """Parse the input file or directory.
@@ -174,36 +181,65 @@ class Engine():
         """
         self.__terraform.generate(file, models, self.__auth)
 
-    def init_terraform(self) -> None:
-        """Initialize Terraform."""
-        self.__terraform.init()
+    def init_terraform(
+        self,
+        working_dir: Path = Path.cwd(),
+        upgrade: bool = False,
+    ) -> tuple[int, str]:
+        """Initialize Terraform.
 
-    def plan_terraform(self, plan_file_path: str = terraform_plan_file) -> str:
+        Parameters
+        ----------
+        working_dir : Path, optional
+            The path of the working directory, by default Path.cwd()
+        upgrade : bool, optional
+            Whether to upgrade the Terraform providers, by default False
+
+        Returns
+        -------
+        tuple[int, str]
+            The terraform init exit code and output
+        """
+        return self.__terraform.init(working_dir, upgrade)
+
+    def plan_terraform(
+        self,
+        working_dir: Path = Path.cwd(),
+        plan_file_path: str = terraform_plan_file,
+    ) -> tuple[int, str]:
         """Plan Terraform.
 
         Parameters
         ----------
+        working_dir : Path, optional
+            The path of the working directory, by default Path.cwd()
         plan_file_path : str, optional
             The path of the plan file, by default thipster.tfplan
 
         Returns
         -------
-        str
-            The results of the Terraform plan
+        tuple[int, str]
+            The terraform plan exit code and output
         """
-        return self.__terraform.plan(plan_file_path)
+        return self.__terraform.plan(working_dir, plan_file_path)
 
-    def apply_terraform(self, plan_file_path: str = terraform_plan_file) -> str:
+    def apply_terraform(
+        self,
+        working_dir: Path = Path.cwd(),
+        plan_file_path: str = terraform_plan_file,
+    ) -> tuple[int, str]:
         """Apply Terraform.
 
         Parameters
         ----------
+        working_dir : Path, optional
+            The path of the working directory, by default Path.cwd()
         plan_file_path : str, optional
             The path of the plan file, by default thipster.tfplan
 
         Returns
         -------
-        str
-            The results of the Terraform apply
+        tuple[int, str]
+            The terraform apply exit code and output
         """
-        return self.__terraform.apply(plan_file_path)
+        return self.__terraform.apply(working_dir, plan_file_path)
