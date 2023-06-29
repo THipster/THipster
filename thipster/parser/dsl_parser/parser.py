@@ -71,9 +71,8 @@ class DSLParser(ParserPort):
             ast = parser.run()
 
             interpreter = Interpreter()
-            parsed_file = interpreter.run(ast)
+            return interpreter.run(ast)
 
-            return parsed_file
         except DSLParserBaseError as e:
             raise e
         except Exception as e:

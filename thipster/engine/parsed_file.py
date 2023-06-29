@@ -215,6 +215,28 @@ class ParsedResource:
         self.attributes: list[ParsedAttribute] = attributes
 
 
+class ParsedOutput:
+    """Represents a Parsed output."""
+
+    def __init__(
+            self,
+            value: str,
+            position: Position | None,
+    ):
+        """
+        Represent a Parsed output.
+
+        Parameters
+        ----------
+        name : str
+            value to output
+        position : Position
+            position of the output block in its origin file
+        """
+        self.value: str = value
+        self.position: Position | None = position
+
+
 class ParsedFile:
     """Represents a Parsed File.
 
@@ -224,3 +246,4 @@ class ParsedFile:
     def __init__(self):
         """Represent a Parsed File."""
         self.resources: list[ParsedResource] = []
+        self.outputs: list[ParsedOutput] = []

@@ -473,7 +473,7 @@ class Interpreter:
 
         Returns
         -------
-        int
+        list[pf.ParsedResource]
             A ParsedResource object based on the node's attributes
         """
         return [
@@ -482,6 +482,26 @@ class Interpreter:
                 name=element.name.accept(self).value,
                 position=element.position,
                 attributes=[v.accept(self) for v in element.parameters.value],
+            ),
+        ]
+
+    def visit_output(self, element: ast.OutputNode) -> list[pf.ParsedOutput]:
+        """Visitor for an OutputNode.
+
+        Parameters
+        ----------
+        element: OutputNode
+            The visited node
+
+        Returns
+        -------
+        list[pf.ParsedOutput]
+            A ParsedOutput object based on the node's attributes
+        """
+        return [
+            pf.ParsedOutput(
+                element.value.accept(self),
+                element.position,
             ),
         ]
 
@@ -505,5 +525,8 @@ class Interpreter:
 
         for res in element.resources:
             parsed_file.resources += res.accept(self)
+
+        for output in element.outputs:
+            parsed_file.outputs += output.accept(self)
 
         return parsed_file

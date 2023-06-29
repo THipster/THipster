@@ -90,6 +90,7 @@ class ParserFactory(ParserPort):
         for file in files:
             parsed_file = cls.__get_parser(file).run(file)
             res.resources += parsed_file.resources
+            res.outputs += parsed_file.outputs
 
         if len(res.resources) == 0:
             raise NoFileFoundError(path)

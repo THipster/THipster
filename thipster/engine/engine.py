@@ -12,7 +12,7 @@ from .resource_model import ResourceModel
 terraform_plan_file = 'thipster.tfplan'
 
 
-class Engine():
+class Engine:
     """THipster's Engine.
 
     The core of the application, it is used to call and link all

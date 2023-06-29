@@ -188,6 +188,7 @@ class Lexer:
             'elif': self.__handle_word_token(TT.ELIF),
             'else': self.__handle_word_token(TT.ELSE),
             'or': self.__handle_word_token(TT.OR),
+            'output': self.__handle_word_token(TT.OUTPUT),
             'true': self.__handle_word_token(TT.BOOLEAN, 'true'),
             'false': self.__handle_word_token(TT.BOOLEAN, 'false'),
             'not': self.__handle_word_token(TT.NOT),

@@ -26,7 +26,7 @@ class TokenParser:
     def run(self) -> ast.FileNode:
         """Run the parser."""
         self.__rm_empty_lines()
-        tree = ast.FileNode()
+        file_node = ast.FileNode()
         try:
             self.__trim_newlines()
             while self.__get_next_type() != TT.EOF:
@@ -34,18 +34,22 @@ class TokenParser:
 
                 match self.__get_next_type():
                     case TT.VAR:
-                        tree.add_variable(self.__variable_definition())
+                        file_node.variables.append(
+                            self.__variable_definition(),
+                        )
                     case TT.STRING:
-                        tree.add_resource(self.__create_resource())
+                        file_node.resources.append(self.__create_resource())
+                    case TT.OUTPUT:
+                        self.__output_block(file_node)
                     case _:
                         raise DSLSyntaxError(
-                            self.__next(), [TT.VAR, TT.STRING],
+                            self.__next(), [TT.VAR, TT.STRING, TT.OUTPUT],
                         )
                 self.__trim_newlines()
         except Exception as e:
             raise e
 
-        return tree
+        return file_node
 
     def __next(self, expected: TT | list[TT] | None = None) -> Token:
         """Get next token and pop it from the list.
@@ -144,6 +148,8 @@ class TokenParser:
         """Check if the number of tabs is correct/ if it is the end of the block."""
         if self.__get_next_type() == TT.EOF:
             return False
+        if indent == 0:
+            return True
         if self.__get_next_type(indent-1) == TT.TAB:
             for _ in range(indent):
                 self.__next(TT.TAB)
@@ -751,3 +757,18 @@ class TokenParser:
         self.__get_whitespaces()
 
         return ast.VariableDefinitionNode(name, value)
+
+    def __output_block(self, file_node: ast.FileNode):
+        output_token = self.__next(TT.OUTPUT)
+        self.__get_whitespaces()
+        self.__next(TT.COLON)
+        self.__get_whitespaces()
+        self.__get_newline()
+        output_list = self.__get_list(1)
+
+        for output in output_list.value:
+            if not isinstance(output, ast.StringExprNode):
+                raise DSLSyntaxError(output, TT.STRING)
+            file_node.outputs.append(
+                ast.OutputNode(output_token.position, output),
+            )
