@@ -22,6 +22,7 @@ class TOKENTYPES(Enum):
     IF = 'IF'
     NOT = 'NOT'
     OR = 'OR'
+    OUTPUT = 'OUTPUT'
 
     # SYMBOLS
     BRACKETS_END = 'BRACKETS_END'

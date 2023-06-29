@@ -9,7 +9,7 @@ def test_create_ast():
     # bucket nom-#test \n\t toto: tata
     tree = ast.FileNode()
 
-    tree.add_resource(
+    tree.resources.append(
         ast.ResourceNode(
             resource_type=ast.StringNode(
                 Token(Position('file', 1, 1), 'STRING', 'bucket'),

@@ -456,6 +456,28 @@ name = {self.name!s}, parameters = {self.parameters!s}>'
         return visitor.visit_resource(self)
 
 
+class OutputNode(Node):
+    """Output node."""
+
+    def __init__(
+        self,
+        position: Position,
+        value: StringNode,
+    ) -> None:
+        super().__init__()
+        self.__position = position
+        self.value = value
+
+    @property
+    def position(self) -> Position:
+        """Return node's position in the file."""
+        return self.__position
+
+    def accept(self, visitor):
+        """Accept visitor method."""
+        return visitor.visit_output(self)
+
+
 class FileNode(Node):
     """File node."""
 
@@ -463,14 +485,7 @@ class FileNode(Node):
         super().__init__()
         self.resources: list[ResourceNode | IfNode | AmountNode] = []
         self.variables: list[VariableDefinitionNode] = []
-
-    def add_resource(self, item: ResourceNode | IfNode | AmountNode) -> None:
-        """Add item to the node."""
-        self.resources.append(item)
-
-    def add_variable(self, item: VariableDefinitionNode) -> None:
-        """Add item to the node."""
-        self.variables.append(item)
+        self.outputs: list[OutputNode] = []
 
     def __str__(self) -> str:
         """Return string representation of the node."""

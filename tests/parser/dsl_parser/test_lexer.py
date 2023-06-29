@@ -76,8 +76,26 @@ def test_lex_single_tokens():
         '>': TT.GT,
         '^': TT.POW,
         '%': TT.PERCENT,
+        'and': TT.AND,
+        'if': TT.IF,
+        'elif': TT.ELIF,
+        'else': TT.ELSE,
+        'or': TT.OR,
+        '\t': TT.TAB,
+        'output': TT.OUTPUT,
     }.items():
         __single_token_test(input_char, output)
+
+
+def test_lex_single_value_tokens():
+    """Test the lexing of single characters."""
+    for input_char, output in {
+        'true': TT.BOOLEAN,
+        'false': TT.BOOLEAN,
+        '8': TT.INT,
+        '4.5': TT.FLOAT,
+    }.items():
+        __single_token_test(input_char, output, token_value=input_char)
 
 
 def test_lex_brackets():
@@ -214,11 +232,6 @@ def test_lex_newline():
     __single_token_test('\n', TT.NEWLINE, is_newline=True)
 
 
-def test_lex_tab():
-    """Test the lexing of a tab."""
-    __single_token_test('\t', TT.TAB)
-
-
 def test_lex_2_whitespaces_as_tab():
     """Test if 2 whitespaces are considered as a tab."""
     input_file = {
@@ -260,11 +273,6 @@ def test_lex_2_2_whitespaces_as_tabs():
         assert repr(output[i]) == expected_output[i]
 
 
-def test_lex_dash():
-    """Test the lexing of a dash."""
-    __single_token_test('-', TT.MINUS)
-
-
 def test_lex_amount():
     """Test the lexing of an amount."""
     input_string = 'amount '
@@ -281,26 +289,6 @@ def test_lex_amount():
     assert len(output) == len(expected_output)
     for i in range(len(expected_output)):
         assert repr(output[i]) == expected_output[i]
-
-
-def test_lex_and():
-    """Test the lexing of an 'and' string."""
-    __single_token_test('and', TT.AND)
-
-
-def test_lex_if():
-    """Test the lexing of an 'if' string."""
-    __single_token_test('if', TT.IF)
-
-
-def test_lex_elif():
-    """Test the lexing of an 'elif' string."""
-    __single_token_test('elif', TT.ELIF)
-
-
-def test_lex_else():
-    """Test the lexing of an 'else' string."""
-    __single_token_test('else', TT.ELSE)
 
 
 def test_lex_if_else():
@@ -324,31 +312,6 @@ def test_lex_if_else():
     assert len(output) == len(expected_output)
     for i in range(len(expected_output)):
         assert repr(output[i]) == expected_output[i]
-
-
-def test_lex_or():
-    """Test the lexing of an 'or' string."""
-    __single_token_test('or', TT.OR)
-
-
-def test_lex_true():
-    """Test the lexing of a boolean true."""
-    __single_token_test('true', TT.BOOLEAN, token_value='true')
-
-
-def test_lex_false():
-    """Test the lexing of a boolean false."""
-    __single_token_test('false', TT.BOOLEAN, token_value='false')
-
-
-def test_lex_int():
-    """Test the lexing of an integer."""
-    __single_token_test('8', TT.INT, token_value='8')
-
-
-def test_lex_float():
-    """Test the lexing of a float."""
-    __single_token_test('4.5', TT.FLOAT, token_value='4.5')
 
 
 def test_lex_string():

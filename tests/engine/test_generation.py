@@ -5,6 +5,7 @@ import pytest
 
 from tests.test_tools import (
     assert_number_of_resource_type_is,
+    assert_output_created,
     assert_resource_created,
     get_function_name,
     get_resource_parameter,
@@ -264,5 +265,35 @@ network:
     assert_resource_created('google_compute_network', network_name)
 
     assert_number_of_resource_type_is('google_compute_subnetwork', 2)
+
+    clean_up()
+
+
+def test_outputs():
+    """Test the generation of multiple subnetworks in a network."""
+    function_name = get_function_name()
+
+    network_name = f'network-{uuid.uuid4().int}'
+    clean_up = process_file(
+        directory=function_name,
+        file=f"""
+network {network_name}:
+  auto_create_subnetworks: false
+  subnetwork:
+    - name: europe
+      region: europe-west1
+      ip_range: 10.0.1.0/24
+    - region: us-west1
+      ip_range: 10.0.2.0/24
+
+output:
+  - {network_name}.id
+  - europe.ip_cidr_range
+""",
+        mock_auth=True,
+    )
+
+    assert_output_created(f'{network_name}.id')
+    assert_output_created('europe.ip_cidr_range')
 
     clean_up()

@@ -1,6 +1,8 @@
-file        = {assignation | resource}
+file        = {assignation | resource | outputs}
 
 assignation = VARIABLE, EQ, value
+
+outputs     = OUTPUT, COLON, NEWLINE, list
 
 resource    = type, string, COLON, [if_ctrl] , [nb_ctrl],NEWLINE
                                 {parameter, NEWLINE}

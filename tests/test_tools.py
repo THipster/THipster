@@ -211,7 +211,7 @@ def assert_resource_created(
     resource_name : str
         The name of the resource to check for.
     """
-    output = __get_output(inspect.currentframe().f_back.f_code.co_name)
+    output = __get_output(get_parent_function_name())
     assert output.get('resource') is not None
     resources = output.get('resource')
 
@@ -236,7 +236,7 @@ def assert_number_of_resource_type_is(
     amount : str
         The number of resources to check for.
     """
-    output = __get_output(inspect.currentframe().f_back.f_code.co_name)
+    output = __get_output(get_parent_function_name())
     assert output.get('resource') is not None
     resources = output.get('resource')
 
@@ -255,7 +255,7 @@ def assert_resource_parameters_are(resource_data: tuple, parameters: list[str]):
         The parameters to check for.
     """
     resource = __get_resource(
-        inspect.currentframe().f_back.f_code.co_name, resource_data,
+        get_parent_function_name(), resource_data,
     )
 
     for parameter in parameters:
@@ -273,13 +273,28 @@ def get_resource_parameter(resource_data: tuple, parameter: str):
         The parameter to get.
     """
     resource = __get_resource(
-        inspect.currentframe().f_back.f_code.co_name, resource_data,
+        get_parent_function_name(), resource_data,
     )
 
     assert parameter in resource
     return resource.get(parameter)
 
 
+def assert_output_created(output_name: str):
+    """Assert an output was created."""
+    output = __get_output(get_parent_function_name())
+    assert output.get('output') is not None
+    outputs: dict[str, dict[str, str]] = output.get('output')
+
+    output_values = [x.get('value') for x in outputs.values()]
+    assert any(output_name in output_value for output_value in output_values)
+
+
 def get_function_name():
-    """Get the name of the function that called this function."""
+    """Get the name of the current function."""
     return inspect.currentframe().f_back.f_code.co_name
+
+
+def get_parent_function_name():
+    """Get the name of the function that called the current function."""
+    return inspect.currentframe().f_back.f_back.f_code.co_name

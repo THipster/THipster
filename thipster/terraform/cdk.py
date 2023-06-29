@@ -8,7 +8,7 @@ import sys
 import uuid
 from pathlib import Path
 
-from cdktf import App, TerraformStack
+from cdktf import App, TerraformOutput, TerraformStack
 from constructs import Construct
 
 import thipster.engine.parsed_file as pf
@@ -206,6 +206,9 @@ class CDK(TerraformPort):
 
                     cls._created_resources[f'{resource.resource_type}/{resource.name}']\
                         = created_resource
+
+                for output in file.outputs:
+                    _create_output(self, output)
 
         _ResourceStack(app, file_name)
 
@@ -765,15 +768,9 @@ def _check_explicit_dependency(
     attribute_value: str | dict
         Value of the attribute to check
     """
-    resource_attribute = 'id'
-    explicit_value = attribute_value
-    if isinstance(attribute_value, pf.ParsedLiteral):
-        explicit_value = attribute_value.value
-
-    if isinstance(explicit_value, str):
-        split = explicit_value.split('.', maxsplit=1)
-        explicit_value = split[0]
-        resource_attribute = split[1] if len(split) > 1 else 'id'
+    explicit_value, resource_attribute = _get_name_attr_from_string(
+        attribute_value,
+    )
 
     dependency_type = ctx.dependencies[attribute_name]['resource']
     created_name = f'{dependency_type}/{explicit_value}'
@@ -820,3 +817,42 @@ def _check_explicit_dependency(
 
     ctx.resource_args[attribute_name] = resource
     return True
+
+
+def _get_name_attr_from_string(attribute: str):
+    """Split an attribute value into name + id."""
+    resource_attribute = 'id'
+    explicit_value = attribute
+    if isinstance(attribute, pf.ParsedLiteral):
+        explicit_value = attribute.value
+
+    if isinstance(explicit_value, str):
+        split = explicit_value.split('.', maxsplit=1)
+        explicit_value = split[0]
+        if len(split) > 1:
+            resource_attribute = split[1]
+
+    return (explicit_value, resource_attribute)
+
+
+def _create_output(stack_self, output: pf.ParsedOutput):
+    resource_name, attr = _get_name_attr_from_string(output.value)
+
+    def create_output(resource_name: str):
+        return TerraformOutput(
+            stack_self, f'{resource_name}_{attr}',
+            value=getattr(CDK._created_resources[resource_name], attr),
+        )
+
+    if resource_name in CDK._created_resources:
+        return create_output(resource_name)
+    matches = list(
+        filter(
+            lambda element: element.endswith(resource_name),
+            CDK._created_resources,
+        ),
+    )
+    if len(matches) != 1:
+        raise Exception
+
+    return create_output(matches[0])
