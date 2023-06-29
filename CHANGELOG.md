@@ -2,6 +2,12 @@
 
 <!--next-version-placeholder-->
 
+## v0.23.0 (2023-06-29)
+
+### :sparkles:
+
+* :sparkles: feat: output block ([#203](https://github.com/THipster/THipster/issues/203)) ([`a4a9494`](https://github.com/THipster/THipster/commit/a4a9494fe92ff77f6059b0289bd6ad1beac706a5))
+
 ## v0.22.1 (2023-06-29)
 
 ### :bug:
