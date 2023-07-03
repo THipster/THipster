@@ -2,6 +2,12 @@
 
 <!--next-version-placeholder-->
 
+## v0.23.2 (2023-07-03)
+
+### :arrow_up:
+
+* :arrow_up: chore(deps): bump google-auth from 2.20.0 to 2.21.0 ([#204](https://github.com/THipster/THipster/issues/204)) ([`03fac46`](https://github.com/THipster/THipster/commit/03fac4673d7bf9db465c5c2d9d27a8651acd3342))
+
 ## v0.23.1 (2023-07-03)
 
 ### :arrow_up:
