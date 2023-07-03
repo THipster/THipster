@@ -1,2 +1,2 @@
 cdktf-cdktf-provider-google==8.0.2
-google-auth==2.20.0
+google-auth==2.21.0
