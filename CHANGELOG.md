@@ -2,6 +2,14 @@
 
 <!--next-version-placeholder-->
 
+## v0.23.3 (2023-07-12)
+
+### :arrow_up:
+
+* :arrow_up: chore(deps): bump cdktf-cdktf-provider-google from 8.0.2 to 8.0.4 ([#208](https://github.com/THipster/THipster/issues/208)) ([`8f1ca4a`](https://github.com/THipster/THipster/commit/8f1ca4aacf44b3286564d2401854720c9de339aa))
+* :arrow_up: chore(deps): bump cdktf from 0.17.0 to 0.17.1 ([#207](https://github.com/THipster/THipster/issues/207)) ([`f52be0c`](https://github.com/THipster/THipster/commit/f52be0c940c76a16addea2a70cd4a2374ff5e6b6))
+* :arrow_up: chore(deps): bump dagger-io from 0.6.2 to 0.6.3 ([#206](https://github.com/THipster/THipster/issues/206)) ([`5126588`](https://github.com/THipster/THipster/commit/5126588a3048447c4e3b7f793eca7d914eca6748))
+
 ## v0.23.2 (2023-07-03)
 
 ### :arrow_up:
