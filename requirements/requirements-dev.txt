@@ -1,4 +1,4 @@
-dagger-io==0.6.3
+dagger-io==0.6.4
 pre-commit==3.3.3
 pytest==7.4.0
 pytest-mock==3.11.1
