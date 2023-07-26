@@ -12,18 +12,44 @@ testpaths = [
 ]
 
 [tool.semantic_release]
-version_variable = "setup.py:__version__"
-branch = "main"
+version_variables = [
+    "setup.py:__version__"
+]
 commit_parser = "semantic_release.history.emoji_parser"
 
-major_emoji = ":boom:"
-minor_emoji = ":sparkles:"
-patch_emoji = ":ambulance:,:bug:,:adhesive_bandage:,:lock:,:arrow_up:,:arrow_down:,:heavy_plus_sign:,:heavy_minus_sign:,:rotating_light:,:zap:,:recycle:,:wrench:,:loud_sound:,:mute:,:goal_net:,:wastebasket:,:coffin:,:chart_with_upwards_trend:,:globe_with_meridians:,:alien:,:wheelchair:,:children_crossing:,:bricks:"
-
-repository_url = "https://upload.pypi.org/legacy/"
-
-commit_subject = ":bookmark: {version} [skip ci]"
+commit_message = ":bookmark: {version} [skip ci]"
 major_on_zero = false
+
+[tool.semantic_release.commit_parser_options]
+major_tags = [":boom:"]
+minor_tags = [
+    ":sparkles:",
+]
+patch_tags = [
+    ":ambulance:",
+    ":bug:",
+    ":adhesive_bandage:",
+    ":lock:",
+    ":arrow_up:",
+    ":arrow_down:",
+    ":heavy_plus_sign:",
+    ":heavy_minus_sign:",
+    ":rotating_light:",
+    ":zap:",
+    ":recycle:",
+    ":wrench:",
+    ":loud_sound:",
+    ":mute:",
+    ":goal_net:",
+    ":wastebasket:",
+    ":coffin:",
+    ":chart_with_upwards_trend:",
+    ":globe_with_meridians:",
+    ":alien:",
+    ":wheelchair:",
+    ":children_crossing:",
+    ":bricks:",
+]
 
 [pytest]
 mock_use_standalone_module = true
