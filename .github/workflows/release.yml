@@ -12,7 +12,7 @@ jobs:
 
     steps:
     - name: Temporarily disable "include administrators" branch protection
-      uses: benjefferies/branch-protection-bot@master
+      uses: benjefferies/branch-protection-bot@1.0.9
       if: always()
       with:
         access_token: ${{ secrets.RELEASE_ACCESS_TOKEN }}
@@ -24,14 +24,14 @@ jobs:
         token: ${{ secrets.RELEASE_ACCESS_TOKEN }}
 
     - name: Python Semantic Release
-      uses: relekang/python-semantic-release@master
+      uses: relekang/python-semantic-release@v7.33.5
       with:
         github_token: ${{ secrets.RELEASE_ACCESS_TOKEN }}
         repository_username: __token__
         repository_password: ${{ secrets.PYPI_TOKEN }}
 
     - name: Enable "include administrators" branch protection
-      uses: benjefferies/branch-protection-bot@master
+      uses: benjefferies/branch-protection-bot@1.0.9
       if: always()
       with:
         access_token: ${{ secrets.RELEASE_ACCESS_TOKEN }}
