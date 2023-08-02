@@ -175,7 +175,7 @@ class Lexer:
     def __handle_current_token(self) -> None:
         """Process the current stored token.
 
-        Check if the current token is a keyword, calls the cprresponding function, or
+        Check if the current token is a keyword, calls the corresponding function, or
         the '__handleLiteralsAndVariables' otherwise.
         """
         current_token = self.__lexerPosition.currentToken.lower()
