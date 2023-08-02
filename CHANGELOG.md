@@ -2,6 +2,43 @@
 
 
 
+## v0.23.5 (2023-08-02)
+
+### :arrow_up:
+
+* :arrow_up: chore(deps): bump dagger-io from 0.6.3 to 0.6.4 (#212)
+
+Signed-off-by: dependabot[bot] &lt;support@github.com&gt;
+Co-authored-by: dependabot[bot] &lt;49699333+dependabot[bot]@users.noreply.github.com&gt; ([`3d7e2e5`](https://github.com/THipster/THipster/commit/3d7e2e58c9d30e2dcd756bf80a185c01bf7815d3))
+
+* :arrow_up: chore(deps): bump cdktf from 0.17.1 to 0.17.3 (#215)
+
+Signed-off-by: dependabot[bot] &lt;support@github.com&gt;
+Co-authored-by: dependabot[bot] &lt;49699333+dependabot[bot]@users.noreply.github.com&gt; ([`8911d75`](https://github.com/THipster/THipster/commit/8911d75d6136338611edf5a359b93e905dc9246b))
+
+* :arrow_up: chore(deps): bump cdktf-cdktf-provider-google from 8.0.4 to 8.0.7 (#216)
+
+Signed-off-by: dependabot[bot] &lt;support@github.com&gt;
+Co-authored-by: dependabot[bot] &lt;49699333+dependabot[bot]@users.noreply.github.com&gt; ([`e0425d0`](https://github.com/THipster/THipster/commit/e0425d0ae3a0b2f028c50a4b9e94c8220b678b35))
+
+* :arrow_up: chore(deps): bump sphinx from 7.0.1 to 7.1.1 (#217)
+
+Signed-off-by: dependabot[bot] &lt;support@github.com&gt;
+Co-authored-by: dependabot[bot] &lt;49699333+dependabot[bot]@users.noreply.github.com&gt;
+Co-authored-by: Gabriel Suquet &lt;91719818+gsuquet@users.noreply.github.com&gt; ([`e5a05fc`](https://github.com/THipster/THipster/commit/e5a05fc07764545f947eae7c73886feef9bd23fe))
+
+### Other
+
+* :green_heart: chore(ci): bump python-semantic-release/python-semantic-release from 8.0.0 to 8.0.4 (#218)
+
+Signed-off-by: dependabot[bot] &lt;support@github.com&gt;
+Co-authored-by: dependabot[bot] &lt;49699333+dependabot[bot]@users.noreply.github.com&gt; ([`a579f13`](https://github.com/THipster/THipster/commit/a579f13def5f2ff21d93be736afeeddcf62cb3f6))
+
+* :green_heart: fix(): add conditions to build ([`4743107`](https://github.com/THipster/THipster/commit/47431078d181ba36756c01f6e6d18d326e781f7e))
+
+* :green_heart: feat(ci): add build stage ([`2b3d807`](https://github.com/THipster/THipster/commit/2b3d807e43323b272bab865460b5bfc54786877f))
+
+
 ## v0.23.4 (2023-07-27)
 
 ### :arrow_up:
