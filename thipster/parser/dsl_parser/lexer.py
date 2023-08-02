@@ -418,7 +418,6 @@ class Lexer:
             self.__lexerPosition.reset_current_token()
 
         self.__lexerPosition.isMultiLine = False
-        self.__handle_newline_token()
         self.__handle_eof_token()
 
     def __isfloat(self, num: str) -> bool:

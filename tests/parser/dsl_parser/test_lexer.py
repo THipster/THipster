@@ -35,9 +35,8 @@ def __single_token_test(
         __get_token_string(test_file_name, 1, 1, token, token_value),
         __get_token_string(
             test_file_name, line_value,
-            column_value, TT.NEWLINE,
+            column_value, TT.EOF,
         ),
-        __get_token_string(test_file_name, line_value+1, 1, TT.EOF),
     ]
     lexer = Lexer({test_file_name: input_string})
     lexer.run()
@@ -106,8 +105,7 @@ def test_lex_brackets():
         __get_token_string('file', 1, 1, TT.BRACKETS_START),
         __get_token_string('file', 1, 2, TT.STRING, 'toto'),
         __get_token_string('file', 1, 6, TT.BRACKETS_END),
-        __get_token_string('file', 1, 7, TT.NEWLINE),
-        __get_token_string('file', 2, 1, TT.EOF),
+        __get_token_string('file', 1, 7, TT.EOF),
     ]
     lexer.lex('file', input_string)
     output = lexer.tokenList
@@ -125,8 +123,7 @@ def test_lex_quoted_string():
     expected_output = [
         __get_token_string('file', 1, 2, TT.STRING, 'bucket number 21'),
         __get_token_string('file', 1, 20, TT.STRING, 'bucket number 22'),
-        __get_token_string('file', 1, 37, TT.NEWLINE),
-        __get_token_string('file', 2, 1, TT.EOF),
+        __get_token_string('file', 1, 37, TT.EOF),
     ]
     lexer.lex('file', input_string)
     output = lexer.tokenList
@@ -139,8 +136,7 @@ def test_lex_quoted_string():
     input_string = "'bucket number 21'"
     expected_output = [
         __get_token_string('file', 1, 2, TT.STRING, 'bucket number 21'),
-        __get_token_string('file', 1, 19, TT.NEWLINE),
-        __get_token_string('file', 2, 1, TT.EOF),
+        __get_token_string('file', 1, 19, TT.EOF),
     ]
     lexer.lex('file', input_string)
     output = lexer.tokenList
@@ -153,8 +149,7 @@ def test_lex_quoted_string():
     input_string = "'bucket number \"21\"'"
     expected_output = [
         __get_token_string('file', 1, 2, TT.STRING, 'bucket number "21"'),
-        __get_token_string('file', 1, 21, TT.NEWLINE),
-        __get_token_string('file', 2, 1, TT.EOF),
+        __get_token_string('file', 1, 21, TT.EOF),
     ]
     lexer.lex('file', input_string)
     output = lexer.tokenList
@@ -167,8 +162,7 @@ def test_lex_quoted_string():
     input_string = '"bucket number \'21\'"'
     expected_output = [
         __get_token_string('file', 1, 2, TT.STRING, "bucket number '21'"),
-        __get_token_string('file', 1, 21, TT.NEWLINE),
-        __get_token_string('file', 2, 1, TT.EOF),
+        __get_token_string('file', 1, 21, TT.EOF),
     ]
     lexer.lex('file', input_string)
     output = lexer.tokenList
@@ -198,8 +192,7 @@ def test_lex_multiline_input():
         __get_token_string('file', 1, 7, TT.WHITESPACE),
         __get_token_string('file', 1, 8, TT.STRING, 'nomtest'),
         __get_token_string('file', 2, 5, TT.COLON),
-        __get_token_string('file', 2, 6, TT.NEWLINE),
-        __get_token_string('file', 3, 1, TT.EOF),
+        __get_token_string('file', 2, 6, TT.EOF),
     ]
     lexer = Lexer(input_file)
     lexer.run()
@@ -215,8 +208,7 @@ def test_lex_var():
     input_string = '#variable'
     expected_output = [
         __get_token_string('file', 1, 2, TT.VAR, 'variable'),
-        __get_token_string('file', 1, 10, TT.NEWLINE),
-        __get_token_string('file', 2, 1, TT.EOF),
+        __get_token_string('file', 1, 10, TT.EOF),
     ]
     lexer = Lexer({'': ''})
     lexer.lex('file', input_string)
@@ -241,8 +233,7 @@ def test_lex_2_whitespaces_as_tab():
         __get_token_string('file', 1, 1, TT.TAB),
         __get_token_string('file', 1, 3, TT.NEWLINE),
         __get_token_string('file', 2, 1, TT.TAB),
-        __get_token_string('file', 2, 2, TT.NEWLINE),
-        __get_token_string('file', 3, 1, TT.EOF),
+        __get_token_string('file', 2, 2, TT.EOF),
     ]
     lexer = Lexer(input_file)
     output = lexer.run()
@@ -262,8 +253,7 @@ def test_lex_2_2_whitespaces_as_tabs():
         __get_token_string('file', 1, 3, TT.TAB),
         __get_token_string('file', 1, 5, TT.NEWLINE),
         __get_token_string('file', 2, 1, TT.TAB),
-        __get_token_string('file', 2, 2, TT.NEWLINE),
-        __get_token_string('file', 3, 1, TT.EOF),
+        __get_token_string('file', 2, 2, TT.EOF),
     ]
     lexer = Lexer(input_file)
     output = lexer.run()
@@ -279,8 +269,7 @@ def test_lex_amount():
     expected_output = [
         __get_token_string('file', 1, 1, TT.AMOUNT),
         __get_token_string('file', 1, 7, TT.WHITESPACE),
-        __get_token_string('file', 1, 8, TT.NEWLINE),
-        __get_token_string('file', 2, 1, TT.EOF),
+        __get_token_string('file', 1, 8, TT.EOF),
     ]
     lexer = Lexer({'': ''})
     lexer.lex('file', input_string)
@@ -302,8 +291,7 @@ def test_lex_if_else():
         __get_token_string('file', 1, 14, TT.ELSE),
         __get_token_string('file', 1, 18, TT.WHITESPACE),
         __get_token_string('file', 1, 19, TT.STRING, 'something'),
-        __get_token_string('file', 1, 28, TT.NEWLINE),
-        __get_token_string('file', 2, 1, TT.EOF),
+        __get_token_string('file', 1, 28, TT.EOF),
     ]
     lexer = Lexer({'': ''})
     lexer.lex('file', input_string)
@@ -323,8 +311,7 @@ def test_lex_string():
         __get_token_string('file', 1, 8, TT.STRING, 'nom'),
         __get_token_string('file', 1, 11, TT.MINUS),
         __get_token_string('file', 1, 12, TT.INT, 8),
-        __get_token_string('file', 1, 13, TT.NEWLINE),
-        __get_token_string('file', 2, 1, TT.EOF),
+        __get_token_string('file', 1, 13, TT.EOF),
     ]
     lexer = Lexer({'': ''})
     lexer.lex('file', input_string)
@@ -356,8 +343,7 @@ def test_run_lexer():
         __get_token_string('file', 1, 24, TT.WHITESPACE),
         __get_token_string('file', 1, 25, TT.NEWLINE),
         __get_token_string('file', 2, 1, TT.TAB),
-        __get_token_string('file', 2, 2, TT.NEWLINE),
-        __get_token_string('file', 3, 1, TT.EOF),
+        __get_token_string('file', 2, 2, TT.EOF),
 
         __get_token_string('file2', 1, 1, TT.STRING, 'network'),
         __get_token_string('file2', 1, 8, TT.WHITESPACE),
@@ -377,8 +363,7 @@ def test_run_lexer():
         __get_token_string('file2', 2, 2, TT.MINUS),
         __get_token_string('file2', 2, 3, TT.WHITESPACE),
         __get_token_string('file2', 2, 4, TT.STRING, 'property'),
-        __get_token_string('file2', 2, 12, TT.NEWLINE),
-        __get_token_string('file2', 3, 1, TT.EOF),
+        __get_token_string('file2', 2, 12, TT.EOF),
     ]
     lexer = Lexer(input_files)
     output = lexer.run()
@@ -407,8 +392,7 @@ def test_run_lexer_var_in_name():
         __get_token_string('file', 2, 7, TT.COLON),
         __get_token_string('file', 2, 8, TT.WHITESPACE),
         __get_token_string('file', 2, 9, TT.STRING, 'tata'),
-        __get_token_string('file', 2, 13, TT.NEWLINE),
-        __get_token_string('file', 3, 1, TT.EOF),
+        __get_token_string('file', 2, 13, TT.EOF),
     ]
     lexer = Lexer(input_file)
     output = lexer.run()
