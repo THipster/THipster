@@ -4,8 +4,7 @@ assignation = VARIABLE, EQ, value
 
 outputs     = OUTPUT, COLON, NEWLINE, list
 
-resource    = type, string, COLON, [if_ctrl] , [nb_ctrl],NEWLINE
-                                {parameter, NEWLINE}
+resource    = type, string, COLON, [if_ctrl] , [nb_ctrl],NEWLINE, dict
 
 parameter   = STRING, COLON, ( value, [if_else_ctrl]
                     | [if_ctrl], NEWLINE (list | dict))

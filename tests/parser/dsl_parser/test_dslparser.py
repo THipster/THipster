@@ -691,14 +691,15 @@ bucket my-bucket:
         expected=TT.COLON, got=TT.STRING,
     )
 
-    # MISSING TAB
+    # MISSING TAB :
+    # MEANS THAT NEXT LINE SHOULD BE CONSIDERED AS RESOURCE : ERROR ON COLON
     input_file = """
 bucket my-bucket:
 region: euw
             """
     __test_syntax_error(
-        mocker, input_file=input_file, ln=3, col=1,
-        expected=TT.TAB, got=TT.STRING,
+        mocker, input_file=input_file, ln=3, col=7,
+        expected=[TT.STRING, TT.VAR], got=TT.COLON,
     )
 
     # MISSING VALUE

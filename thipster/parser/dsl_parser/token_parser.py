@@ -182,7 +182,7 @@ class TokenParser:
 
         self.__get_newline()
 
-        properties = self.__get_properties(indent+1)
+        properties = self.__get_dict(indent+1)
 
         resource = ast.ResourceNode(
             resource_type=resource_type,
