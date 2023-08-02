@@ -36,7 +36,6 @@ def apply_output():
             yield tf.output()
         except Exception as e:
             raise e
-
         finally:
             tf.destroy()
 
