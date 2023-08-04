@@ -25,7 +25,7 @@ async def pre_commit(version: str):
         pre_commit = setup.with_exec(['pre-commit', 'run', '--all-files'])
 
         # execute
-        await pre_commit.exit_code()
+        await pre_commit
 
     print('Pre-commit passed')
 
