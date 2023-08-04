@@ -35,12 +35,12 @@ class TokenParser:
                 match self.__get_next_type():
                     case TT.VAR:
                         file_node.variables.append(
-                            self.__variable_definition(),
+                            self.__get_assignment(),
                         )
                     case TT.STRING:
                         file_node.resources.append(self.__create_resource())
                     case TT.OUTPUT:
-                        self.__output_block(file_node)
+                        self.__get_outputs(file_node)
                     case _:
                         raise DSLSyntaxError(
                             self.__next(), [TT.VAR, TT.STRING, TT.OUTPUT],
@@ -182,7 +182,7 @@ class TokenParser:
 
         self.__get_newline()
 
-        properties = self.__get_properties(indent+1)
+        properties = self.__get_dict(indent+1)
 
         resource = ast.ResourceNode(
             resource_type=resource_type,
@@ -199,6 +199,31 @@ class TokenParser:
             resource = nb_ctrl
 
         return resource
+
+    def __get_assignment(self):
+        name = self.__next(TT.VAR)
+        self.__get_whitespaces()
+        self.__next(TT.EQ)
+        self.__get_whitespaces()
+        value = self.__get_value()
+        self.__get_whitespaces()
+
+        return ast.VariableDefinitionNode(name, value)
+
+    def __get_outputs(self, file_node: ast.FileNode):
+        output_token = self.__next(TT.OUTPUT)
+        self.__get_whitespaces()
+        self.__next(TT.COLON)
+        self.__get_whitespaces()
+        self.__get_newline()
+        output_list = self.__get_list(1)
+
+        for output in output_list.value:
+            if not isinstance(output, ast.StringExprNode):
+                raise DSLSyntaxError(output, TT.STRING)
+            file_node.outputs.append(
+                ast.OutputNode(output_token.position, output),
+            )
 
     def __get_parameter(self, indent: int) -> ast.ParameterNode:
         r"""Create an AST Parameter node.
@@ -747,28 +772,3 @@ class TokenParser:
             next_token_type = self.__get_next_type()
 
         return ast.StringExprNode(values)
-
-    def __variable_definition(self):
-        name = self.__next(TT.VAR)
-        self.__get_whitespaces()
-        self.__next(TT.EQ)
-        self.__get_whitespaces()
-        value = self.__get_value()
-        self.__get_whitespaces()
-
-        return ast.VariableDefinitionNode(name, value)
-
-    def __output_block(self, file_node: ast.FileNode):
-        output_token = self.__next(TT.OUTPUT)
-        self.__get_whitespaces()
-        self.__next(TT.COLON)
-        self.__get_whitespaces()
-        self.__get_newline()
-        output_list = self.__get_list(1)
-
-        for output in output_list.value:
-            if not isinstance(output, ast.StringExprNode):
-                raise DSLSyntaxError(output, TT.STRING)
-            file_node.outputs.append(
-                ast.OutputNode(output_token.position, output),
-            )
