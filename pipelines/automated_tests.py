@@ -32,7 +32,7 @@ async def test(version: str):
 
         tests = setup.with_exec(['pytest', 'tests'])
         # execute
-        await tests
+        await tests.sync()
 
     print('Tests succeeded!')
 
