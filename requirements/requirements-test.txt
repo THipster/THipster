@@ -1,4 +1,6 @@
 cdktf-cdktf-provider-google==8.0.8
+coverage
+coveralls==3.3.1
 google-auth==2.22.0
 pytest==7.4.0
 pytest-mock==3.11.1

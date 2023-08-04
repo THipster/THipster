@@ -21,6 +21,9 @@ Written entirely in Python, it leverages the Python CDK for Terraform to create 
   <a href="https://github.com/astral-sh/ruff">
     <img src="https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/charliermarsh/ruff/main/assets/badge/v2.json" alt="Ruff" style="max-width:100%;">
   </a>
+  <a href='https://coveralls.io/github/THipster/THipster'>
+    <img src='https://coveralls.io/repos/github/THipster/THipster/badge.svg' alt='Coverage Status' />
+  </a>
 </p>
 
 ## Technology Stack
