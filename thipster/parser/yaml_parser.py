@@ -90,30 +90,23 @@ class YAMLParser(ParserPort):
         ParsedFile
             A ParsedFile object with the content of all the files in the input path
         """
-        try:
-            files = cls.__getfiles(path)
-            parsed_file = pf.ParsedFile()
+        files = cls.__getfiles(path)
+        parsed_file = pf.ParsedFile()
 
-            for file in files:
-                filedir, filename = os.path.split(file)
+        for file in files:
+            filedir, filename = os.path.split(file)
 
-                environment = Environment(
-                    loader=FileSystemLoader(filedir),
-                    autoescape=True,
-                )
-                template = environment.get_template(filename)
-                rendered = template.render()
-                content = yaml.safe_load(rendered)
+            environment = Environment(
+                loader=FileSystemLoader(filedir),
+                autoescape=True,
+            )
+            template = environment.get_template(filename)
+            rendered = template.render()
+            content = yaml.safe_load(rendered)
 
-                parsed_file.resources += cls.__convert(content)
+            parsed_file.resources += cls.__convert(content)
 
-            return parsed_file
-        except yaml.YAMLError as exc:
-            raise exc
-        except YAMLParserBaseError as e:
-            raise e
-        except Exception as e:
-            raise e
+        return parsed_file
 
     @classmethod
     def __convert(cls, file: dict) -> list[pf.ParsedResource]:

@@ -5,7 +5,7 @@ from pathlib import Path
 from thipster.engine import ParserPort
 from thipster.engine.parsed_file import ParsedFile
 
-from .exceptions import DSLParserBaseError, DSLParserPathNotFoundError
+from .exceptions import DSLParserPathNotFoundError
 from .interpreter import Interpreter
 from .lexer import Lexer
 from .token_parser import TokenParser
@@ -63,17 +63,11 @@ class DSLParser(ParserPort):
         ParsedFile
             A ParsedFile object with the content of all the files in the input path
         """
-        try:
-            files = DSLParser.__getfiles(path)
-            lexer = Lexer(files)
-            token_list = lexer.run()
-            parser = TokenParser(token_list)
-            ast = parser.run()
+        files = DSLParser.__getfiles(path)
+        lexer = Lexer(files)
+        token_list = lexer.run()
+        parser = TokenParser(token_list)
+        ast = parser.run()
 
-            interpreter = Interpreter()
-            return interpreter.run(ast)
-
-        except DSLParserBaseError as e:
-            raise e
-        except Exception as e:
-            raise e
+        interpreter = Interpreter()
+        return interpreter.run(ast)

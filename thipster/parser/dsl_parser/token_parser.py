@@ -27,27 +27,25 @@ class TokenParser:
         """Run the parser."""
         self.__rm_empty_lines()
         file_node = ast.FileNode()
-        try:
-            self.__trim_newlines()
-            while self.__get_next_type() != TT.EOF:
-                self.__trim_newlines()
 
-                match self.__get_next_type():
-                    case TT.VAR:
-                        file_node.variables.append(
-                            self.__get_assignment(),
-                        )
-                    case TT.STRING:
-                        file_node.resources.append(self.__create_resource())
-                    case TT.OUTPUT:
-                        self.__get_outputs(file_node)
-                    case _:
-                        raise DSLSyntaxError(
-                            self.__next(), [TT.VAR, TT.STRING, TT.OUTPUT],
-                        )
-                self.__trim_newlines()
-        except Exception as e:
-            raise e
+        self.__trim_newlines()
+        while self.__get_next_type() != TT.EOF:
+            self.__trim_newlines()
+
+            match self.__get_next_type():
+                case TT.VAR:
+                    file_node.variables.append(
+                        self.__get_assignment(),
+                    )
+                case TT.STRING:
+                    file_node.resources.append(self.__create_resource())
+                case TT.OUTPUT:
+                    self.__get_outputs(file_node)
+                case _:
+                    raise DSLSyntaxError(
+                        self.__next(), [TT.VAR, TT.STRING, TT.OUTPUT],
+                    )
+            self.__trim_newlines()
 
         return file_node
 
@@ -230,13 +228,10 @@ class TokenParser:
 
         Format: name, ":", (value, [if_else_ctrl] | [if_ctrl], "\\n", (list | dict)).
         """
-        try:
-            name = self.__next(TT.STRING)
-            self.__get_whitespaces()
-            self.__next(TT.COLON)
-            self.__get_whitespaces()
-        except DSLSyntaxError as e:
-            raise e
+        name = self.__next(TT.STRING)
+        self.__get_whitespaces()
+        self.__next(TT.COLON)
+        self.__get_whitespaces()
 
         next_token_type = self.__get_next_type()
 
@@ -245,13 +240,10 @@ class TokenParser:
             TT.NEWLINE,
         ]:
             # value, [if_else_ctrl]
-            try:
-                value = self.__get_value()
-                self.__get_whitespaces()
-                if_else_ctrl = self.__get_if_else_ctrl()
-                self.__get_whitespaces()
-            except:
-                raise
+            value = self.__get_value()
+            self.__get_whitespaces()
+            if_else_ctrl = self.__get_if_else_ctrl()
+            self.__get_whitespaces()
 
             parameter = ast.ParameterNode(
                 name=ast.StringNode(name),
@@ -329,41 +321,38 @@ class TokenParser:
         """
         list_items = []
 
-        try:
-            small_indent = indent-1 if check_small_indent else indent
-            while self.__get_tabs(small_indent):
-                if not self.__check(TT.MINUS):
-                    if not check_small_indent:
-                        raise DSLSyntaxError(self.__next(), TT.TAB)
-                    small_indent = indent
-                    self.__next(TT.TAB)
-                    self.__next(TT.MINUS)
-                check_small_indent = False
-                self.__next(TT.WHITESPACE)
-                self.__get_whitespaces()
+        small_indent = indent-1 if check_small_indent else indent
+        while self.__get_tabs(small_indent):
+            if not self.__check(TT.MINUS):
+                if not check_small_indent:
+                    raise DSLSyntaxError(self.__next(), TT.TAB)
+                small_indent = indent
+                self.__next(TT.TAB)
+                self.__next(TT.MINUS)
+            check_small_indent = False
+            self.__next(TT.WHITESPACE)
+            self.__get_whitespaces()
 
-                value = self.__get_dict(indent+1, no_indent_first=True)\
-                    if self.__check_dict() else self.__get_value()
-                self.__get_whitespaces()
+            value = self.__get_dict(indent+1, no_indent_first=True)\
+                if self.__check_dict() else self.__get_value()
+            self.__get_whitespaces()
 
-                if_else_ctrl = self.__get_if_else_ctrl()
-                self.__get_whitespaces()
-                amount_ctrl = self.__get_nb_ctrl()
-                self.__get_whitespaces()
+            if_else_ctrl = self.__get_if_else_ctrl()
+            self.__get_whitespaces()
+            amount_ctrl = self.__get_nb_ctrl()
+            self.__get_whitespaces()
 
-                if if_else_ctrl:
-                    if_else_ctrl.if_case = value
-                    value = if_else_ctrl
+            if if_else_ctrl:
+                if_else_ctrl.if_case = value
+                value = if_else_ctrl
 
-                if amount_ctrl:
-                    amount_ctrl.node = value
-                    value = amount_ctrl
+            if amount_ctrl:
+                amount_ctrl.node = value
+                value = amount_ctrl
 
-                list_items.append(value)
+            list_items.append(value)
 
-                self.__get_newline()
-        except Exception as e:
-            raise e
+            self.__get_newline()
 
         self.__tokens.insert(
             0, Token(
@@ -424,15 +413,12 @@ class TokenParser:
         """
         parameters = []
 
-        try:
-            while self.__get_tabs(indent) or no_indent_first:
-                self.__get_whitespaces()
-                parameters.append(self.__get_parameter(indent))
-                self.__get_whitespaces()
-                self.__get_newline()
-                no_indent_first = False
-        except Exception as e:
-            raise e
+        while self.__get_tabs(indent) or no_indent_first:
+            self.__get_whitespaces()
+            parameters.append(self.__get_parameter(indent))
+            self.__get_whitespaces()
+            self.__get_newline()
+            no_indent_first = False
 
         self.__tokens.insert(
             0, Token(
@@ -448,20 +434,17 @@ class TokenParser:
 
         Format: "amount", ":", int, ["#", var].
         """
-        try:
-            amount_token = self.__check(TT.AMOUNT)
-            if not amount_token:
-                return None
+        amount_token = self.__check(TT.AMOUNT)
+        if not amount_token:
+            return None
 
-            self.__get_whitespaces()
-            self.__next(TT.COLON)
+        self.__get_whitespaces()
+        self.__next(TT.COLON)
 
-            self.__get_whitespaces()
-            amount = self.__get_value()
+        self.__get_whitespaces()
+        amount = self.__get_value()
 
-            self.__get_whitespaces()
-        except DSLSyntaxError as e:
-            raise e
+        self.__get_whitespaces()
 
         amount_variable = self.__check(TT.VAR)
 
@@ -487,11 +470,8 @@ class TokenParser:
             return None
 
         self.__get_whitespaces()
-        try:
-            condition = self.__get_comp_expr()
-            self.__get_whitespaces()
-        except DSLSyntaxError as e:
-            raise e
+        condition = self.__get_comp_expr()
+        self.__get_whitespaces()
 
         return ast.IfNode(
             condition=condition,
