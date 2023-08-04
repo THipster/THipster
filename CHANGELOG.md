@@ -2,6 +2,19 @@
 
 
 
+## v0.23.6 (2023-08-04)
+
+### :recycle:
+
+* :recycle: refactor: use correct functions + rename according to grammar (#222) ([`22149f4`](https://github.com/THipster/THipster/commit/22149f4540bdf2ab5c0006fe5138f652cb058626))
+
+### Other
+
+* :green_heart: fix(ci): Update dagger (#225)
+
+Co-authored-by: Gabriel Suquet &lt;gsuquet@ippon.fr&gt; ([`6a53c49`](https://github.com/THipster/THipster/commit/6a53c495961cd7e13d0bc91bb8cff34c3690b882))
+
+
 ## v0.23.5 (2023-08-02)
 
 ### :arrow_up:
