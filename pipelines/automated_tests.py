@@ -1,4 +1,5 @@
 """Step that runs automated tests in a pipeline."""
+import os
 import sys
 
 import anyio
@@ -11,7 +12,10 @@ async def test(version: str):
     async with dagger.Connection(dagger.Config(log_output=sys.stderr)) as client:
 
         gcp_credentials_content = (
-            client.host().env_variable('GOOGLE_APPLICATION_CREDENTIALS_CONTENT').secret()
+            client.set_secret(
+                'GOOGLE_APPLICATION_CREDENTIALS_CONTENT',
+                os.environ['GOOGLE_APPLICATION_CREDENTIALS_CONTENT'],
+            )
         )
 
         src = client.host().directory('.')
@@ -28,7 +32,7 @@ async def test(version: str):
 
         tests = setup.with_exec(['pytest', 'tests'])
         # execute
-        await tests.exit_code()
+        await tests.sync()
 
     print('Tests succeeded!')
 
