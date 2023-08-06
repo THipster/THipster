@@ -1,4 +1,4 @@
-cdktf-cdktf-provider-google==8.0.7
+cdktf-cdktf-provider-google==8.0.8
 google-auth==2.22.0
 pytest==7.4.0
 pytest-mock==3.11.1
