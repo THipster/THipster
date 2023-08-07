@@ -127,13 +127,26 @@ class TokenParser:
         end = 0
         while end < len(self.__tokens):
             begin = end
+            next_token_type = self.__get_next_type(end)
             while self.__get_next_type(end) in empty_types:
                 end += 1
+                next_token_type = self.__get_next_type(end)
 
-            if self.__get_next_type(index=end) == TT.NEWLINE:
+            if next_token_type == TT.NEWLINE:
+                for _ in range(begin, end + 1):
+                    self.__tokens.pop(begin)
+                end = begin
+
+            elif next_token_type == TT.EOF:
                 for _ in range(begin, end):
                     self.__tokens.pop(begin)
-            end += 1
+                end += 1
+
+            else:
+                while next_token_type != TT.NEWLINE:
+                    end += 1
+                    next_token_type = self.__get_next_type(end)
+                end += 1
 
     def __get_newline(self):
         newline = self.__next(TT.NEWLINE)

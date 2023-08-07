@@ -106,7 +106,6 @@ def test_parse_simple_file_with_newlines():
 
 bucket    my-bucket:
 
-
 \tregion:   euw
 
 bucket my-bucket2:
@@ -114,7 +113,7 @@ bucket my-bucket2:
 
 
 
-""",
+   """,
     )
     assert len(out.resources) == 2
     for bucket in out.resources:
