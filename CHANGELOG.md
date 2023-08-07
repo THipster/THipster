@@ -2,6 +2,32 @@
 
 
 
+## v0.23.7 (2023-08-07)
+
+### :arrow_up:
+
+* :arrow_up: chore(deps): bump cdktf-cdktf-provider-google from 8.0.7 to 8.0.8 (#226)
+
+Signed-off-by: dependabot[bot] &lt;support@github.com&gt;
+Co-authored-by: dependabot[bot] &lt;49699333+dependabot[bot]@users.noreply.github.com&gt; ([`7704585`](https://github.com/THipster/THipster/commit/77045853faf9f0477f66b270c2c73ab91187938b))
+
+* :arrow_up: chore(deps): bump dagger-io from 0.8.0 to 0.8.1 (#228)
+
+Signed-off-by: dependabot[bot] &lt;support@github.com&gt;
+Co-authored-by: dependabot[bot] &lt;49699333+dependabot[bot]@users.noreply.github.com&gt; ([`c1a738e`](https://github.com/THipster/THipster/commit/c1a738e859dec4a9167c4954946a19ea6a047984))
+
+* :arrow_up: chore(deps): bump sphinx from 7.1.1 to 7.1.2 (#227)
+
+Signed-off-by: dependabot[bot] &lt;support@github.com&gt;
+Co-authored-by: dependabot[bot] &lt;49699333+dependabot[bot]@users.noreply.github.com&gt; ([`38eca3c`](https://github.com/THipster/THipster/commit/38eca3cf92307a0595338d5876cf205c7fcd815a))
+
+### Other
+
+* :green_heart: feat: disable stale issues (#224) ([`3e5783c`](https://github.com/THipster/THipster/commit/3e5783c7cbf32ee5e19cdd1f023e1d6c7ca4c706))
+
+* :fire: fix: remove useless try-catch loops (#221) ([`e84b3fc`](https://github.com/THipster/THipster/commit/e84b3fc897dea0e29a400a94314727d734dca0a1))
+
+
 ## v0.23.6 (2023-08-04)
 
 ### :recycle:
