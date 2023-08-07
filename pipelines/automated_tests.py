@@ -18,6 +18,13 @@ async def test(version: str):
             )
         )
 
+        coveralls_token = (
+            client.set_secret(
+                'COVERALLS_REPO_TOKEN',
+                os.environ['COVERALLS_REPO_TOKEN'],
+            )
+        )
+
         src = client.host().directory('.')
 
         setup = (
@@ -28,9 +35,13 @@ async def test(version: str):
             .with_secret_variable(
                 'GOOGLE_APPLICATION_CREDENTIALS_CONTENT', gcp_credentials_content,
             )
+            .with_secret_variable('COVERALLS_REPO_TOKEN', coveralls_token)
         )
 
-        tests = setup.with_exec(['pytest', 'tests'])
+        tests = setup.with_exec(
+            ['coverage', 'run', '--source=thipster', '-m', 'pytest', 'tests/'],
+        ).with_exec(['coveralls'])
+
         # execute
         await tests.sync()
 
