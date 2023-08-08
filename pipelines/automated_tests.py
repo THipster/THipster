@@ -36,6 +36,16 @@ async def test(version: str):
                 'GOOGLE_APPLICATION_CREDENTIALS_CONTENT', gcp_credentials_content,
             )
             .with_secret_variable('COVERALLS_REPO_TOKEN', coveralls_token)
+            .with_(
+                env_variables(
+                    [
+                        'CI_NAME',
+                        'CI_BUILD_NUMBER',
+                        'CI_BRANCH',
+                        'CI_PULL_REQUEST',
+                    ],
+                ),
+            )
         )
 
         tests = setup.with_exec(
@@ -48,6 +58,25 @@ async def test(version: str):
     print('Tests succeeded!')
 
 
+def env_variables(env_keys: list[str]):
+    """Add specified environment variables to a container if defined."""
+    def env_variables_inner(ctr: dagger.Container):
+        for key in env_keys:
+            if key in os.environ:
+                ctr = ctr.with_env_variable(key, os.environ[key])
+        return ctr
+
+    return env_variables_inner
+
+
+def get_active_branch_name():
+    """Get the name of the active git branch."""
+    from pathlib import Path
+    return Path('.git/HEAD').read_text().split('/')[-1].strip()
+
+
 if __name__ == '__main__':
     python_version = '3.11.3'
+    os.environ['CI_NAME'] = 'dagger local'
+    os.environ['CI_BRANCH'] = get_active_branch_name()
     anyio.run(test, python_version)

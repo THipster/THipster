@@ -48,6 +48,10 @@ jobs:
         env:
           GOOGLE_APPLICATION_CREDENTIALS_CONTENT: ${{ secrets.GOOGLE_APPLICATION_CREDENTIALS_CONTENT }}
           COVERALLS_REPO_TOKEN: ${{ secrets.COVERALLS_REPO_TOKEN }}
+          CI_NAME: 'dagger github action'
+          CI_BUILD_NUMBER: ${{ github.run_number }}
+          CI_BRANCH: ${{ github.base_ref }}
+          CI_PULL_REQUEST: ${{ github.event.number }}
 
   run_pre-commit:
     name: "Dagger.io Pre-commit only on doc"
