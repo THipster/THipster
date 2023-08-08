@@ -3,6 +3,7 @@ from pathlib import Path
 
 import thipster.engine.parsed_file as pf
 
+from .exceptions import BadPortError
 from .i_auth import AuthPort
 from .i_parser import ParserPort
 from .i_repository import RepositoryPort
@@ -20,10 +21,10 @@ class Engine:
     """
 
     def __init__(
-            self, parser: ParserPort,
-            repository: RepositoryPort,
-            auth: AuthPort,
-            terraform:  TerraformPort,
+            self, parser: ParserPort = None,
+            repository: RepositoryPort = None,
+            auth: AuthPort = None,
+            terraform:  TerraformPort = None,
     ):
         """THipster's Engine.
 
@@ -41,56 +42,64 @@ class Engine:
         terraform : TerraformPort
             Instance of a Terraform class
         """
-        self.__parser = parser
-        self.__repository = repository
-        self.__auth = auth
-        self.__terraform = terraform
+        self.parser = parser
+        self.repository = repository
+        self.auth = auth
+        self.terraform = terraform
 
     @property
     def parser(self):
         """Get the parser."""
-        return self.__parser
+        if self.__parser:
+            return self.__parser
+        raise NotImplementedError
 
     @parser.setter
     def parser(self, value):
         if not isinstance(value, ParserPort):
-            raise Exception
+            raise BadPortError(value.__class__, ParserPort)
 
         self.__parser = value
 
     @property
     def repository(self):
         """Get the repository."""
-        return self.__repository
+        if self.__repository:
+            return self.__repository
+        raise NotImplementedError
 
     @repository.setter
     def repository(self, value):
         if not isinstance(value, RepositoryPort):
-            raise Exception
+            raise BadPortError(value.__class__, RepositoryPort)
 
         self.__repository = value
 
     @property
     def auth(self):
         """Get the authentification module."""
-        return self.__auth
+        if self.__auth:
+            return self.__auth
+        raise NotImplementedError
 
     @auth.setter
     def auth(self, value):
         if not isinstance(value, AuthPort):
-            raise Exception
+            raise BadPortError(value.__class__, AuthPort)
 
         self.__auth = value
 
     @property
     def terraform(self):
         """Get the Terraform module."""
-        return self.__terraform
+        if self.__terraform:
+            return self.__terraform
+        raise NotImplementedError
 
     @terraform.setter
     def terraform(self, value):
         if not isinstance(value, TerraformPort):
-            raise Exception
+            raise BadPortError(value.__class__, TerraformPort)
 
         self.__terraform = value
 
@@ -144,7 +153,7 @@ class Engine:
         pf.ParsedFile
             The ParsedFile object containing the resources defined in the input file
         """
-        parsed_file = self.__parser.run(path)
+        parsed_file = self.parser.run(path)
         assert type(parsed_file) == pf.ParsedFile
 
         return parsed_file
@@ -165,7 +174,7 @@ class Engine:
             The dictionary of models
         """
         types = [r.resource_type for r in file.resources]
-        return self.__repository.get(types)
+        return self.repository.get(types)
 
     def generate_tf_files(
         self, file: pf.ParsedFile, models: dict[str, ResourceModel],
@@ -179,7 +188,7 @@ class Engine:
         models : dict[str, ResourceModel]
             The dictionary of models
         """
-        self.__terraform.generate(file, models, self.__auth)
+        self.terraform.generate(file, models, self.__auth)
 
     def init_terraform(
         self,
@@ -200,7 +209,7 @@ class Engine:
         tuple[int, str]
             The terraform init exit code and output
         """
-        return self.__terraform.init(working_dir, upgrade)
+        return self.terraform.init(working_dir, upgrade)
 
     def plan_terraform(
         self,
@@ -221,7 +230,7 @@ class Engine:
         tuple[int, str]
             The terraform plan exit code and output
         """
-        return self.__terraform.plan(working_dir, plan_file_path)
+        return self.terraform.plan(working_dir, plan_file_path)
 
     def apply_terraform(
         self,
@@ -242,4 +251,4 @@ class Engine:
         tuple[int, str]
             The terraform apply exit code and output
         """
-        return self.__terraform.apply(working_dir, plan_file_path)
+        return self.terraform.apply(working_dir, plan_file_path)

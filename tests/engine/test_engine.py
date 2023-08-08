@@ -3,6 +3,7 @@
 import pytest
 
 import thipster.engine as eng
+from thipster.engine.exceptions import BadPortError
 from thipster.engine.parsed_file import ParsedFile
 from thipster.engine.resource_model import ResourceModel
 
@@ -140,3 +141,35 @@ def test_repository_failure(mocker):
     with pytest.raises(MockError):
         engine = eng.Engine(parser, repository, auth, terraform)
         engine.run(test_file)
+
+
+def test_engine_setters():
+    """Test the behavior of the engine setters when they fail."""
+    parser = MockParser()
+    repository = MockRepository()
+    auth = MockAuth()
+    terraform = MockTerraform()
+
+    with pytest.raises(BadPortError) as exc_info:
+        eng.Engine(None, repository, auth, terraform)
+
+    assert str(exc_info.value) == 'Error while setting THipster port : got NoneType, \
+expected ParserPort'
+
+    with pytest.raises(BadPortError) as exc_info:
+        eng.Engine(parser, None, auth, terraform)
+
+    assert str(exc_info.value) == 'Error while setting THipster port : got NoneType, \
+expected RepositoryPort'
+
+    with pytest.raises(BadPortError) as exc_info:
+        eng.Engine(parser, repository, None, terraform)
+
+    assert str(exc_info.value) == 'Error while setting THipster port : got NoneType, \
+expected AuthPort'
+
+    with pytest.raises(BadPortError) as exc_info:
+        eng.Engine(parser, repository, auth, None)
+
+    assert str(exc_info.value) == 'Error while setting THipster port : got NoneType, \
+expected TerraformPort'
