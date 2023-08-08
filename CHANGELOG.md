@@ -2,6 +2,15 @@
 
 
 
+## v0.23.10 (2023-08-08)
+
+### :bug:
+
+* :bug: fix(ci): Add missing coveralls parameters hidden by dagger (#230)
+
+Co-authored-by: Gabriel Suquet &lt;gsuquet@ippon.fr&gt; ([`939b288`](https://github.com/THipster/THipster/commit/939b288d0afe0421810a652ffc751703913d8b5f))
+
+
 ## v0.23.9 (2023-08-08)
 
 ### :bug:
