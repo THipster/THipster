@@ -2,6 +2,19 @@
 
 
 
+## v0.23.8 (2023-08-08)
+
+### :recycle:
+
+* :recycle: fix: use engine properties (#229) ([`65fbefe`](https://github.com/THipster/THipster/commit/65fbefebba6e6edf077b6bb9b83d3fff3e2a6a52))
+
+### Other
+
+* :green_heart: feat(ci): Add coverage status report (#223)
+
+Co-authored-by: Gabriel Suquet &lt;gsuquet@ippon.fr&gt; ([`5ae6f5d`](https://github.com/THipster/THipster/commit/5ae6f5d72feb6bdb26ada1722efd6649a72ae3b0))
+
+
 ## v0.23.7 (2023-08-07)
 
 ### :arrow_up:
