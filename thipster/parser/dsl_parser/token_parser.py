@@ -38,7 +38,7 @@ class TokenParser:
                         self.__get_assignment(),
                     )
                 case TT.STRING:
-                    file_node.resources.append(self.__create_resource())
+                    file_node.resources.append(self.__get_resource())
                 case TT.OUTPUT:
                     self.__get_outputs(file_node)
                 case _:
@@ -62,17 +62,16 @@ class TokenParser:
         Token
             The next token
         """
-        next_token_type = self.__get_next_type()
+        if not expected:
+            return self.__tokens.pop(0)
 
-        if expected:
-            if type(expected) is list:
-                if next_token_type not in expected:
-                    raise DSLSyntaxError(self.__tokens[0], expected)
-            elif next_token_type != expected:
-                raise DSLSyntaxError(self.__tokens[0], expected)
-        return self.__tokens.pop(0)
+        next_token = self.__check(expected)
 
-    def __check(self, expected: TT, index: int = 0) -> Token | None:
+        if not next_token:
+            raise DSLSyntaxError(self.__tokens[0], expected)
+        return next_token
+
+    def __check(self, expected: TT | list[TT], index: int = 0) -> Token | None:
         """Check if the next token is the expected one.
 
         If the type of the next token is equal to the expected parameter, it is popped
@@ -80,8 +79,8 @@ class TokenParser:
 
         Parameters
         ----------
-        expected : TT
-            Expected token type
+        expected : TT | list[TT]
+            Expected token type(s)
         index : int, optional
             Index of the token to check, by default 0
 
@@ -90,11 +89,15 @@ class TokenParser:
         Token | None
             The next token if it is the expected one, None otherwise
         """
-        token = self.__get_next_type(index=index)
-        if token != expected:
-            return None
+        next_token_type = self.__get_next_type(index)
 
-        return self.__next(expected)
+        if expected:
+            if type(expected) is list:
+                if next_token_type not in expected:
+                    return None
+            elif next_token_type != expected:
+                return None
+        return self.__tokens.pop(0)
 
     def __get_next_type(self, index: int = 0) -> TT:
         """Get the type of the next token.
@@ -124,13 +127,26 @@ class TokenParser:
         end = 0
         while end < len(self.__tokens):
             begin = end
+            next_token_type = self.__get_next_type(end)
             while self.__get_next_type(end) in empty_types:
                 end += 1
+                next_token_type = self.__get_next_type(end)
 
-            if self.__get_next_type(index=end) == TT.NEWLINE:
+            if next_token_type == TT.NEWLINE:
+                for _ in range(begin, end + 1):
+                    self.__tokens.pop(begin)
+                end = begin
+
+            elif next_token_type == TT.EOF:
                 for _ in range(begin, end):
                     self.__tokens.pop(begin)
-            end += 1
+                end += 1
+
+            else:
+                while next_token_type != TT.NEWLINE:
+                    end += 1
+                    next_token_type = self.__get_next_type(end)
+                end += 1
 
     def __get_newline(self):
         newline = self.__next(TT.NEWLINE)
@@ -139,7 +155,7 @@ class TokenParser:
         return newline
 
     def __get_whitespaces(self):
-        while self.__check(TT.WHITESPACE):
+        while self.__check([TT.WHITESPACE, TT.TAB]):
             pass
 
     def __get_tabs(self, indent: int) -> bool:
@@ -154,7 +170,7 @@ class TokenParser:
             return True
         return False
 
-    def __create_resource(
+    def __get_resource(
         self,
         indent=0,
     ) -> ast.ResourceNode | ast.IfNode | ast.AmountNode:

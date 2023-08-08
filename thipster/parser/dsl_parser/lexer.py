@@ -175,7 +175,7 @@ class Lexer:
     def __handle_current_token(self) -> None:
         """Process the current stored token.
 
-        Check if the current token is a keyword, calls the cprresponding function, or
+        Check if the current token is a keyword, calls the corresponding function, or
         the '__handleLiteralsAndVariables' otherwise.
         """
         current_token = self.__lexerPosition.currentToken.lower()
@@ -418,7 +418,6 @@ class Lexer:
             self.__lexerPosition.reset_current_token()
 
         self.__lexerPosition.isMultiLine = False
-        self.__handle_newline_token()
         self.__handle_eof_token()
 
     def __isfloat(self, num: str) -> bool:
