@@ -1,0 +1,27 @@
+name: 'Merge Pull Requests'
+
+on:
+  merge_group:
+    branches: [ main ]
+
+jobs:
+  test_coverage:
+    name: 'Dagger.io Test Coverage'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+      - uses: actions/checkout@v3
+      - name: Install deps
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements/dagger-requirements.txt
+      - name: Run Dagger_test.py pipeline
+        run: python pipelines/prhandler.py
+        env:
+          GOOGLE_APPLICATION_CREDENTIALS_CONTENT: ${{ secrets.GOOGLE_APPLICATION_CREDENTIALS_CONTENT }}
+          COVERALLS_REPO_TOKEN: ${{ secrets.COVERALLS_REPO_TOKEN }}
+          CI_NAME: 'dagger github action'
+          CI_BUILD_NUMBER: ${{ github.run_number }}
+          CI_BRANCH: 'main'
