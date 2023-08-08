@@ -2,6 +2,13 @@
 
 
 
+## v0.23.9 (2023-08-08)
+
+### :bug:
+
+* :bug: fix: allow unusual spacing + remove eof newline (#219) ([`fca40a4`](https://github.com/THipster/THipster/commit/fca40a4e078dee49deb1f8289894d3532c34926d))
+
+
 ## v0.23.8 (2023-08-08)
 
 ### :recycle:
