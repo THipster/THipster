@@ -169,3 +169,14 @@ def test_add_resource():
     parsed_file.resources.append(resource)
 
     assert resource in parsed_file.resources
+
+
+def test_parsedlist_is_generator():
+    """Test that ParsedList type is a generator."""
+    value = pf.ParsedList([
+        pf.ParsedLiteral('test_list_1'),
+        pf.ParsedLiteral('test_list_2'),
+        pf.ParsedLiteral('test_list_3'),
+    ])
+    for item in value:
+        assert isinstance(item, pf.ParsedLiteral)

@@ -67,15 +67,11 @@ class ModelList(ModelValue):
 
     def __next__(self):
         """Return the next value of the iterator."""
-        if not self.value:
-            return None
-        ret = self.value[self.i]
-        if self.i > len(self.value):
+        if self.i >= len(self.value):
             raise StopIteration
 
         self.i += 1
-
-        return ret
+        return self.value[self.i-1]
 
 
 class ModelLiteral(ModelValue):
@@ -106,23 +102,6 @@ class ModelDict(ModelValue):
         """
         super().__init__()
         self.value = value
-
-    def __iter__(self):
-        """Iterate over the dictionary."""
-        self.i = 0
-        return self
-
-    def __next__(self):
-        """Return the next value of the iterator."""
-        if not self.value:
-            return None
-        ret = self.value[self.i]
-        if self.i > len(self.value):
-            raise StopIteration
-
-        self.i += 1
-
-        return ret
 
 
 class ResourceModel:
