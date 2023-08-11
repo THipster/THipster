@@ -190,7 +190,7 @@ def test_lex_multiline_input():
     expected_output = [
         __get_token_string('file', 1, 1, TT.STRING, 'bucket'),
         __get_token_string('file', 1, 7, TT.WHITESPACE),
-        __get_token_string('file', 1, 8, TT.STRING, 'nomtest'),
+        __get_token_string('file', 1, 8, TT.STRING, 'nom\ntest'),
         __get_token_string('file', 2, 5, TT.COLON),
         __get_token_string('file', 2, 6, TT.EOF),
     ]
@@ -400,3 +400,35 @@ def test_run_lexer_var_in_name():
     assert len(output) == len(expected_output)
     for i in range(len(expected_output)):
         assert repr(output[i]) == expected_output[i]
+
+
+def test_char_escaping():
+    r"""Test that special characters are escaped when using \ char."""
+    for char in [
+        ':',
+        ',',
+        '+',
+        '-',
+        '=',
+        '*',
+        '/',
+        '!',
+        '<',
+        '>',
+        '^',
+        '%',
+        '\\',
+    ]:
+        input_file = {
+            'file': f'char\\{char}test',
+        }
+        expected_output = [
+            __get_token_string('file', 1, 1, TT.STRING, f'char{char}test'),
+            __get_token_string('file', 1, 11, TT.EOF),
+        ]
+
+        lexer = Lexer(input_file)
+        output = lexer.run()
+
+        assert len(output) == len(expected_output)
+        assert repr(output[0]) == expected_output[0]

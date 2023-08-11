@@ -77,12 +77,9 @@ class Lexer:
                 continue
 
             if self.__lexerPosition.escaped:
-                match char:
-                    case '\n':
-                        self.__lexerPosition.isMultiLine = True
-                        self.__lexerPosition.new_line()
-                    case _:
-                        self.__add_next_char()
+                self.__add_next_char()
+                if char == '\n':
+                    self.__lexerPosition.new_line()
                 self.__lexerPosition.escaped = False
                 continue
 
@@ -95,9 +92,6 @@ class Lexer:
                 continue
 
             if char == '\n':
-                if self.__lexerPosition.isMultiLine:
-                    self.__lexerPosition.new_line()
-                    continue
                 position = str(
                     Position(
                         self.__lexerPosition.currentFile,
@@ -351,14 +345,10 @@ class Lexer:
 
     def __handle_newline_token(self) -> None:
         r"""Handle a NEWLINE token '\\n'."""
-        if not self.__lexerPosition.isMultiLine:
-            self.__handle_base_token(TT.NEWLINE)
+        self.__handle_base_token(TT.NEWLINE)
 
         self.__lexerPosition.new_line()
-        if not self.__lexerPosition.isMultiLine:
-            self.__lexerPosition.set_current_token_index()
-
-        self.__lexerPosition.isMultiLine = False
+        self.__lexerPosition.set_current_token_index()
 
     def __handle_backslash_token(self) -> None:
         r"""Handle a BACKSLASH token '\\'.
