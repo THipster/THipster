@@ -2,6 +2,17 @@
 
 
 
+## v0.23.12 (2023-08-14)
+
+### :recycle:
+
+* :recycle: refactor: clean character escaping (#233) ([`27222c2`](https://github.com/THipster/THipster/commit/27222c2d7d2f6080a105fcca44ce7ec1a838aa85))
+
+### Other
+
+* :white_check_mark: feat: add tests for generators (#232) ([`a5ad3fc`](https://github.com/THipster/THipster/commit/a5ad3fc78001be266bda46e9e2e3789cb249da45))
+
+
 ## v0.23.11 (2023-08-14)
 
 ### :heavy_minus_sign:
