@@ -137,7 +137,7 @@ class ParsedList(ParsedValue):
 
     def __next__(self):
         """Return the next value of the iterator."""
-        if self.i > len(self.__value):
+        if self.i >= len(self.value):
             raise StopIteration
 
         self.i += 1

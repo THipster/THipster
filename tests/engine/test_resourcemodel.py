@@ -208,3 +208,15 @@ def test_create_internal_object():
 
     assert isinstance(model, rm.ResourceModel)
     assert model.name_key is None
+
+
+def test_modellist_is_generator():
+    """Test that ModelList type is a generator."""
+    value = rm.ModelList([
+        rm.ModelLiteral('test_list_1'),
+        rm.ModelLiteral('test_list_2'),
+        rm.ModelLiteral('test_list_3'),
+    ])
+
+    for item in value:
+        assert isinstance(item, rm.ModelLiteral)
