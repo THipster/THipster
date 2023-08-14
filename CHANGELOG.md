@@ -2,6 +2,13 @@
 
 
 
+## v0.23.11 (2023-08-14)
+
+### :heavy_minus_sign:
+
+* :heavy_minus_sign: fix: remove python-terraform (#231) ([`ffc38a9`](https://github.com/THipster/THipster/commit/ffc38a98d031ecb667e584093ef0d61df31444e9))
+
+
 ## v0.23.10 (2023-08-08)
 
 ### :bug:
