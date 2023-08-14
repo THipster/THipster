@@ -24,7 +24,6 @@ class LexerPosition():
         self.__currentTokenLine = 1
         self.isVariable = False
         self.isQuotedString = False
-        self.isMultiLine = False
         self.isComment = False
         self.escaped = False
         self.consecutiveWhitespaces = 0
