@@ -1,2 +1,2 @@
-cdktf-cdktf-provider-google==8.0.8
+cdktf-cdktf-provider-google==8.0.10
 google-auth==2.22.0
