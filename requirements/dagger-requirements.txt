@@ -1,1 +1,1 @@
-dagger-io==0.8.2
+dagger-io==0.8.4
