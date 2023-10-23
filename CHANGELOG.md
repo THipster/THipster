@@ -2,6 +2,20 @@
 
 
 
+## v0.23.14 (2023-10-23)
+
+### :arrow_up:
+
+* :arrow_up: chore(deps): bump pytest from 7.4.0 to 7.4.2 (#249)
+
+Signed-off-by: dependabot[bot] &lt;support@github.com&gt;
+Co-authored-by: dependabot[bot] &lt;49699333+dependabot[bot]@users.noreply.github.com&gt; ([`bbbde8c`](https://github.com/THipster/THipster/commit/bbbde8c37b232ae4db7fc3728851c9f1e8583def))
+
+### Other
+
+* :white_check_mark: feat: change GitHub tests branch (#238) ([`bea4ece`](https://github.com/THipster/THipster/commit/bea4ece85ef6875473bc06d545861673a04d3f44))
+
+
 ## v0.23.13 (2023-08-16)
 
 ### :arrow_up:
