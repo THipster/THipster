@@ -2,6 +2,16 @@
 
 
 
+## v0.23.15 (2023-11-22)
+
+### :arrow_up:
+
+* :arrow_up: chore(deps): bump sphinx from 7.1.2 to 7.2.6 (#251)
+
+Signed-off-by: dependabot[bot] &lt;support@github.com&gt;
+Co-authored-by: dependabot[bot] &lt;49699333+dependabot[bot]@users.noreply.github.com&gt; ([`1c95a9c`](https://github.com/THipster/THipster/commit/1c95a9c9d0ffde7cbc59e91ed02170618ad27c63))
+
+
 ## v0.23.14 (2023-10-23)
 
 ### :arrow_up:
